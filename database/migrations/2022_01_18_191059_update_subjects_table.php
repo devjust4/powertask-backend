@@ -14,8 +14,8 @@ class UpdateSubjectsTable extends Migration
     public function up()
     {
         Schema::table('subjects', function(Blueprint $table) {
-            $table->foreignId('course_id')->constrained('courses');
-            $table->foreignId('period_id')->constrained('periods');
+            // $table->foreignId('course_id')->constrained('courses')->nullable();      // TODO: remove this comments
+            // $table->foreignId('period_id')->constrained('periods')->nullable();
         });
     }
 

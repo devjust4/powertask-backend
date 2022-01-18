@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\TasksController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -15,5 +16,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('checkDBConnection')->group(function() {
-    Route::put('register', [UsersController::class, 'register']);
+
+    Route::prefix('task')->group(function() {
+        Route::put('create', [TasksController::class, 'create']);
+    });
+
 });
