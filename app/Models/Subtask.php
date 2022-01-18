@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Subtask extends Model
 {
     use HasFactory;
+
+    public function task() {
+        return $this->belongsTo(Task::class);
+    }
 }
