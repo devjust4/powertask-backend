@@ -19,6 +19,7 @@ Route::middleware('checkDBConnection')->group(function() {
 
     Route::prefix('task')->group(function() {
         Route::put('create', [TasksController::class, 'create']);
+        Route::put('edit', [TasksController::class, 'edit']);
     });
 
 });
