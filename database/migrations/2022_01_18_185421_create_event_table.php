@@ -16,7 +16,7 @@ class CreateEventTable extends Migration
         Schema::create('event', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->enum('type', ['exam', 'medical']);
+            $table->enum('type', ['exam', 'medical', 'vacations']);
             $table->date('date_start');
             $table->date('date_end');
             $table->timestamps();
