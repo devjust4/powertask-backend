@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\SubtasksController;
 use App\Http\Controllers\TasksController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +23,12 @@ Route::middleware('checkDBConnection')->group(function() {
         Route::put('edit', [TasksController::class, 'edit']);
         Route::put('get', [TasksController::class, 'get']);
         Route::put('delete', [TasksController::class, 'delete']);
+    });
+    Route::prefix('subtask')->group(function() {
+        Route::put('create', [SubtasksController::class, 'create']);
+        Route::put('edit', [SubtasksController::class, 'edit']);
+        Route::put('get', [SubtasksController::class, 'get']);
+        Route::put('delete', [SubtasksController::class, 'delete']);
     });
 
 });
