@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Validator;
 class TasksController extends Controller
 {
     public function create(Request $req) {
+        $http_status_code = 200;
+
         $data = $req->getContent();
         if($data) {
             if(gettype(json_decode($data, true)) === 'array') {
@@ -25,6 +27,7 @@ class TasksController extends Controller
 
                 if ($validator->fails()) {
                     $response = ['status'=>0, 'msg'=>$validator->errors()->first()];
+                    $http_status_code = 400;
                 } else {
                     $response = ['status'=>1, 'msg'=>''];
 
@@ -42,13 +45,14 @@ class TasksController extends Controller
                         $task->save();
 
                         $response['msg'] = "Task created properly with id ".$task->id;
-                        return response()->json($response)->setStatusCode(201);
+                        $http_status_code = 201;
                     } catch (\Throwable $th) {
                         $response['msg'] = "An error has occurred: ".$th->getMessage();
                         $response['status'] = 0;
+                        $http_status_code = 500;
                     }
                 }
-                return response()->json($response)->setStatusCode(500);
+                return response()->json($response)->setStatusCode($http_status_code);
             } else {
                 return response(null, 400);     //Ran when received data is not an array    (400: Bad Request)
             }
@@ -57,6 +61,8 @@ class TasksController extends Controller
         }
     }
     public function edit(Request $req) {
+        $http_status_code = 200;
+
         $data = $req->getContent();
         if($data) {
             if(gettype(json_decode($data, true)) === 'array') {
@@ -77,6 +83,7 @@ class TasksController extends Controller
 
                 if ($validator->fails()) {
                     $response = ['status'=>0, 'msg'=>$validator->errors()->first()];
+                    $http_status_code = 400;
                 } else {
                     $response = ['status'=>1, 'msg'=>''];
 
@@ -97,13 +104,14 @@ class TasksController extends Controller
                         $task->save();
 
                         $response['msg'] = "Task edited properly";
-                        return response()->json($response)->setStatusCode(200);
+                        $http_status_code = 200;
                     } catch (\Throwable $th) {
                         $response['msg'] = "An error has occurred: ".$th->getMessage();
                         $response['status'] = 0;
+                        $http_status_code = 500;
                     }
                 }
-                return response()->json($response)->setStatusCode(500);
+                return response()->json($response)->setStatusCode($http_status_code);
             } else {
                 return response(null, 400);     //Ran when received data is not an array    (400: Bad Request)
             }
