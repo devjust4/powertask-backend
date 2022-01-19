@@ -12,7 +12,4 @@ class Session extends Model
     public function student() {
         return $this->belongsTo(Student::class);
     }
-    public function task() {
-        return $this->belongsTo(Task::class);
-    }
 }

@@ -15,17 +15,16 @@ class Student extends Model
     public function events() {
         return $this->hasMany(Event::class);
     }
-    public function periods() {
-        return $this->hasMany(Period::class);
-    }
     public function sessions() {
         return $this->hasMany(Session::class);
     }
     public function courses() {
-        return $this->hasManyThrough(Course::class, Enrollment::class);
+        return $this->hasMany(Course::class);
     }
-
-    public function enrollments() {
-        return $this->belongsTo(Enrollment::class);
+    public function subjects() {
+        return $this->hasMany(Subject::class);
+    }
+    public function blocks() {
+        return $this->hasMany(Block::class);
     }
 }

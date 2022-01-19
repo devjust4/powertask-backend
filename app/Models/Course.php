@@ -9,7 +9,11 @@ class Course extends Model
 {
     use HasFactory;
 
-    public function students() {
-        return $this->hasManyThrough(Student::class, Enrollment::class);
+    public function subjects() {
+        return $this->hasMany(Subject::class);
+    }
+
+    public function student() {
+        return $this->belongsTo(Student::class);
     }
 }

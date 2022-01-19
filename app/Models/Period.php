@@ -9,14 +9,7 @@ class Period extends Model
 {
     use HasFactory;
 
-    public function subjects() {
-        return $this->hasMany(Subject::class);
-    }
-    public function blocks() {
-        return $this->hasMany(Block::class);
-    }
-
-    public function student() {
-        return $this->belongsTo(Student::class);
+    public function subject() {
+        return $this->belongsTo(Subject::class);
     }
 }
