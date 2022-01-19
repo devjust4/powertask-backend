@@ -17,7 +17,7 @@ class CreateSubtasksTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('description');
-            $table->boolean('completed');
+            $table->boolean('completed')->nullable();
             $table->timestamps();
             $table->foreignId('task_id')->constrained('tasks');
         });
