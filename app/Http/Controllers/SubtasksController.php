@@ -7,7 +7,7 @@ use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class TasksController extends Controller
+class SubtasksController extends Controller
 {
     public function create(Request $req) {
         $http_status_code = 200;
@@ -21,7 +21,7 @@ class TasksController extends Controller
                     'date_handover' => 'required|date_format:Y-m-d',
                     'description' => 'required|string',
                     'student_id' => 'required|int',
-                    'subject_id' => 'int',
+                    'subject_id' => 'required|int',
                 ], [
                     'date_format' => 'The format doesn\'t match with YYYY-MM-DD (e.g. 1999-03-25)',
                 ]);
@@ -41,14 +41,7 @@ class TasksController extends Controller
                         $task->date_handover = $data->date_handover;
                         $task->description = $data->description;
                         $task->student_id = $data->student_id;
-
-                        if(isset($data->subject_id)) {
-                            if (Subject::where('id', $data->subject_id)->first()) {
-                                $task->subject_id = $data->subject_id;
-                            } else {
-                                return response('Subject id doesn\'t match any subject')->setStatusCode(400);
-                            }
-                        }
+                        $task->subject_id = $data->subject_id;
 
                         $task->save();
 
@@ -97,29 +90,26 @@ class TasksController extends Controller
                     $data = json_decode($data);
 
                     try {
-                        if($task = Task::find($data->task_id)) {
-                            if(isset($data->name)) $task->name = $data->name;
-                            if(isset($data->date_completed)) $task->date_completed = $data->date_completed;
-                            if(isset($data->date_handover)) $task->date_handover = $data->date_handover;
-                            if(isset($data->mark)) $task->mark = $data->mark;
-                            if(isset($data->description)) $task->description = $data->description;
-                            if(isset($data->completed)) $task->completed = $data->completed;
-                            if(isset($data->subject_id)) {
-                                if (Subject::where('id', $data->subject_id)->first()) {
-                                    $task->subject_id = $data->subject_id;
-                                } else {
-                                    return response('Subject id doesn\'t match any subject')->setStatusCode(400);
-                                }
+                        $task = Task::find($data->task_id);
+
+                        if(isset($data->name)) $task->name = $data->name;
+                        if(isset($data->date_completed)) $task->date_completed = $data->date_completed;
+                        if(isset($data->date_handover)) $task->date_handover = $data->date_handover;
+                        if(isset($data->mark)) $task->mark = $data->mark;
+                        if(isset($data->description)) $task->description = $data->description;
+                        if(isset($data->completed)) $task->completed = $data->completed;
+                        if(isset($data->subject_id)) {
+                            if (Subject::where('id', $data->subject_id)->first()) {
+                                $task->subject_id = $data->subject_id;
+                            } else {
+                                return response()->json("Subject id doesn't match any subject")->setStatusCode(400);
                             }
-
-                            $task->save();
-
-                            $response['msg'] = "Task edited properly";
-                            $http_status_code = 200;
-                        } else {
-                            $response['msg'] = "Task by that id doesn't exist.";
-                            $http_status_code = 404;
                         }
+
+                        $task->save();
+
+                        $response['msg'] = "Task edited properly";
+                        $http_status_code = 200;
                     } catch (\Throwable $th) {
                         $response['msg'] = "An error has occurred: ".$th->getMessage();
                         $response['status'] = 0;
@@ -219,3 +209,4 @@ class TasksController extends Controller
         }
     }
 }
+
