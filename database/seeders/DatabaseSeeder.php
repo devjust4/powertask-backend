@@ -14,6 +14,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-
+        DB::table('students')->insert([
+            'name' => 'Daniel Ximenez',
+            'email' => 'danixidev@gmail.com',
+            'image_url' => 'image01.png',
+        ]);
     }
 }

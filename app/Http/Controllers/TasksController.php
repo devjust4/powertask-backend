@@ -119,4 +119,46 @@ class TasksController extends Controller
             return response(null, 204);     //Ran when received data is empty    (204: No Content)
         }
     }
+    public function get(Request $req) {
+        $http_status_code = 200;
+
+        $data = $req->getContent();
+        if($data) {
+            if(gettype(json_decode($data, true)) === 'array') {
+
+                $validator = Validator::make(json_decode($data, true), [
+                    'task_id' => 'required|integer',
+                ]);
+
+                if ($validator->fails()) {
+                    $response = ['status'=>0, 'msg'=>$validator->errors()->first()];
+                    $http_status_code = 400;
+                } else {
+                    $response = ['status'=>1, 'msg'=>''];
+
+                    $data = json_decode($data);
+
+                    try {
+                        if ($task = Task::find($data->task_id)) {
+                            $response['msg'] = "Task shown properly.";
+                            $response['data'] = $task;
+                            $http_status_code = 200;
+                        } else {
+                            $response['msg'] = "Task by that id doesn't exist.";
+                            $http_status_code = 404;
+                        }
+                    } catch (\Throwable $th) {
+                        $response['msg'] = "An error has occurred: ".$th->getMessage();
+                        $response['status'] = 0;
+                        $http_status_code = 500;
+                    }
+                }
+                return response()->json($response)->setStatusCode($http_status_code);
+            } else {
+                return response(null, 400);     //Ran when received data is not an array    (400: Bad Request)
+            }
+        } else {
+            return response(null, 204);     //Ran when received data is empty    (204: No Content)
+        }
+    }
 }
