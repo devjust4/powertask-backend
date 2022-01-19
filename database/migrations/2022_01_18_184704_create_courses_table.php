@@ -17,6 +17,7 @@ class CreateCoursesTable extends Migration
             $table->id();
             $table->string('name');
             $table->timestamps();
+            $table->foreignId('student_id')->constrained('students');
         });
     }
 

@@ -19,6 +19,7 @@ class CreateBlocksTable extends Migration
             $table->time('time_end');
             $table->integer('day');
             $table->timestamps();
+            $table->foreignId('student_id')->constrained('students');
         });
     }
 
