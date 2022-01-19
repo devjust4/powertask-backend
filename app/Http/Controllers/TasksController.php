@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Subject;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -75,7 +76,6 @@ class TasksController extends Controller
                     'mark' => 'integer',
                     'description' => 'string',
                     'completed' => 'boolean',
-                    'student_id' => 'int',
                     'subject_id' => 'int',
                 ], [
                     'date_format' => 'The format doesn\'t match with YYYY-MM-DD (e.g. 1999-03-25)',
@@ -98,13 +98,102 @@ class TasksController extends Controller
                         if(isset($data->mark)) $task->mark = $data->mark;
                         if(isset($data->description)) $task->description = $data->description;
                         if(isset($data->completed)) $task->completed = $data->completed;
-                        if(isset($data->student_id)) $task->student_id = $data->student_id;
-                        if(isset($data->subject_id)) $task->subject_id = $data->subject_id;
+                        if(isset($data->subject_id)) {
+                            if (Subject::where('id', $data->subject_id)->first()) {
+                                $task->subject_id = $data->subject_id;
+                            } else {
+                                return response()->json("Subject id doesn't match any subject")->setStatusCode(400);
+                            }
+                        }
 
                         $task->save();
 
                         $response['msg'] = "Task edited properly";
                         $http_status_code = 200;
+                    } catch (\Throwable $th) {
+                        $response['msg'] = "An error has occurred: ".$th->getMessage();
+                        $response['status'] = 0;
+                        $http_status_code = 500;
+                    }
+                }
+                return response()->json($response)->setStatusCode($http_status_code);
+            } else {
+                return response(null, 400);     //Ran when received data is not an array    (400: Bad Request)
+            }
+        } else {
+            return response(null, 204);     //Ran when received data is empty    (204: No Content)
+        }
+    }
+    public function get(Request $req) {
+        $http_status_code = 200;
+
+        $data = $req->getContent();
+        if($data) {
+            if(gettype(json_decode($data, true)) === 'array') {
+
+                $validator = Validator::make(json_decode($data, true), [
+                    'task_id' => 'required|integer',
+                ]);
+
+                if ($validator->fails()) {
+                    $response = ['status'=>0, 'msg'=>$validator->errors()->first()];
+                    $http_status_code = 400;
+                } else {
+                    $response = ['status'=>1, 'msg'=>''];
+
+                    $data = json_decode($data);
+
+                    try {
+                        if ($task = Task::find($data->task_id)) {
+                            $response['msg'] = "Task found successfully.";
+                            $response['data'] = $task;
+                            $http_status_code = 200;
+                        } else {
+                            $response['msg'] = "Task by that id doesn't exist.";
+                            $http_status_code = 404;
+                        }
+                    } catch (\Throwable $th) {
+                        $response['msg'] = "An error has occurred: ".$th->getMessage();
+                        $response['status'] = 0;
+                        $http_status_code = 500;
+                    }
+                }
+                return response()->json($response)->setStatusCode($http_status_code);
+            } else {
+                return response(null, 400);     //Ran when received data is not an array    (400: Bad Request)
+            }
+        } else {
+            return response(null, 204);     //Ran when received data is empty    (204: No Content)
+        }
+    }
+    public function delete(Request $req) {
+        $http_status_code = 200;
+
+        $data = $req->getContent();
+        if($data) {
+            if(gettype(json_decode($data, true)) === 'array') {
+
+                $validator = Validator::make(json_decode($data, true), [
+                    'task_id' => 'required|integer',
+                ]);
+
+                if ($validator->fails()) {
+                    $response = ['status'=>0, 'msg'=>$validator->errors()->first()];
+                    $http_status_code = 400;
+                } else {
+                    $response = ['status'=>1, 'msg'=>''];
+
+                    $data = json_decode($data);
+
+                    try {
+                        if ($task = Task::find($data->task_id)) {
+                            $task->delete();
+                            $response['msg'] = "Task deleted succesfully.";
+                            $http_status_code = 200;
+                        } else {
+                            $response['msg'] = "Task by that id doesn't exist.";
+                            $http_status_code = 404;
+                        }
                     } catch (\Throwable $th) {
                         $response['msg'] = "An error has occurred: ".$th->getMessage();
                         $response['status'] = 0;

@@ -15,7 +15,7 @@ class UpdateTasksTable extends Migration
     {
         Schema::table('tasks', function(Blueprint $table) {
             $table->foreignId('student_id')->constrained('students');
-            $table->foreignId('subject_id')->constrained('subjects');
+            $table->foreignId('subject_id')->nullable()->constrained('subjects');
         });
     }
 
