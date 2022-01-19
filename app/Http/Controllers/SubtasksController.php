@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Subject;
+use App\Models\Subtask;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -18,12 +19,8 @@ class SubtasksController extends Controller
 
                 $validator = Validator::make(json_decode($data, true), [
                     'name' => 'required|string',
-                    'date_handover' => 'required|date_format:Y-m-d',
                     'description' => 'required|string',
-                    'student_id' => 'required|int',
-                    'subject_id' => 'required|int',
-                ], [
-                    'date_format' => 'The format doesn\'t match with YYYY-MM-DD (e.g. 1999-03-25)',
+                    'task_id' => 'required|int',
                 ]);
 
                 if ($validator->fails()) {
@@ -35,17 +32,20 @@ class SubtasksController extends Controller
                     $data = json_decode($data);
 
                     try {
-                        $task = new Task();
+                        $subtask = new Subtask();
 
-                        $task->name = $data->name;
-                        $task->date_handover = $data->date_handover;
-                        $task->description = $data->description;
-                        $task->student_id = $data->student_id;
-                        $task->subject_id = $data->subject_id;
+                        $subtask->name = $data->name;
+                        $subtask->description = $data->description;
 
-                        $task->save();
+                        if (Task::find($data->task_id)) {
+                            $subtask->task_id = $data->task_id;
+                        } else {
+                            return response('Task id doesn\'t match any task')->setStatusCode(400);
+                        }
 
-                        $response['msg'] = "Task created properly with id ".$task->id;
+                        $subtask->save();
+
+                        $response['msg'] = "Subtask created properly with id ".$subtask->id;
                         $http_status_code = 201;
                     } catch (\Throwable $th) {
                         $response['msg'] = "An error has occurred: ".$th->getMessage();
@@ -69,16 +69,11 @@ class SubtasksController extends Controller
             if(gettype(json_decode($data, true)) === 'array') {
 
                 $validator = Validator::make(json_decode($data, true), [
-                    'task_id' => 'required|integer',
+                    'subtask_id' => 'required|integer',
                     'name' => 'string',
-                    'date_completed' => 'date_format:Y-m-d',
-                    'date_handover' => 'date_format:Y-m-d',
-                    'mark' => 'integer',
                     'description' => 'string',
                     'completed' => 'boolean',
-                    'subject_id' => 'int',
-                ], [
-                    'date_format' => 'The format doesn\'t match with YYYY-MM-DD (e.g. 1999-03-25)',
+                    // 'task_id' => 'int',          #Para poder editar la tarea a la que pertenecen
                 ]);
 
                 if ($validator->fails()) {
@@ -90,26 +85,25 @@ class SubtasksController extends Controller
                     $data = json_decode($data);
 
                     try {
-                        $task = Task::find($data->task_id);
+                        if($subtask = Subtask::find($data->subtask_id)) {
+                            if(isset($data->name)) $subtask->name = $data->name;
+                            if(isset($data->description)) $subtask->description = $data->description;
+                            if(isset($data->completed)) $subtask->completed = $data->completed;
+                            // if(isset($data->task_id)) {          #Para poder editar la tarea a la que pertenecen
+                            //     if (Task::find($data->task_id)) {
+                            //         $subtask->task_id = $data->task_id;
+                            //     } else {
+                            //         return response('Task id doesn\'t match any task')->setStatusCode(400);
+                            //     }
+                            // }
+                            $subtask->save();
 
-                        if(isset($data->name)) $task->name = $data->name;
-                        if(isset($data->date_completed)) $task->date_completed = $data->date_completed;
-                        if(isset($data->date_handover)) $task->date_handover = $data->date_handover;
-                        if(isset($data->mark)) $task->mark = $data->mark;
-                        if(isset($data->description)) $task->description = $data->description;
-                        if(isset($data->completed)) $task->completed = $data->completed;
-                        if(isset($data->subject_id)) {
-                            if (Subject::where('id', $data->subject_id)->first()) {
-                                $task->subject_id = $data->subject_id;
-                            } else {
-                                return response()->json("Subject id doesn't match any subject")->setStatusCode(400);
-                            }
+                            $response['msg'] = "Subtask edited properly";
+                            $http_status_code = 200;
+                        } else {
+                            $response['msg'] = "Subtask by that id doesn't exist.";
+                            $http_status_code = 404;
                         }
-
-                        $task->save();
-
-                        $response['msg'] = "Task edited properly";
-                        $http_status_code = 200;
                     } catch (\Throwable $th) {
                         $response['msg'] = "An error has occurred: ".$th->getMessage();
                         $response['status'] = 0;
@@ -132,7 +126,7 @@ class SubtasksController extends Controller
             if(gettype(json_decode($data, true)) === 'array') {
 
                 $validator = Validator::make(json_decode($data, true), [
-                    'task_id' => 'required|integer',
+                    'subtask_id' => 'required|integer',
                 ]);
 
                 if ($validator->fails()) {
@@ -144,12 +138,12 @@ class SubtasksController extends Controller
                     $data = json_decode($data);
 
                     try {
-                        if ($task = Task::find($data->task_id)) {
-                            $response['msg'] = "Task found successfully.";
-                            $response['data'] = $task;
+                        if ($subtask = Subtask::find($data->subtask_id)) {
+                            $response['msg'] = "Subtask found successfully.";
+                            $response['data'] = $subtask;
                             $http_status_code = 200;
                         } else {
-                            $response['msg'] = "Task by that id doesn't exist.";
+                            $response['msg'] = "Subtask by that id doesn't exist.";
                             $http_status_code = 404;
                         }
                     } catch (\Throwable $th) {
@@ -174,7 +168,7 @@ class SubtasksController extends Controller
             if(gettype(json_decode($data, true)) === 'array') {
 
                 $validator = Validator::make(json_decode($data, true), [
-                    'task_id' => 'required|integer',
+                    'subtask_id' => 'required|integer',
                 ]);
 
                 if ($validator->fails()) {
@@ -186,9 +180,9 @@ class SubtasksController extends Controller
                     $data = json_decode($data);
 
                     try {
-                        if ($task = Task::find($data->task_id)) {
-                            $task->delete();
-                            $response['msg'] = "Task deleted succesfully.";
+                        if ($subtask = Subtask::find($data->subtask_id)) {
+                            $subtask->delete();
+                            $response['msg'] = "Subtask deleted successfully.";
                             $http_status_code = 200;
                         } else {
                             $response['msg'] = "Task by that id doesn't exist.";
@@ -209,4 +203,3 @@ class SubtasksController extends Controller
         }
     }
 }
-

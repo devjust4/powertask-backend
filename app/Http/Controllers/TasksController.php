@@ -40,10 +40,14 @@ class TasksController extends Controller
                         $task->name = $data->name;
                         $task->date_handover = $data->date_handover;
                         $task->description = $data->description;
-                        $task->student_id = $data->student_id;
 
+                        if (Task::find($data->student_id)) {
+                            $task->student_id = $data->student_id;
+                        } else {
+                            return response('Student id doesn\'t match any student')->setStatusCode(400);
+                        }
                         if(isset($data->subject_id)) {
-                            if (Subject::where('id', $data->subject_id)->first()) {
+                            if (Subject::find($data->subject_id)) {
                                 $task->subject_id = $data->subject_id;
                             } else {
                                 return response('Subject id doesn\'t match any subject')->setStatusCode(400);
@@ -105,7 +109,7 @@ class TasksController extends Controller
                             if(isset($data->description)) $task->description = $data->description;
                             if(isset($data->completed)) $task->completed = $data->completed;
                             if(isset($data->subject_id)) {
-                                if (Subject::where('id', $data->subject_id)->first()) {
+                                if (Subject::find($data->subject_id)) {
                                     $task->subject_id = $data->subject_id;
                                 } else {
                                     return response('Subject id doesn\'t match any subject')->setStatusCode(400);
@@ -198,7 +202,7 @@ class TasksController extends Controller
                     try {
                         if ($task = Task::find($data->task_id)) {
                             $task->delete();
-                            $response['msg'] = "Task deleted succesfully.";
+                            $response['msg'] = "Task deleted successfully.";
                             $http_status_code = 200;
                         } else {
                             $response['msg'] = "Task by that id doesn't exist.";
