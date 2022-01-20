@@ -10,10 +10,10 @@ use Illuminate\Support\Facades\Validator;
 
 class TasksController extends Controller
 {
-    public function create(Request $req) {
+    public function create(Request $request) {
         $http_status_code = 200;
 
-        $data = $req->getContent();
+        $data = $request->getContent();
         if($data) {
             if(gettype(json_decode($data, true)) === 'array') {
 
@@ -70,13 +70,13 @@ class TasksController extends Controller
                 return response(null, 400);     //Ran when received data is not an array    (400: Bad Request)
             }
         } else {
-            return response(null, 204);     //Ran when received data is empty    (204: No Content)
+            return response(null, 412);     //Ran when received data is empty    (204: No Content)
         }
     }
-    public function edit(Request $req) {
+    public function edit(Request $request) {
         $http_status_code = 200;
 
-        $data = $req->getContent();
+        $data = $request->getContent();
         if($data) {
             if(gettype(json_decode($data, true)) === 'array') {
 
@@ -139,10 +139,10 @@ class TasksController extends Controller
             return response(null, 204);     //Ran when received data is empty    (204: No Content)
         }
     }
-    public function get(Request $req) {
+    public function get(Request $request) {
         $http_status_code = 200;
 
-        $data = $req->getContent();
+        $data = $request->getContent();
         if($data) {
             if(gettype(json_decode($data, true)) === 'array') {
 
@@ -180,13 +180,13 @@ class TasksController extends Controller
                 return response(null, 400);     //Ran when received data is not an array    (400: Bad Request)
             }
         } else {
-            return response(null, 204);     //Ran when received data is empty    (204: No Content)
+            return response(null, 412);     //Ran when received data is empty    (204: No Content)
         }
     }
-    public function getAll(Request $req) {
+    public function getAll(Request $request) {
         $http_status_code = 200;
 
-        $data = $req->getContent();
+        $data = $request->getContent();
         if($data) {
             if(gettype(json_decode($data, true)) === 'array') {
 
@@ -229,13 +229,13 @@ class TasksController extends Controller
                 return response(null, 400);     //Ran when received data is not an array    (400: Bad Request)
             }
         } else {
-            return response(null, 204);     //Ran when received data is empty    (204: No Content)
+            return response(null, 412);     //Ran when received data is empty    (204: No Content)
         }
     }
-    public function delete(Request $req) {
+    public function delete(Request $request) {
         $http_status_code = 200;
 
-        $data = $req->getContent();
+        $data = $request->getContent();
         if($data) {
             if(gettype(json_decode($data, true)) === 'array') {
 
@@ -271,7 +271,7 @@ class TasksController extends Controller
                 return response(null, 400);     //Ran when received data is not an array    (400: Bad Request)
             }
         } else {
-            return response(null, 204);     //Ran when received data is empty    (204: No Content)
+            return response(null, 412);     //Ran when received data is empty    (204: No Content)
         }
     }
 }

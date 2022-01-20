@@ -19,11 +19,11 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('checkDBConnection')->group(function() {
 
     Route::prefix('task')->group(function() {
-        Route::put('create', [TasksController::class, 'create']);
+        Route::post('create', [TasksController::class, 'create']);
         Route::put('edit', [TasksController::class, 'edit']);
-        Route::put('get', [TasksController::class, 'get']);
-        Route::put('getAll', [TasksController::class, 'getAll']);
-        Route::put('delete', [TasksController::class, 'delete']);
+        Route::get('get/{id}', [TasksController::class, 'get']);
+        Route::get('getAll', [TasksController::class, 'getAll']);
+        Route::delete('delete', [TasksController::class, 'delete']);
     });
     Route::prefix('subtask')->group(function() {
         Route::put('create', [SubtasksController::class, 'create']);
