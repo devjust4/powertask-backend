@@ -1,0 +1,80 @@
+swagger: "2.0"
+info:
+  description: ""
+  version: "1.0.0"
+  title: "Swagger Petstore"
+host: "powertask.swagger.io"
+
+tags:
+- name: "task"
+  description: "All about your tasks"
+
+schemes:
+- "https"
+- "http"
+
+paths:
+  /create:
+    put:
+      tags:
+      - "task"
+      summary: "Create a task"
+      description: ""
+      operationId: "updatePet"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Task object that is going to be created"
+        required: true
+        schema:
+          $ref: "#/definitions/Task"
+      responses:
+        "405":
+          description: "Invalid input"
+
+definitions:
+
+  Task:
+    type: "object"
+    required:
+    - "name"
+    - "date_handover"
+    - "description"
+    - "student_id"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+      date_completed:
+        type: "string"
+        example: "YYYY-MM-DD"
+      date_handover:
+        type: "string"
+        example: "YYYY-MM-DD"
+      description:
+        type: "string"
+      completed:
+        type: "bool"
+      student_id:
+        type: "integer"
+        format: "int64"
+      subject_id:
+        type: "integer"
+        format: "int64"
+      # photoUrls:
+      #   type: "array"
+      #   xml:
+      #     name: "photoUrl"
+      #     wrapped: true
+      #   items:
+      #     type: "string"
+    xml:
+      name: "Task"
