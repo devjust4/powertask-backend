@@ -159,6 +159,8 @@ class TasksController extends Controller
 
                     try {
                         if ($task = Task::find($data->task_id)) {
+                            $task->subtasks = $task->subtasks()->get();
+
                             $response['msg'] = "Task found successfully.";
                             $response['data'] = $task;
                             $http_status_code = 200;
