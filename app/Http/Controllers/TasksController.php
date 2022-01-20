@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Student;
 use App\Models\Subject;
 use App\Models\Task;
 use Illuminate\Http\Request;
@@ -41,7 +42,7 @@ class TasksController extends Controller
                         $task->date_handover = $data->date_handover;
                         $task->description = $data->description;
 
-                        if (Task::find($data->student_id)) {
+                        if (Student::find($data->student_id)) {
                             $task->student_id = $data->student_id;
                         } else {
                             return response('Student id doesn\'t match any student')->setStatusCode(400);
@@ -159,11 +160,62 @@ class TasksController extends Controller
 
                     try {
                         if ($task = Task::find($data->task_id)) {
+                            $task->subtasks = $task->subtasks()->get();
+
                             $response['msg'] = "Task found successfully.";
                             $response['data'] = $task;
                             $http_status_code = 200;
                         } else {
                             $response['msg'] = "Task by that id doesn't exist.";
+                            $http_status_code = 404;
+                        }
+                    } catch (\Throwable $th) {
+                        $response['msg'] = "An error has occurred: ".$th->getMessage();
+                        $response['status'] = 0;
+                        $http_status_code = 500;
+                    }
+                }
+                return response()->json($response)->setStatusCode($http_status_code);
+            } else {
+                return response(null, 400);     //Ran when received data is not an array    (400: Bad Request)
+            }
+        } else {
+            return response(null, 204);     //Ran when received data is empty    (204: No Content)
+        }
+    }
+    public function getAll(Request $req) {
+        $http_status_code = 200;
+
+        $data = $req->getContent();
+        if($data) {
+            if(gettype(json_decode($data, true)) === 'array') {
+
+                $validator = Validator::make(json_decode($data, true), [
+                    'student_id' => 'required|integer',
+                ]);
+
+                if ($validator->fails()) {
+                    $response = ['status'=>0, 'msg'=>$validator->errors()->first()];
+                    $http_status_code = 400;
+                } else {
+                    $response = ['status'=>1, 'msg'=>''];
+
+                    $data = json_decode($data);
+
+                    try {
+                        if ($student = Student::find($data->student_id)) {
+                            $tasks = $student->tasks()->get();
+                            $task_array = array();
+                            foreach ($tasks as $task) {
+                                $task->subtasks = $task->subtasks()->get();
+                                array_push($task_array, $task);
+                            }
+
+                            $response['msg'] = "Task found successfully.";
+                            $response['data'] = $task_array;
+                            $http_status_code = 200;
+                        } else {
+                            $response['msg'] = "Student by that id doesn't exist.";
                             $http_status_code = 404;
                         }
                     } catch (\Throwable $th) {
