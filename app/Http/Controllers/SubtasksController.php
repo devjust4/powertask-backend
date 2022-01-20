@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Validator;
 class SubtasksController extends Controller
 {
     public function create(Request $request) {
-        $http_status_code = 200;
 
         $data = $request->getContent();
         if($data) {

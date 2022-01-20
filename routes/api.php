@@ -22,14 +22,14 @@ Route::middleware('checkDBConnection')->group(function() {
         Route::post('create', [TasksController::class, 'create']);
         Route::put('edit', [TasksController::class, 'edit']);
         Route::get('get/{id}', [TasksController::class, 'get']);
-        Route::get('getAll', [TasksController::class, 'getAll']);
-        Route::delete('delete', [TasksController::class, 'delete']);
+        Route::get('list/{id}', [TasksController::class, 'list']);
+        Route::delete('delete/{id}', [TasksController::class, 'delete']);
     });
     Route::prefix('subtask')->group(function() {
-        Route::put('create', [SubtasksController::class, 'create']);
+        Route::post('create', [SubtasksController::class, 'create']);
         Route::put('edit', [SubtasksController::class, 'edit']);
-        Route::put('get', [SubtasksController::class, 'get']);
-        Route::put('delete', [SubtasksController::class, 'delete']);
+        Route::get('get', [SubtasksController::class, 'get']);
+        Route::delete('delete', [SubtasksController::class, 'delete']);
     });
 
 });
