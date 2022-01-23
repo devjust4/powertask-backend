@@ -25,12 +25,9 @@ class TasksController extends Controller
                 ]);
 
                 if (!$validator->fails()) {
-                    $response = ['status'=>1, 'msg'=>''];
-
                     $data = json_decode($data);
 
                     $task = new Task();
-
                     $task->name = $data->name;
                     $task->date_handover = $data->date_handover;
                     $task->description = $data->description;
@@ -50,15 +47,14 @@ class TasksController extends Controller
 
                     $task->save();
 
-                    $response['msg'] = "Task created properly with id ".$task->id;
+                    $response['response'] = "Task created properly with id ".$task->id;
                     $http_status_code = 201;
                 } else {
-                    $response = ['status'=>0, 'msg'=>$validator->errors()->first()];
+                    $response['response'] = $validator->errors()->first();
                     $http_status_code = 400;
                 }
             } catch (\Throwable $th) {
-                $response['msg'] = "An error has occurred: ".$th->getMessage();
-                $response['status'] = 0;
+                $response['response'] = "An error has occurred: ".$th->getMessage();
                 $http_status_code = 500;
             }
             return response()->json($response)->setStatusCode($http_status_code);
@@ -84,8 +80,6 @@ class TasksController extends Controller
                 ]);
 
                 if (!$validator->fails()) {
-                    $response = ['status'=>1, 'msg'=>''];
-
                     $data = json_decode($data);
 
                     if($task = Task::find($data->task_id)) {
@@ -105,19 +99,18 @@ class TasksController extends Controller
 
                         $task->save();
 
-                        $response['msg'] = "Task edited properly";
+                        $response['response'] = "Task edited properly";
                         $http_status_code = 200;
                     } else {
-                        $response['msg'] = "Task by that id doesn't exist.";
+                        $response['response'] = "Task by that id doesn't exist.";
                         $http_status_code = 404;
                     }
                 } else {
-                    $response = ['status'=>0, 'msg'=>$validator->errors()->first()];
+                    $response['response'] = $validator->errors()->first();
                     $http_status_code = 400;
                 }
             } catch (\Throwable $th) {
-                $response['msg'] = "An error has occurred: ".$th->getMessage();
-                $response['status'] = 0;
+                $response['response'] = "An error has occurred: ".$th->getMessage();
                 $http_status_code = 500;
             }
             return response()->json($response)->setStatusCode($http_status_code);
@@ -128,21 +121,17 @@ class TasksController extends Controller
     public function get(Request $request, $id) {
         if($id) {
             try {
-                $response = ['status'=>1, 'msg'=>''];
-
                 if ($task = Task::find($id)) {
                     $task->subtasks = $task->subtasks()->get();
 
-                    $response['msg'] = "Task found successfully.";
-                    $response['data'] = $task;
+                    $response['response'] = $task;
                     $http_status_code = 200;
                 } else {
-                    $response['msg'] = "Task by that id doesn't exist.";
+                    $response['response'] = "Task by that id doesn't exist.";
                     $http_status_code = 404;
                 }
             } catch (\Throwable $th) {
-                $response['msg'] = "An error has occurred: ".$th->getMessage();
-                $response['status'] = 0;
+                $response['response'] = "An error has occurred: ".$th->getMessage();
                 $http_status_code = 500;
             }
             return response()->json($response)->setStatusCode($http_status_code);
@@ -153,8 +142,6 @@ class TasksController extends Controller
     public function list(Request $request, $id) {
         if($id) {
             try {
-                $response = ['status'=>1, 'msg'=>''];
-
                 if ($student = Student::find($id)) {
                     $tasks = $student->tasks()->get();
                     $task_array = array();
@@ -163,16 +150,14 @@ class TasksController extends Controller
                         array_push($task_array, $task);
                     }
 
-                    $response['msg'] = "Tasks found successfully.";
-                    $response['data'] = $task_array;
+                    $response['response'] = $task_array;
                     $http_status_code = 200;
                 } else {
-                    $response['msg'] = "Student by that id doesn't exist.";
+                    $response['response'] = "Student by that id doesn't exist.";
                     $http_status_code = 404;
                 }
             } catch (\Throwable $th) {
-                $response['msg'] = "An error has occurred: ".$th->getMessage();
-                $response['status'] = 0;
+                $response['response'] = "An error has occurred: ".$th->getMessage();
                 $http_status_code = 500;
             }
             return response()->json($response)->setStatusCode($http_status_code);
@@ -183,19 +168,16 @@ class TasksController extends Controller
     public function delete(Request $request, $id) {
         if($id) {
             try {
-                $response = ['status'=>1, 'msg'=>''];
-
                 if ($task = Task::find($id)) {
                     $task->delete();
-                    $response['msg'] = "Task deleted successfully.";
+                    $response['response'] = "Task deleted successfully.";
                     $http_status_code = 200;
                 } else {
-                    $response['msg'] = "Task by that id doesn't exist.";
+                    $response['response'] = "Task by that id doesn't exist.";
                     $http_status_code = 404;
                 }
             } catch (\Throwable $th) {
-                $response['msg'] = "An error has occurred: ".$th->getMessage();
-                $response['status'] = 0;
+                $response['response'] = "An error has occurred: ".$th->getMessage();
                 $http_status_code = 500;
             }
             return response()->json($response)->setStatusCode($http_status_code);

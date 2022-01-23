@@ -20,12 +20,9 @@ class SubtasksController extends Controller
                 ]);
 
                 if (!$validator->fails()) {
-                    $response = ['status'=>1, 'msg'=>''];
-
                     $data = json_decode($data);
 
                     $subtask = new Subtask();
-
                     $subtask->name = $data->name;
                     $subtask->description = $data->description;
 
@@ -37,15 +34,14 @@ class SubtasksController extends Controller
 
                     $subtask->save();
 
-                    $response['msg'] = "Subtask created properly with id ".$subtask->id;
+                    $response['response'] = "Subtask created properly with id ".$subtask->id;
                     $http_status_code = 201;
                 } else {
-                    $response = ['status'=>0, 'msg'=>$validator->errors()->first()];
+                    $response['response'] = $validator->errors()->first();
                     $http_status_code = 400;
                 }
             } catch (\Throwable $th) {
-                $response['msg'] = "An error has occurred: ".$th->getMessage();
-                $response['status'] = 0;
+                $response['response'] = "An error has occurred: ".$th->getMessage();
                 $http_status_code = 500;
             }
             return response()->json($response)->setStatusCode($http_status_code);
@@ -65,8 +61,6 @@ class SubtasksController extends Controller
                 ]);
 
                 if (!$validator->fails()) {
-                    $response = ['status'=>1, 'msg'=>''];
-
                     $data = json_decode($data);
 
                     if($subtask = Subtask::find($id)) {
@@ -82,10 +76,10 @@ class SubtasksController extends Controller
                         // }
                         $subtask->save();
 
-                        $response['msg'] = "Subtask edited properly";
+                        $response['response'] = "Subtask edited properly";
                         $http_status_code = 200;
                     } else {
-                        $response['msg'] = "Subtask by that id doesn't exist.";
+                        $response['response'] = "Subtask by that id doesn't exist.";
                         $http_status_code = 404;
                     }
                 } else {
@@ -93,8 +87,7 @@ class SubtasksController extends Controller
                     $http_status_code = 400;
                 }
             } catch (\Throwable $th) {
-                $response['msg'] = "An error has occurred: ".$th->getMessage();
-                $response['status'] = 0;
+                $response['response'] = "An error has occurred: ".$th->getMessage();
                 $http_status_code = 500;
             }
             return response()->json($response)->setStatusCode($http_status_code);
@@ -105,19 +98,16 @@ class SubtasksController extends Controller
     public function delete(Request $request, $id) {
         if($id) {
             try {
-                $response = ['status'=>1, 'msg'=>''];
-
                 if ($subtask = Subtask::find($id)) {
                     $subtask->delete();
-                    $response['msg'] = "Subtask deleted successfully.";
+                    $response['response'] = "Subtask deleted successfully.";
                     $http_status_code = 200;
                 } else {
-                    $response['msg'] = "Task by that id doesn't exist.";
+                    $response['response'] = "Task by that id doesn't exist.";
                     $http_status_code = 404;
                 }
             } catch (\Throwable $th) {
-                $response['msg'] = "An error has occurred: ".$th->getMessage();
-                $response['status'] = 0;
+                $response['response'] = "An error has occurred: ".$th->getMessage();
                 $http_status_code = 500;
             }
             return response()->json($response)->setStatusCode($http_status_code);
