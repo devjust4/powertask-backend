@@ -19,10 +19,7 @@ class SubtasksController extends Controller
                     'description' => 'required|string',
                 ]);
 
-                if ($validator->fails()) {
-                    $response = ['status'=>0, 'msg'=>$validator->errors()->first()];
-                    $http_status_code = 400;
-                } else {
+                if (!$validator->fails()) {
                     $response = ['status'=>1, 'msg'=>''];
 
                     $data = json_decode($data);
@@ -42,6 +39,9 @@ class SubtasksController extends Controller
 
                     $response['msg'] = "Subtask created properly with id ".$subtask->id;
                     $http_status_code = 201;
+                } else {
+                    $response = ['status'=>0, 'msg'=>$validator->errors()->first()];
+                    $http_status_code = 400;
                 }
             } catch (\Throwable $th) {
                 $response['msg'] = "An error has occurred: ".$th->getMessage();
@@ -64,10 +64,7 @@ class SubtasksController extends Controller
                     // 'task_id' => 'int',          #Para poder editar la tarea a la que pertenecen
                 ]);
 
-                if ($validator->fails()) {
-                    $response = ['status'=>0, 'msg'=>$validator->errors()->first()];
-                    $http_status_code = 400;
-                } else {
+                if (!$validator->fails()) {
                     $response = ['status'=>1, 'msg'=>''];
 
                     $data = json_decode($data);
@@ -91,6 +88,9 @@ class SubtasksController extends Controller
                         $response['msg'] = "Subtask by that id doesn't exist.";
                         $http_status_code = 404;
                     }
+                } else {
+                    $response = ['status'=>0, 'msg'=>$validator->errors()->first()];
+                    $http_status_code = 400;
                 }
             } catch (\Throwable $th) {
                 $response['msg'] = "An error has occurred: ".$th->getMessage();

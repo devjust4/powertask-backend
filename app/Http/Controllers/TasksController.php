@@ -24,10 +24,7 @@ class TasksController extends Controller
                     'date_format' => 'The format doesn\'t match with YYYY-MM-DD (e.g. 1999-03-25)',
                 ]);
 
-                if ($validator->fails()) {
-                    $response = ['status'=>0, 'msg'=>$validator->errors()->first()];
-                    $http_status_code = 400;
-                } else {
+                if (!$validator->fails()) {
                     $response = ['status'=>1, 'msg'=>''];
 
                     $data = json_decode($data);
@@ -55,6 +52,9 @@ class TasksController extends Controller
 
                     $response['msg'] = "Task created properly with id ".$task->id;
                     $http_status_code = 201;
+                } else {
+                    $response = ['status'=>0, 'msg'=>$validator->errors()->first()];
+                    $http_status_code = 400;
                 }
             } catch (\Throwable $th) {
                 $response['msg'] = "An error has occurred: ".$th->getMessage();
@@ -83,10 +83,7 @@ class TasksController extends Controller
                     'date_format' => 'The format doesn\'t match with YYYY-MM-DD (e.g. 1999-03-25)',
                 ]);
 
-                if ($validator->fails()) {
-                    $response = ['status'=>0, 'msg'=>$validator->errors()->first()];
-                    $http_status_code = 400;
-                } else {
+                if (!$validator->fails()) {
                     $response = ['status'=>1, 'msg'=>''];
 
                     $data = json_decode($data);
@@ -114,6 +111,9 @@ class TasksController extends Controller
                         $response['msg'] = "Task by that id doesn't exist.";
                         $http_status_code = 404;
                     }
+                } else {
+                    $response = ['status'=>0, 'msg'=>$validator->errors()->first()];
+                    $http_status_code = 400;
                 }
             } catch (\Throwable $th) {
                 $response['msg'] = "An error has occurred: ".$th->getMessage();
@@ -184,7 +184,6 @@ class TasksController extends Controller
         if($id) {
             try {
                 $response = ['status'=>1, 'msg'=>''];
-
 
                 if ($task = Task::find($id)) {
                     $task->delete();
