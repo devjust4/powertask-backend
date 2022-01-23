@@ -19,7 +19,7 @@ class TasksController extends Controller
                     'date_handover' => 'required|date_format:Y-m-d',
                     'description' => 'required|string',
                     'student_id' => 'required|int',
-                    'subject_id' => 'int',
+                    'subject_id' => 'nullable|int',
                 ], [
                     'date_format' => 'The format doesn\'t match with YYYY-MM-DD (e.g. 1999-03-25)',
                 ]);
@@ -62,19 +62,18 @@ class TasksController extends Controller
             return response(null, 412);     //Ran when received data is empty    (412: Precondition failed)
         }
     }
-    public function edit(Request $request) {
+    public function edit(Request $request, $id) {
         $data = $request->getContent();
         if($data) {
             try {
                 $validator = Validator::make(json_decode($data, true), [
-                    'task_id' => 'required|integer',
-                    'name' => 'string',
-                    'date_completed' => 'date_format:Y-m-d',
-                    'date_handover' => 'date_format:Y-m-d',
-                    'mark' => 'integer',
-                    'description' => 'string',
-                    'completed' => 'boolean',
-                    'subject_id' => 'int',
+                    'name' => 'nullable|string',
+                    'date_completed' => 'nullable|date_format:Y-m-d',
+                    'date_handover' => 'nullable|date_format:Y-m-d',
+                    'mark' => 'nullable|integer',
+                    'description' => 'nullable|string',
+                    'completed' => 'nullable|boolean',
+                    'subject_id' => 'nullable|int',
                 ], [
                     'date_format' => 'The format doesn\'t match with YYYY-MM-DD (e.g. 1999-03-25)',
                 ]);
@@ -82,7 +81,7 @@ class TasksController extends Controller
                 if (!$validator->fails()) {
                     $data = json_decode($data);
 
-                    if($task = Task::find($data->task_id)) {
+                    if($task = Task::find($id)) {
                         if(isset($data->name)) $task->name = $data->name;
                         if(isset($data->date_completed)) $task->date_completed = $data->date_completed;
                         if(isset($data->date_handover)) $task->date_handover = $data->date_handover;

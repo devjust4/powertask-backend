@@ -54,10 +54,10 @@ class SubtasksController extends Controller
         if($data && $id) {
             try {
                 $validator = Validator::make(json_decode($data, true), [
-                    'name' => 'string',
-                    'description' => 'string',
-                    'completed' => 'boolean',
-                    // 'task_id' => 'int',          #Para poder editar la tarea a la que pertenecen
+                    'name' => 'nullable|string',
+                    'description' => 'nullable|string',
+                    'completed' => 'nullable|boolean',
+                    // 'task_id' => 'nullable|int',          #Para poder editar la tarea a la que pertenecen
                 ]);
 
                 if (!$validator->fails()) {
