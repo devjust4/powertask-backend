@@ -27,4 +27,9 @@ class Student extends Model
     public function blocks() {
         return $this->hasMany(Block::class);
     }
+
+
+    public function period() {
+        return $this->belongsTo(Period::class);
+    }
 }

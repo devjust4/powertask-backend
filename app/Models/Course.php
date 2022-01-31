@@ -12,8 +12,11 @@ class Course extends Model
     public function subjects() {
         return $this->hasMany(Subject::class);
     }
-
-    public function student() {
-        return $this->belongsTo(Student::class);
+    public function students() {
+        return $this->hasMany(Student::class);
     }
+
+    // public function student() {
+    //     return $this->belongsTo(Student::class);
+    // }
 }
