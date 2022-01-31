@@ -18,10 +18,13 @@ class Subject extends Model
     public function periods() {
         return $this->hasMany(Period::class);
     }
-
-    public function course() {
-        return $this->belongsTo(Course::class);
+    public function blocks() {
+        return $this->hasMany(Block::class);
     }
+    public function courses() {
+        return $this->hasMany(Course::class);
+    }
+
     public function student() {
         return $this->belongsTo(Student::class);
     }
