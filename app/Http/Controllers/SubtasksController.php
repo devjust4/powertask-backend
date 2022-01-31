@@ -10,196 +10,109 @@ use Illuminate\Support\Facades\Validator;
 
 class SubtasksController extends Controller
 {
-    public function create(Request $req) {
-        $http_status_code = 200;
-
-        $data = $req->getContent();
-        if($data) {
-            if(gettype(json_decode($data, true)) === 'array') {
-
+    public function create(Request $request, $id) {
+        $data = $request->getContent();
+        if($data && $id) {
+            try {
                 $validator = Validator::make(json_decode($data, true), [
                     'name' => 'required|string',
                     'description' => 'required|string',
-                    'task_id' => 'required|int',
                 ]);
 
-                if ($validator->fails()) {
-                    $response = ['status'=>0, 'msg'=>$validator->errors()->first()];
-                    $http_status_code = 400;
-                } else {
-                    $response = ['status'=>1, 'msg'=>''];
-
+                if (!$validator->fails()) {
                     $data = json_decode($data);
 
-                    try {
-                        $subtask = new Subtask();
+                    $subtask = new Subtask();
+                    $subtask->name = $data->name;
+                    $subtask->description = $data->description;
 
-                        $subtask->name = $data->name;
-                        $subtask->description = $data->description;
+                    if (Task::find($id)) {
+                        $subtask->task_id = $id;
+                    } else {
+                        return response('Task id doesn\'t match any task')->setStatusCode(400);
+                    }
 
-                        if (Task::find($data->task_id)) {
-                            $subtask->task_id = $data->task_id;
-                        } else {
-                            return response('Task id doesn\'t match any task')->setStatusCode(400);
-                        }
+                    $subtask->save();
 
+                    $response['response'] = "Subtask created properly with id ".$subtask->id;
+                    $http_status_code = 201;
+                } else {
+                    $response['response'] = $validator->errors()->first();
+                    $http_status_code = 400;
+                }
+            } catch (\Throwable $th) {
+                $response['response'] = "An error has occurred: ".$th->getMessage();
+                $http_status_code = 500;
+            }
+            return response()->json($response)->setStatusCode($http_status_code);
+        } else {
+            return response(null, 412);     //Ran when received data is empty    (412: Precondition failed)
+        }
+    }
+    public function edit(Request $request, $id) {
+        $data = $request->getContent();
+        if($data && $id) {
+            try {
+                $validator = Validator::make(json_decode($data, true), [
+                    'name' => 'nullable|string',
+                    'description' => 'nullable|string',
+                    'completed' => 'nullable|boolean',
+                    // 'task_id' => 'nullable|int',          #Para poder editar la tarea a la que pertenecen
+                ]);
+
+                if (!$validator->fails()) {
+                    $data = json_decode($data);
+
+                    if($subtask = Subtask::find($id)) {
+                        if(isset($data->name)) $subtask->name = $data->name;
+                        if(isset($data->description)) $subtask->description = $data->description;
+                        if(isset($data->completed)) $subtask->completed = $data->completed;
+                        // if(isset($data->task_id)) {          #Para poder editar la tarea a la que pertenecen
+                        //     if (Task::find($data->task_id)) {
+                        //         $subtask->task_id = $data->task_id;
+                        //     } else {
+                        //         return response('Task id doesn\'t match any task')->setStatusCode(400);
+                        //     }
+                        // }
                         $subtask->save();
 
-                        $response['msg'] = "Subtask created properly with id ".$subtask->id;
-                        $http_status_code = 201;
-                    } catch (\Throwable $th) {
-                        $response['msg'] = "An error has occurred: ".$th->getMessage();
-                        $response['status'] = 0;
-                        $http_status_code = 500;
+                        $response['response'] = "Subtask edited properly";
+                        $http_status_code = 200;
+                    } else {
+                        $response['response'] = "Subtask by that id doesn't exist.";
+                        $http_status_code = 404;
                     }
-                }
-                return response()->json($response)->setStatusCode($http_status_code);
-            } else {
-                return response(null, 400);     //Ran when received data is not an array    (400: Bad Request)
-            }
-        } else {
-            return response(null, 204);     //Ran when received data is empty    (204: No Content)
-        }
-    }
-    public function edit(Request $req) {
-        $http_status_code = 200;
-
-        $data = $req->getContent();
-        if($data) {
-            if(gettype(json_decode($data, true)) === 'array') {
-
-                $validator = Validator::make(json_decode($data, true), [
-                    'subtask_id' => 'required|integer',
-                    'name' => 'string',
-                    'description' => 'string',
-                    'completed' => 'boolean',
-                    // 'task_id' => 'int',          #Para poder editar la tarea a la que pertenecen
-                ]);
-
-                if ($validator->fails()) {
+                } else {
                     $response = ['status'=>0, 'msg'=>$validator->errors()->first()];
                     $http_status_code = 400;
-                } else {
-                    $response = ['status'=>1, 'msg'=>''];
-
-                    $data = json_decode($data);
-
-                    try {
-                        if($subtask = Subtask::find($data->subtask_id)) {
-                            if(isset($data->name)) $subtask->name = $data->name;
-                            if(isset($data->description)) $subtask->description = $data->description;
-                            if(isset($data->completed)) $subtask->completed = $data->completed;
-                            // if(isset($data->task_id)) {          #Para poder editar la tarea a la que pertenecen
-                            //     if (Task::find($data->task_id)) {
-                            //         $subtask->task_id = $data->task_id;
-                            //     } else {
-                            //         return response('Task id doesn\'t match any task')->setStatusCode(400);
-                            //     }
-                            // }
-                            $subtask->save();
-
-                            $response['msg'] = "Subtask edited properly";
-                            $http_status_code = 200;
-                        } else {
-                            $response['msg'] = "Subtask by that id doesn't exist.";
-                            $http_status_code = 404;
-                        }
-                    } catch (\Throwable $th) {
-                        $response['msg'] = "An error has occurred: ".$th->getMessage();
-                        $response['status'] = 0;
-                        $http_status_code = 500;
-                    }
                 }
-                return response()->json($response)->setStatusCode($http_status_code);
-            } else {
-                return response(null, 400);     //Ran when received data is not an array    (400: Bad Request)
+            } catch (\Throwable $th) {
+                $response['response'] = "An error has occurred: ".$th->getMessage();
+                $http_status_code = 500;
             }
+            return response()->json($response)->setStatusCode($http_status_code);
         } else {
-            return response(null, 204);     //Ran when received data is empty    (204: No Content)
+            return response(null, 412);     //Ran when received data is empty    (412: Precondition failed)
         }
     }
-    public function get(Request $req) {
-        $http_status_code = 200;
-
-        $data = $req->getContent();
-        if($data) {
-            if(gettype(json_decode($data, true)) === 'array') {
-
-                $validator = Validator::make(json_decode($data, true), [
-                    'subtask_id' => 'required|integer',
-                ]);
-
-                if ($validator->fails()) {
-                    $response = ['status'=>0, 'msg'=>$validator->errors()->first()];
-                    $http_status_code = 400;
+    public function delete(Request $request, $id) {
+        if($id) {
+            try {
+                if ($subtask = Subtask::find($id)) {
+                    $subtask->delete();
+                    $response['response'] = "Subtask deleted successfully.";
+                    $http_status_code = 200;
                 } else {
-                    $response = ['status'=>1, 'msg'=>''];
-
-                    $data = json_decode($data);
-
-                    try {
-                        if ($subtask = Subtask::find($data->subtask_id)) {
-                            $response['msg'] = "Subtask found successfully.";
-                            $response['data'] = $subtask;
-                            $http_status_code = 200;
-                        } else {
-                            $response['msg'] = "Subtask by that id doesn't exist.";
-                            $http_status_code = 404;
-                        }
-                    } catch (\Throwable $th) {
-                        $response['msg'] = "An error has occurred: ".$th->getMessage();
-                        $response['status'] = 0;
-                        $http_status_code = 500;
-                    }
+                    $response['response'] = "Task by that id doesn't exist.";
+                    $http_status_code = 404;
                 }
-                return response()->json($response)->setStatusCode($http_status_code);
-            } else {
-                return response(null, 400);     //Ran when received data is not an array    (400: Bad Request)
+            } catch (\Throwable $th) {
+                $response['response'] = "An error has occurred: ".$th->getMessage();
+                $http_status_code = 500;
             }
+            return response()->json($response)->setStatusCode($http_status_code);
         } else {
-            return response(null, 204);     //Ran when received data is empty    (204: No Content)
-        }
-    }
-    public function delete(Request $req) {
-        $http_status_code = 200;
-
-        $data = $req->getContent();
-        if($data) {
-            if(gettype(json_decode($data, true)) === 'array') {
-
-                $validator = Validator::make(json_decode($data, true), [
-                    'subtask_id' => 'required|integer',
-                ]);
-
-                if ($validator->fails()) {
-                    $response = ['status'=>0, 'msg'=>$validator->errors()->first()];
-                    $http_status_code = 400;
-                } else {
-                    $response = ['status'=>1, 'msg'=>''];
-
-                    $data = json_decode($data);
-
-                    try {
-                        if ($subtask = Subtask::find($data->subtask_id)) {
-                            $subtask->delete();
-                            $response['msg'] = "Subtask deleted successfully.";
-                            $http_status_code = 200;
-                        } else {
-                            $response['msg'] = "Task by that id doesn't exist.";
-                            $http_status_code = 404;
-                        }
-                    } catch (\Throwable $th) {
-                        $response['msg'] = "An error has occurred: ".$th->getMessage();
-                        $response['status'] = 0;
-                        $http_status_code = 500;
-                    }
-                }
-                return response()->json($response)->setStatusCode($http_status_code);
-            } else {
-                return response(null, 400);     //Ran when received data is not an array    (400: Bad Request)
-            }
-        } else {
-            return response(null, 204);     //Ran when received data is empty    (204: No Content)
+            return response(null, 412);     //Ran when received id is empty    (412: Precondition failed)
         }
     }
 }
