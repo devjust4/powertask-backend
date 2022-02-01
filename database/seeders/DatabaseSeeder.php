@@ -19,5 +19,14 @@ class DatabaseSeeder extends Seeder
             'email' => 'danixidev@gmail.com',
             'image_url' => 'image01.png',
         ]);
+        DB::table('courses')->insert([
+            'name' => 'Curso 1',
+            'student_id' => 1,
+        ]);
+        DB::table('subjects')->insert([
+            'name' => 'Acceso a Datos',
+            'color' => 'FF0000',
+            'course_id' => 1,
+        ]);
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BlocksController;
 use App\Http\Controllers\PeriodsController;
 use App\Http\Controllers\SubtasksController;
 use App\Http\Controllers\TasksController;
@@ -35,4 +36,10 @@ Route::prefix('period')->group(function() {
     Route::post('create', [PeriodsController::class, 'create']);
     Route::put('edit/{id}', [PeriodsController::class, 'edit']);
     Route::delete('delete/{id}', [PeriodsController::class, 'delete']);
+});
+
+Route::prefix('block')->group(function() {
+    Route::post('create', [BlocksController::class, 'create']);
+    Route::put('edit/{id}', [BlocksController::class, 'edit']);
+    Route::delete('delete/{id}', [BlocksController::class, 'delete']);
 });
