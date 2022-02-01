@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BlocksController;
+use App\Http\Controllers\EventsController;
 use App\Http\Controllers\PeriodsController;
 use App\Http\Controllers\SubtasksController;
 use App\Http\Controllers\TasksController;
@@ -43,3 +44,10 @@ Route::prefix('block')->group(function() {
     Route::put('edit/{id}', [BlocksController::class, 'edit']);
     Route::delete('delete/{id}', [BlocksController::class, 'delete']);
 });
+
+Route::prefix('event')->group(function() {
+    Route::post('create', [EventsController::class, 'create']);
+    Route::put('edit/{id}', [EventsController::class, 'edit']);
+    Route::delete('delete/{id}', [EventsController::class, 'delete']);
+});
+
