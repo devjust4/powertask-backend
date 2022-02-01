@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\PeriodsController;
 use App\Http\Controllers\SubtasksController;
 use App\Http\Controllers\TasksController;
+use App\Http\Controllers\UserAttributesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -27,4 +29,10 @@ Route::prefix('subtask')->group(function() {
     Route::post('create/{id}', [SubtasksController::class, 'create']);
     Route::put('edit/{id}', [SubtasksController::class, 'edit']);
     Route::delete('delete/{id}', [SubtasksController::class, 'delete']);
+});
+
+Route::prefix('period')->group(function() {
+    Route::post('create', [PeriodsController::class, 'create']);
+    Route::put('edit/{id}', [PeriodsController::class, 'edit']);
+    Route::delete('delete/{id}', [PeriodsController::class, 'delete']);
 });

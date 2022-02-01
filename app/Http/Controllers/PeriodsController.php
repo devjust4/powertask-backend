@@ -2,39 +2,37 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Subject;
-use App\Models\Subtask;
-use App\Models\Task;
+use App\Models\Period;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class SubtasksController extends Controller
+class PeriodsController extends Controller
 {
-    public function create(Request $request, $id) {
+    function create(Request $request) {
         $data = $request->getContent();
         if($data) {
             try {
                 $validator = Validator::make(json_decode($data, true), [
                     'name' => 'required|string',
-                    'description' => 'required|string',
+                    'date_start' => 'required|date_format:Y-m-d',
+                    'date_start' => 'required|date_format:Y-m-d',
+                    'student_id' => 'required|integer|exists:students,id',
+                ], [
+                    'date_format' => 'Date format is YYYY-MM-DD (1999-03-25)',
                 ]);
 
                 if (!$validator->fails()) {
                     $data = json_decode($data);
 
-                    $subtask = new Subtask();
-                    $subtask->name = $data->name;
-                    $subtask->description = $data->description;
+                    $period = new Period();
+                    $period->name = $data->name;
+                    $period->date_start = $data->date_start;
+                    $period->date_end = $data->date_end;
+                    $period->student_id = $data->student_id;
 
-                    if (Task::find($id)) {
-                        $subtask->task_id = $id;
-                    } else {
-                        return response('Task id doesn\'t match any task')->setStatusCode(400);
-                    }
+                    $period->save();
 
-                    $subtask->save();
-
-                    $response['response'] = "Subtask created properly with id ".$subtask->id;
+                    $response['response'] = "Period created properly with id ".$period->id;
                     $http_status_code = 201;
                 } else {
                     $response['response'] = $validator->errors()->first();
@@ -54,32 +52,25 @@ class SubtasksController extends Controller
         if($data) {
             try {
                 $validator = Validator::make(json_decode($data, true), [
-                    'name' => 'nullable|string',
-                    'description' => 'nullable|string',
-                    'completed' => 'nullable|boolean',
-                    // 'task_id' => 'nullable|int',          #Para poder editar la tarea a la que pertenecen
+                    'name' => 'string',
+                    'date_start' => 'date_format:Y-m-d',
+                    'date_start' => 'date_format:Y-m-d',
                 ]);
 
                 if (!$validator->fails()) {
                     $data = json_decode($data);
 
-                    if($subtask = Subtask::find($id)) {
-                        if(isset($data->name)) $subtask->name = $data->name;
-                        if(isset($data->description)) $subtask->description = $data->description;
-                        if(isset($data->completed)) $subtask->completed = $data->completed;
-                        // if(isset($data->task_id)) {          #Para poder editar la tarea a la que pertenecen
-                        //     if (Task::find($data->task_id)) {
-                        //         $subtask->task_id = $data->task_id;
-                        //     } else {
-                        //         return response('Task id doesn\'t match any task')->setStatusCode(400);
-                        //     }
-                        // }
-                        $subtask->save();
+                    if($period = Period::find($id)) {
+                        if(isset($data->name)) $period->name = $data->name;
+                        if(isset($data->date_start)) $period->date_start = $data->date_start;
+                        if(isset($data->date_end)) $period->date_end = $data->date_end;
 
-                        $response['response'] = "Subtask edited properly";
+                        $period->save();
+
+                        $response['response'] = "Period edited properly";
                         $http_status_code = 200;
                     } else {
-                        $response['response'] = "Subtask by that id doesn't exist.";
+                        $response['response'] = "Period by that id doesn't exist.";
                         $http_status_code = 404;
                     }
                 } else {
@@ -97,12 +88,12 @@ class SubtasksController extends Controller
     }
     public function delete(Request $request, $id) {
         try {
-            if ($subtask = Subtask::find($id)) {
-                $subtask->delete();
-                $response['response'] = "Subtask deleted successfully.";
+            if ($period = Period::find($id)) {
+                $period->delete();
+                $response['response'] = "Period deleted successfully.";
                 $http_status_code = 200;
             } else {
-                $response['response'] = "Task by that id doesn't exist.";
+                $response['response'] = "Period by that id doesn't exist.";
                 $http_status_code = 404;
             }
         } catch (\Throwable $th) {

@@ -118,70 +118,58 @@ class TasksController extends Controller
         }
     }
     public function get(Request $request, $id) {
-        if($id) {
-            try {
-                if ($task = Task::find($id)) {
-                    $task->subtasks = $task->subtasks()->get();
+        try {
+            if ($task = Task::find($id)) {
+                $task->subtasks = $task->subtasks()->get();
 
-                    $response['response'] = $task;
-                    $http_status_code = 200;
-                } else {
-                    $response['response'] = "Task by that id doesn't exist.";
-                    $http_status_code = 404;
-                }
-            } catch (\Throwable $th) {
-                $response['response'] = "An error has occurred: ".$th->getMessage();
-                $http_status_code = 500;
+                $response['response'] = $task;
+                $http_status_code = 200;
+            } else {
+                $response['response'] = "Task by that id doesn't exist.";
+                $http_status_code = 404;
             }
-            return response()->json($response)->setStatusCode($http_status_code);
-        } else {
-            return response(null, 412);     //Ran when received id is empty    (412: Precondition failed)
+        } catch (\Throwable $th) {
+            $response['response'] = "An error has occurred: ".$th->getMessage();
+            $http_status_code = 500;
         }
+        return response()->json($response)->setStatusCode($http_status_code);
     }
     public function list(Request $request, $id) {
-        if($id) {
-            try {
-                if ($student = Student::find($id)) {
-                    $tasks = $student->tasks()->get();
-                    $task_array = array();
-                    foreach ($tasks as $task) {
-                        $task->subtasks = $task->subtasks()->get();
-                        array_push($task_array, $task);
-                    }
-
-                    $response['response'] = $task_array;
-                    $http_status_code = 200;
-                } else {
-                    $response['response'] = "Student by that id doesn't exist.";
-                    $http_status_code = 404;
+        try {
+            if ($student = Student::find($id)) {
+                $tasks = $student->tasks()->get();
+                $task_array = array();
+                foreach ($tasks as $task) {
+                    $task->subtasks = $task->subtasks()->get();
+                    array_push($task_array, $task);
                 }
-            } catch (\Throwable $th) {
-                $response['response'] = "An error has occurred: ".$th->getMessage();
-                $http_status_code = 500;
+
+                $response['response'] = $task_array;
+                $http_status_code = 200;
+            } else {
+                $response['response'] = "Student by that id doesn't exist.";
+                $http_status_code = 404;
             }
-            return response()->json($response)->setStatusCode($http_status_code);
-        } else {
-            return response(null, 412);     //Ran when received id is empty    (412: Precondition failed)
+        } catch (\Throwable $th) {
+            $response['response'] = "An error has occurred: ".$th->getMessage();
+            $http_status_code = 500;
         }
+        return response()->json($response)->setStatusCode($http_status_code);
     }
     public function delete(Request $request, $id) {
-        if($id) {
-            try {
-                if ($task = Task::find($id)) {
-                    $task->delete();
-                    $response['response'] = "Task deleted successfully.";
-                    $http_status_code = 200;
-                } else {
-                    $response['response'] = "Task by that id doesn't exist.";
-                    $http_status_code = 404;
-                }
-            } catch (\Throwable $th) {
-                $response['response'] = "An error has occurred: ".$th->getMessage();
-                $http_status_code = 500;
+        try {
+            if ($task = Task::find($id)) {
+                $task->delete();
+                $response['response'] = "Task deleted successfully.";
+                $http_status_code = 200;
+            } else {
+                $response['response'] = "Task by that id doesn't exist.";
+                $http_status_code = 404;
             }
-            return response()->json($response)->setStatusCode($http_status_code);
-        } else {
-            return response(null, 412);     //Ran when received id is empty    (412: Precondition failed)
+        } catch (\Throwable $th) {
+            $response['response'] = "An error has occurred: ".$th->getMessage();
+            $http_status_code = 500;
         }
+        return response()->json($response)->setStatusCode($http_status_code);
     }
 }
