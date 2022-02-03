@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BlocksController;
 use App\Http\Controllers\EventsController;
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PeriodsController;
 use App\Http\Controllers\SubtasksController;
 use App\Http\Controllers\TasksController;
@@ -50,4 +51,6 @@ Route::prefix('event')->group(function() {
     Route::put('edit/{id}', [EventsController::class, 'edit']);
     Route::delete('delete/{id}', [EventsController::class, 'delete']);
 });
+
+Route::get('login', [LoginController::class, 'login']);
 
