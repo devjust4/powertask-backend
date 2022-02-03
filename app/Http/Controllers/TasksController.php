@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Student;
 use App\Models\Subject;
 use App\Models\Task;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -18,7 +18,7 @@ class TasksController extends Controller
                     'name' => 'required|string',
                     'date_handover' => 'required|date_format:Y-m-d',
                     'description' => 'required|string',
-                    'user_id' => 'required|int',
+                    'student_id' => 'required|int',
                     'subject_id' => 'nullable|int',
                 ], [
                     'date_format' => 'The format doesn\'t match with YYYY-MM-DD (e.g. 1999-03-25)',
@@ -32,10 +32,10 @@ class TasksController extends Controller
                     $task->date_handover = $data->date_handover;
                     $task->description = $data->description;
 
-                    if (User::find($data->user_id)) {
-                        $task->user_id = $data->user_id;
+                    if (Student::find($data->student_id)) {
+                        $task->student_id = $data->student_id;
                     } else {
-                        return response('User id doesn\'t match any student')->setStatusCode(400);
+                        return response('Student id doesn\'t match any student')->setStatusCode(400);
                     }
                     if(isset($data->subject_id)) {
                         if (Subject::find($data->subject_id)) {
@@ -136,8 +136,8 @@ class TasksController extends Controller
     }
     public function list(Request $request, $id) {
         try {
-            if ($user = User::find($id)) {
-                $tasks = $user->tasks()->get();
+            if ($student = Student::find($id)) {
+                $tasks = $student->tasks()->get();
                 $task_array = array();
                 foreach ($tasks as $task) {
                     $task->subtasks = $task->subtasks()->get();
@@ -147,7 +147,7 @@ class TasksController extends Controller
                 $response['response'] = $task_array;
                 $http_status_code = 200;
             } else {
-                $response['response'] = "User by that id doesn't exist.";
+                $response['response'] = "Student by that id doesn't exist.";
                 $http_status_code = 404;
             }
         } catch (\Throwable $th) {

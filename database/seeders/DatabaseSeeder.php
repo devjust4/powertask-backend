@@ -14,14 +14,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('users')->insert([
+        DB::table('students')->insert([
             'name' => 'Daniel Ximenez',
             'email' => 'danixidev@gmail.com',
             'image_url' => 'image01.png',
         ]);
         DB::table('courses')->insert([
             'name' => 'Curso 1',
-            'user_id' => 1,
+            'student_id' => 1,
         ]);
         DB::table('subjects')->insert([
             'name' => 'Acceso a Datos',

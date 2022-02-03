@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Subject extends Model
+class Student extends Model
 {
     use HasFactory;
 
@@ -15,17 +15,19 @@ class Subject extends Model
     public function events() {
         return $this->hasMany(Event::class);
     }
-    public function periods() {
-        return $this->hasMany(Period::class);
-    }
-    public function blocks() {
-        return $this->hasMany(Block::class);
+    public function sessions() {
+        return $this->hasMany(Session::class);
     }
     public function courses() {
         return $this->hasMany(Course::class);
     }
-
-    public function student() {
-        return $this->belongsTo(Student::class);
+    public function subjects() {
+        return $this->hasMany(Subject::class);
+    }
+    public function blocks() {
+        return $this->hasMany(Block::class);
+    }
+    public function periods() {
+        return $this->hasMany(Period::class);
     }
 }

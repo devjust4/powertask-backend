@@ -19,7 +19,7 @@ class CreatePeriodsTable extends Migration
             $table->date('date_start');
             $table->date('date_end');
             $table->timestamps();
-            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('student_id')->constrained('students');
         });
     }
 

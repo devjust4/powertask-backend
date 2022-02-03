@@ -9,7 +9,7 @@ class Session extends Model
 {
     use HasFactory;
 
-    public function user() {
-        return $this->belongsTo(User::class);
+    public function student() {
+        return $this->belongsTo(Student::class);
     }
 }
