@@ -13,8 +13,8 @@ class Task extends Model
         return $this->hasMany(Subtask::class);
     }
 
-    public function student() {
-        return $this->belongsTo(Student::class);
+    public function user() {
+        return $this->belongsTo(User::class);
     }
     public function subject() {
         return $this->belongsTo(Subject::class);

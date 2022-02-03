@@ -19,7 +19,7 @@ class CreateSessionsTable extends Migration
             $table->integer('duration');
             $table->integer('total_time');
             $table->timestamps();
-            $table->foreignId('student_id')->constrained('students');
+            $table->foreignId('user_id')->constrained('users');
         });
     }
 
