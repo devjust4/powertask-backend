@@ -38,5 +38,8 @@ Route::get('/auth/callback', function () {
     $student->image_url = 'foto01.png';
     $student->save();
 
-    return response()->json($student);
+    $response['msg'] = 'Usuario creado correctamente';
+    $response['data'] = $student;
+
+    return response()->json($response);
 });
