@@ -26,7 +26,7 @@ Route::get('login', function () {
 });
 
 Route::get('/auth/redirect', function () {
-    $response['url'] = Socialite::driver('github')->setScopes(['read:user', 'public_repo'])->redirect()->getTargetUrl();
+    $response['url'] = Socialite::driver('google')->redirect()->getTargetUrl();
     return response()->json($response);
 })->name('loginRedirect');
 
