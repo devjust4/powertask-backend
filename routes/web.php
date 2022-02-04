@@ -22,12 +22,12 @@ Route::get('/', function () {
 
 
 Route::get('login', function () {
-    return redirect()->route('authLogin');
+    return view('login');
 });
 Route::get('/auth/redirect', function () {
     $response['url'] = Socialite::driver('github')->setScopes(['read:user', 'public_repo'])->redirect()->getTargetUrl();
     return response()->json($response);
-})->name('authLogin');
+});
 Route::get('/auth/callback', function () {
     $githubUser = Socialite::driver('github')->user();
 
