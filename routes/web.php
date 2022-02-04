@@ -22,6 +22,9 @@ Route::get('/', function () {
 Route::get('login', function () {
     return view('login');
 });
+Route::get('mainPage', function () {
+    return view('mainPage');
+});
 
 Route::get('/auth/redirect', function () {
     return Socialite::driver('github')
@@ -51,7 +54,7 @@ Route::get('/auth/callback', function () {
         ]);
     }
 
-    // Auth::login($user);
+    Auth::login($user);
 
-    return redirect('/');
+    return redirect('mainPage');
 });
