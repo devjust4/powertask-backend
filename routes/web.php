@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Student;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -31,22 +32,8 @@ Route::get('/auth/redirect', function () {
 })->name('loginRedirect');
 
 Route::get('/auth/callback', function () {
-    $githubUser = Socialite::driver('github')->user();
-
-    $user = User::where('github_id', $githubUser->id)->first();
-
-    if ($user) {
-        $user->update([
-            'github_token' => $githubUser->token,
-            'github_refresh_token' => $githubUser->refreshToken,
-        ]);
-    } else {
-        $user = User::create([
-            'name' => $githubUser->name,
-            'email' => $githubUser->email,
-            'github_id' => $githubUser->id,
-            'github_token' => $githubUser->token,
-            'github_refresh_token' => $githubUser->refreshToken,
-        ]);
-    }
+    $student = new Student();
+    $student->name = 'Nombre';
+    $student->email = 'nombre@gmail.com';
+    $student->email = 'foto01.png';
 });
