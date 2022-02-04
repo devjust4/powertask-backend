@@ -19,25 +19,19 @@ use Laravel\Socialite\Facades\Socialite;
 Route::get('/', function () {
     return view('welcome');
 });
+
+
 Route::get('login', function () {
     return view('login');
 });
-Route::get('mainPage', function () {
-    return view('mainPage');
-});
-
 Route::get('/auth/redirect', function () {
-    return Socialite::driver('github')
-            ->setScopes(['read:user', 'public_repo'])
-            ->redirect();
+    $response['url'] = Socialite::driver('github')->setScopes(['read:user', 'public_repo'])->redirect()->getTargetUrl();
+    return response()->json($response);
 });
-
 Route::get('/auth/callback', function () {
     $githubUser = Socialite::driver('github')->user();
 
     $user = User::where('github_id', $githubUser->id)->first();
-
-    // dd($githubUser);
 
     if ($user) {
         $user->update([
@@ -53,8 +47,4 @@ Route::get('/auth/callback', function () {
             'github_refresh_token' => $githubUser->refreshToken,
         ]);
     }
-
-    Auth::login($user);
-
-    return redirect('mainPage');
 });

@@ -5,8 +5,6 @@ use App\Http\Controllers\EventsController;
 use App\Http\Controllers\PeriodsController;
 use App\Http\Controllers\SubtasksController;
 use App\Http\Controllers\TasksController;
-use App\Http\Controllers\UserAttributesController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
