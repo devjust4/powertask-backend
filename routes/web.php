@@ -27,7 +27,12 @@ Route::get('login', function () {
 });
 
 Route::get('/auth/redirect', function () {
-    $response['url'] = Socialite::driver('google')->redirect()->getTargetUrl();
+    $scopes = [
+        'https://www.googleapis.com/auth/userinfo.email',
+        'https://www.googleapis.com/auth/userinfo.profile'
+    ];
+
+    $response['url'] = Socialite::driver('google')->scopes($scopes)->redirect()->getTargetUrl();
     return response()->json($response);
 })->name('loginRedirect');
 
