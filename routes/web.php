@@ -45,14 +45,7 @@ Route::get('/auth/redirect', function () {
 })->name('loginRedirect');
 
 Route::get('/auth/callback', function () {
-    $student = new Student();
-    $student->name = 'Nombre';
-    $student->email = 'nombre@gmail.com';
-    $student->image_url = 'foto01.png';
-    $student->save();
-
-    $response['msg'] = 'Usuario creado correctamente';
-    $response['data'] = $student;
+    $response['msg'] = 'Peticion redirigida correctamente';
 
     return response()->json($response);
 });
