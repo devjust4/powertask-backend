@@ -35,5 +35,8 @@ Route::get('/auth/callback', function () {
     $student = new Student();
     $student->name = 'Nombre';
     $student->email = 'nombre@gmail.com';
-    $student->email = 'foto01.png';
+    $student->image_url = 'foto01.png';
+    $student->save();
+
+    return response()->json($student);
 });
