@@ -2,6 +2,7 @@
 
 use App\Models\Student;
 use App\Models\User;
+use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
@@ -44,12 +45,11 @@ Route::get('/auth/redirect', function () {
     return response()->json($response);
 })->name('loginRedirect');
 
-Route::get('/auth/callback', function () {
+Route::get('/auth/callback', function (Request $request) {
     $response['msg'] = 'Peticion redirigida correctamente';
 
-    $googleUser = Socialite::driver('google')->user();
+    $response = $request->authuser;
 
-    dd($googleUser);
 
     return response()->json($response);
 });
