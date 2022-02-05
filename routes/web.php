@@ -47,5 +47,9 @@ Route::get('/auth/redirect', function () {
 Route::get('/auth/callback', function () {
     $response['msg'] = 'Peticion redirigida correctamente';
 
+    $googleUser = Socialite::driver('google')->user();
+
+    dd($googleUser);
+
     return response()->json($response);
 });
