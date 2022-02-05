@@ -2,7 +2,7 @@
 
 use App\Models\Student;
 use App\Models\User;
-use GuzzleHttp\Psr7\Request;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
@@ -48,7 +48,7 @@ Route::get('/auth/redirect', function () {
 Route::get('/auth/callback', function (Request $request) {
     $response['msg'] = 'Peticion redirigida correctamente';
 
-    $response = $request->input('authuser');
+    $response['data'] = $request->input('authuser');
 
 
     return response()->json($response);
