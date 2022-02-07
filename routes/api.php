@@ -51,7 +51,7 @@ Route::prefix('event')->group(function() {
 });
 
 
-Route::prefix('auth')->group(function() {
+Route::middleware('getUserFromToken')->prefix('auth')->group(function() {
     Route::post('create', [AuthController::class, 'create']);
 });
 

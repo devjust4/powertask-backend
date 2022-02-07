@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Laravel\Socialite\Facades\Socialite;
 
 class GetUserFromToken
 {
@@ -18,13 +19,13 @@ class GetUserFromToken
     public function handle(Request $request, Closure $next)
     {
         try {
-            $user = $request->header('token');
+            $user = Socialite::driver('google')->userFromToken($request->header('token'));
             if ($user) {
                 $request->user = $user;
                 return $next($request);
             } else {
                 Log::channel('errors')->info('Error con el token');
-                return response('No token', 412);
+                return response('Token not valid', 401);
             }
         } catch (\Throwable $th) {
             return response($th->getMessage(), 500);
