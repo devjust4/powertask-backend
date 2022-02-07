@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlocksController;
+use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\EventsController;
 use App\Http\Controllers\PeriodsController;
 use App\Http\Controllers\SubtasksController;
@@ -52,7 +52,7 @@ Route::prefix('event')->group(function() {
 
 
 Route::middleware('getUserFromToken')->prefix('auth')->group(function() {
-    Route::post('create', [AuthController::class, 'create']);
-    Route::get('getSubjects', [AuthController::class, 'getSubjects']);
+    Route::post('create', [ClassroomController::class, 'create']);
+    Route::get('getSubjects', [ClassroomController::class, 'getSubjects']);
 });
 

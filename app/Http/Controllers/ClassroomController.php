@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Socialite\Facades\Socialite;
 
-class AuthController extends Controller
+class ClassroomController extends Controller
 {
     function create(Request $request) {
         try {
