@@ -13,29 +13,20 @@ class AuthController extends Controller
         $data = $request->getContent();
         if($data) {
             try {
-                $validator = Validator::make(json_decode($data, true), [
-                    'token' => 'required|string',
-                ]);
+                $data = json_decode($data);
 
-                if (!$validator->fails()) {
-                    $data = json_decode($data);
+                $user = $request->user;
 
-                    $user = $request->user;
+                $student = new Student();
+                $student->name = $user->name;
+                $student->email = $user->email;
+                $student->image_url = $user->avatar;
+                $student->google_id = $user->id;
 
-                    $student = new Student();
-                    $student->name = $user->name;
-                    $student->email = $user->email;
-                    $student->image_url = $user->avatar;
-                    $student->google_id = $user->id;
+                $student->save();
 
-                    $student->save();
-
-                    $response['response'] = "User created properly with id ".$student->id;
-                    $http_status_code = 201;
-                } else {
-                    $response['response'] = $validator->errors()->first();
-                    $http_status_code = 400;
-                }
+                $response['response'] = "User created properly with id ".$student->id;
+                $http_status_code = 201;
             } catch (\Throwable $th) {
                 $response['response'] = "An error has occurred: ".$th->getMessage();
                 $http_status_code = 500;
