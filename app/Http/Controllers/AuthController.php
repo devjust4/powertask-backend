@@ -20,7 +20,7 @@ class AuthController extends Controller
                 if (!$validator->fails()) {
                     $data = json_decode($data);
 
-                    $user = Socialite::driver('google')->userFromToken($data->token);
+                    $user = $request->user;
 
                     $student = new Student();
                     $student->name = $user->name;
