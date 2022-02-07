@@ -49,3 +49,8 @@ Route::prefix('event')->group(function() {
     Route::delete('delete/{id}', [EventsController::class, 'delete']);
 });
 
+
+Route::prefix('auth')->group(function() {
+    Route::post('create', [EventsController::class, 'create']);
+});
+
