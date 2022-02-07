@@ -9,7 +9,7 @@ use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
-    function createUser(Request $request) {
+    function create(Request $request) {
         $data = $request->getContent();
         if($data) {
             try {

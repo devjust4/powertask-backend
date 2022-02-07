@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlocksController;
 use App\Http\Controllers\EventsController;
 use App\Http\Controllers\PeriodsController;
@@ -51,6 +52,6 @@ Route::prefix('event')->group(function() {
 
 
 Route::prefix('auth')->group(function() {
-    Route::post('create', [EventsController::class, 'create']);
+    Route::post('create', [AuthController::class, 'create']);
 });
 
