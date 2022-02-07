@@ -17,7 +17,8 @@ class GetUserFromToken
     public function handle(Request $request, Closure $next)
     {
         try {
-            if ($user = $request->header('token')) {
+            $user = $request->header('token');
+            if ($user) {
                 $request->user = $user;
                 return $next($request);
             } else {
