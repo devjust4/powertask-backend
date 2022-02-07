@@ -49,13 +49,13 @@ Route::get('/auth/callback', function (Request $request) {
     try {
         $user = Socialite::driver('google')->stateless()->user();
 
-        $student = new Student();
-        $student->name = $user->name;
-        $student->email = $user->email;
-        $student->image_url = $user->avatar;
-        $student->google_id = $user->id;
+        // $student = new Student();
+        // $student->name = $user->name;
+        // $student->email = $user->email;
+        // $student->image_url = $user->avatar;
+        // $student->google_id = $user->id;
 
-        $student->save();
+        // $student->save();
 
         $response['msg'] = 'Estudiante creado correctamente';
     } catch (\Throwable $th) {
