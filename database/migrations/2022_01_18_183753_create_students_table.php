@@ -18,6 +18,7 @@ class CreateStudentsTable extends Migration
             $table->string('name');
             $table->string('email');
             $table->string('image_url');
+            $table->bigInteger('google_id');
             $table->timestamps();
         });
     }

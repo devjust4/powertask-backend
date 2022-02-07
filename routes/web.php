@@ -46,9 +46,21 @@ Route::get('/auth/redirect', function () {
 })->name('loginRedirect');
 
 Route::get('/auth/callback', function (Request $request) {
-    $response['msg'] = 'Peticion redirigida correctamente';
+    try {
+        $user = Socialite::driver('google')->stateless()->user();
 
-    $response['token'] = Socialite::driver('google')->stateless()->user();
+        $student = new Student();
+        $student->name = $user->name;
+        $student->email = $user->email;
+        $student->image_url = $user->avatar;
+        $student->google_id = $user->id;
+
+        $student->save();
+
+        $response['msg'] = 'Estudiante creado correctamente';
+    } catch (\Throwable $th) {
+        $response['response'] = "An error has occurred: ".$th->getMessage();
+    }
 
     return response()->json($response);
 });
