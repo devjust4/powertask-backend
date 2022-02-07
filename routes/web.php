@@ -48,7 +48,7 @@ Route::get('/auth/redirect', function () {
 Route::get('/auth/callback', function (Request $request) {
     $response['msg'] = 'Peticion redirigida correctamente';
 
-    $response['token'] = Socialite::driver('google')->user();
+    $response['token'] = Socialite::driver('google')->stateless()->user();
 
     return response()->json($response);
 });
