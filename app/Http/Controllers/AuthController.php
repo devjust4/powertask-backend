@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Student;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -27,6 +28,10 @@ class AuthController extends Controller
 
                 $response['response'] = "User created properly with id ".$student->id;
                 $http_status_code = 201;
+
+                Log::channel('logPersonalizado')->info('Error en el usuario', [
+                    'user_id' => $student->id,
+                ]);
             } catch (\Throwable $th) {
                 $response['response'] = "An error has occurred: ".$th->getMessage();
                 $http_status_code = 500;

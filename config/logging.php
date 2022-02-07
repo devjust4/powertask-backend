@@ -113,6 +113,13 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+
+        'errors' => [
+            'driver' => 'single',  #Para guardar en un único archivo
+            'path' =>  storage_path('logs/errors.log'),
+            'tap' => [SimpleFormatter::class],
+            'level' => 'debug',
+        ],
     ],
 
 ];
