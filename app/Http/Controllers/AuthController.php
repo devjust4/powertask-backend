@@ -29,7 +29,7 @@ class AuthController extends Controller
                 $response['response'] = "User created properly with id ".$student->id;
                 $http_status_code = 201;
 
-                Log::channel('logPersonalizado')->info('Error en el usuario', [
+                Log::channel('errors')->info('Error en el usuario', [
                     'user_id' => $student->id,
                 ]);
             } catch (\Throwable $th) {

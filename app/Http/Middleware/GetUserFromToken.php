@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class GetUserFromToken
 {
@@ -22,6 +23,7 @@ class GetUserFromToken
                 $request->user = $user;
                 return $next($request);
             } else {
+                Log::channel('errors')->info('Error con el token');
                 return response('No token', 412);
             }
         } catch (\Throwable $th) {
