@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Logging;
+
 use Monolog\Formatter\LineFormatter;
 
 class SimpleFormatter {

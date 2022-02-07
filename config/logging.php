@@ -1,5 +1,6 @@
 <?php
 
+use App\Logging\SimpleFormatter;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
@@ -117,6 +118,13 @@ return [
         'errors' => [
             'driver' => 'single',  #Para guardar en un único archivo
             'path' =>  storage_path('logs/errors.log'),
+            'tap' => [SimpleFormatter::class],
+            'level' => 'debug',
+        ],
+
+        'success' => [
+            'driver' => 'single',  #Para guardar en un único archivo
+            'path' =>  storage_path('logs/success.log'),
             'tap' => [SimpleFormatter::class],
             'level' => 'debug',
         ],

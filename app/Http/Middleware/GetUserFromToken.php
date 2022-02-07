@@ -19,13 +19,19 @@ class GetUserFromToken
     public function handle(Request $request, Closure $next)
     {
         try {
-            $user = Socialite::driver('google')->userFromToken($request->header('token'));
-            if ($user) {
-                $request->user = $user;
-                return $next($request);
+            $token = $request->header('token');
+            if($token) {
+                $user = Socialite::driver('google')->userFromToken($request->header('token'));
+                if ($user) {
+                    $request->user = $user;
+                    return $next($request);
+                } else {
+                    Log::channel('errors')->info('[app/Http/Middleware/GetUserFromToken.php] Token not valid');
+                    return response('Token not valid', 401);
+                }
             } else {
-                Log::channel('errors')->info('Error con el token');
-                return response('Token not valid', 401);
+                Log::channel('errors')->info('[app/Http/Middleware/GetUserFromToken.php] No token');
+                return response('No token', 412);
             }
         } catch (\Throwable $th) {
             return response($th->getMessage(), 500);
