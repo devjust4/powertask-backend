@@ -11,25 +11,27 @@ use Laravel\Socialite\Facades\Socialite;
 class AuthController extends Controller
 {
     function create(Request $request) {
-        $data = $request->getContent();
         try {
-            $data = json_decode($data);
-
             $user = $request->user;
 
-            $student = new Student();
-            $student->name = $user->name;
-            $student->email = $user->email;
-            $student->image_url = $user->avatar;
-            $student->google_id = $user->id;
+            if(!Student::where('email', $user->email)->first()) {
+                $student = new Student();
+                $student->name = $user->name;
+                $student->email = $user->email;
+                $student->image_url = $user->avatar;
+                $student->google_id = $user->id;
 
-            $student->save();
+                $student->save();
 
-            $response['response'] = "User created properly with id ".$student->id;
-            Log::channel('success')->info('[app/Http/Controllers/AuthController.php] Student created', [
-                'student' => $student,
-            ]);
-            $http_status_code = 201;
+                $response['response'] = "User created properly with id ".$student->id;
+                Log::channel('success')->info('[app/Http/Controllers/AuthController.php] Student created', [
+                    'student_id' => $student->id,
+                ]);
+                $http_status_code = 201;
+            } else {
+                $response['response'] = "User already exists";
+                $http_status_code = 400;
+            }
         } catch (\Throwable $th) {
             $response['response'] = "An error has occurred: ".$th->getMessage();
             $http_status_code = 500;
