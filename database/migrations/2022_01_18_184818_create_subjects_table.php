@@ -16,9 +16,11 @@ class CreateSubjectsTable extends Migration
         Schema::create('subjects', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('color');
+            $table->string('color')->nullable();
+            $table->string('google_id')->unique();
             $table->timestamps();
-            $table->foreignId('course_id')->constrained('courses');
+            $table->foreignId('course_id')->nullable()->constrained('courses');
+            $table->foreignId('student_id')->constrained('students');
         });
     }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
+use App\Models\Subject;
 use Google\Service\Classroom;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -42,21 +43,37 @@ class AuthController extends Controller
         }
         return response()->json($response)->setStatusCode($http_status_code);
     }
-    function getCourses(Request $request) {
+    function getSubjects(Request $request) {
         try {
             $user = $request->user;
 
             if($user) {
-                $client = new \Google\Client();
-                $client->setAuthConfig('../laravel_id_secret.json');
-                $client->addScope(\Google\Service\Classroom::CLASSROOM_COURSES);
-                $client->setAccessToken($user->token);
+                $student = Student::where('google_id', $user->id)->first();
 
-                $service = new Classroom($client);
-                $courses = $service->courses->listCourses()->courses;
+                if($student) {
+                    $client = new \Google\Client();
+                    $client->setAuthConfig('../laravel_id_secret.json');
+                    $client->addScope(\Google\Service\Classroom::CLASSROOM_COURSES);
+                    $client->setAccessToken($user->token);
 
-                $response['response'] = $courses;
-                $http_status_code = 200;
+                    $service = new Classroom($client);
+                    $courses = $service->courses->listCourses()->courses;
+
+                    foreach ($courses as $course) {
+                        if(!Subject::where('google_id', $course->id)->first()) {
+                            $subject = new Subject();
+                            $subject->name = $course->name;
+                            $subject->google_id = $course->id;
+                            $subject->student_id = $student->id;
+                            $subject->save();
+                        }
+                    }
+                    $response['response'] = $student->subjects;
+                    $http_status_code = 200;
+                } else {
+                    $response['response'] = "Student not found";
+                    $http_status_code = 404;
+                }
             } else {
                 $response['response'] = "User doesn't exist";
                 $http_status_code = 404;

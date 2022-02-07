@@ -53,6 +53,6 @@ Route::prefix('event')->group(function() {
 
 Route::middleware('getUserFromToken')->prefix('auth')->group(function() {
     Route::post('create', [AuthController::class, 'create']);
-    Route::get('getCourses', [AuthController::class, 'getCourses']);
+    Route::get('getSubjects', [AuthController::class, 'getSubjects']);
 });
 
