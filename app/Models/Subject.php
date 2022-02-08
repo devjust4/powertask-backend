@@ -9,6 +9,13 @@ class Subject extends Model
 {
     use HasFactory;
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'student_id',
+    ];
+
+
     public function tasks() {
         return $this->hasMany(Task::class);
     }
