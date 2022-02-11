@@ -16,9 +16,11 @@ class CreateEventsTable extends Migration
         Schema::create('events', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->enum('type', ['exam', 'medical', 'vacations']);
-            $table->date('date_start');
-            $table->date('date_end');
+            $table->enum('type', ['vacation', 'exam', 'personal']);
+            $table->boolean('all_day');
+            $table->text('notes');
+            $table->dateTime('date_start');
+            $table->dateTime('date_end');
             $table->timestamps();
             $table->foreignId('subject_id')->constrained('subjects');
             $table->foreignId('student_id')->constrained('students');

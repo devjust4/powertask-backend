@@ -18,9 +18,11 @@ class EventsController extends Controller
             try {
                 $validator = Validator::make(json_decode($data, true), [
                     'name' => 'required|string',
-                    'type' => 'required|in:exam,medical,vacations',
-                    'date_start' => 'required|date_format:Y-m-d',
-                    'date_end' => 'required|date_format:Y-m-d',
+                    'type' => 'required|in:vacation,exam,personal',
+                    'all_day' => 'required|boolean',
+                    'notes' => 'required|string',
+                    'date_start' => 'required|date_format:Y-m-d H:i:s',
+                    'date_end' => 'required|date_format:Y-m-d H:i:s',
                     'subject_id' => 'required|integer|exists:subjects,id',
                     'student_id' => 'required|integer|exists:students,id',
                 ]);
@@ -31,6 +33,8 @@ class EventsController extends Controller
                     $event = new Event();
                     $event->name = $data->name;
                     $event->type = $data->type;
+                    $event->all_day = $data->all_day;
+                    $event->notes = $data->notes;
                     $event->date_start = $data->date_start;
                     $event->date_end = $data->date_end;
                     $event->subject_id = $data->subject_id;
@@ -117,27 +121,35 @@ class EventsController extends Controller
         try {
             $student = Student::find($id);
 
-            $first_date = $student->events()->orderBy('date_start', 'asc')->first()->date_start;        //Recojo la primera fecha que haya
-            $begin = new DateTime($first_date);
+            if(!$student->events()->get()->isEmpty()) {
+                $first_date = $student->events()->orderBy('date_start', 'asc')->first()->date_start;        //Recojo la primera fecha que haya
+                $begin = new DateTime( explode(" ", $first_date)[0] . ' 00:00:00' );
+                $begin->modify('-1 day');
 
-            $last_date = $student->events()->orderBy('date_end', 'desc')->first()->date_end;            //Recojo la ultima fecha que haya
-            $end = new DateTime($last_date);
-            $end->modify('+1 day');
+                $last_date = $student->events()->orderBy('date_end', 'desc')->first()->date_end;            //Recojo la ultima fecha que haya
+                $end = new DateTime($last_date);
+                // $end->modify('+1 day');
+                $end->setTime(23, 59, 59);
 
-            $interval = DateInterval::createFromDateString('1 day');
-            $period = new DatePeriod($begin, $interval, $end);
+                $interval = DateInterval::createFromDateString('1 day');
+                $period = new DatePeriod($begin, $interval, $end);
 
-            foreach ($period as $date) {                //Recorro todo ese intervalo
-                $date = $date->format("Y-m-d");
+                foreach ($period as $date) {                //Recorro todo ese intervalo
+                    $date_format = $date->format("Y-m-d");
+                    $date_comparison = $date->format("Y-m-d H:i:s");
 
-                $event = $student->events()->where('date_start', '<=', $date)->where('date_end', '>=', $date)->get();
-                if(!$event->isEmpty()) {
-                    $events[$date] = $event;
+                    $event = $student->events()->where('date_start', '<=', $date_comparison)->where('date_end', '>=', $date_comparison)->get();
+                    if(!$event->isEmpty()) {
+                        $events[$date_format] = $event;
+                    }
                 }
-            }
 
-            $response['events'] = $events;
-            $http_status_code = 200;
+                $response['events'] = $events;
+                $http_status_code = 200;
+            } else {
+                $response['msg'] = "User doesn't have events";
+                $http_status_code = 404;
+            }
         } catch (\Throwable $th) {
             $response['response'] = "An error has occurred: ".$th->getMessage();
             $http_status_code = 500;
