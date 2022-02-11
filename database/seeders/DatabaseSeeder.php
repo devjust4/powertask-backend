@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Daniel Ximenez',
             'email' => 'danixidev@gmail.com',
             'image_url' => 'image01.png',
+            'google_id' => '0',
         ]);
         DB::table('courses')->insert([
             'name' => 'Curso 1',
@@ -27,6 +28,8 @@ class DatabaseSeeder extends Seeder
             'name' => 'Acceso a Datos',
             'color' => 'FF0000',
             'course_id' => 1,
+            'student_id' => 1,
+            'google_id' => "0",
         ]);
     }
 }

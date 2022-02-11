@@ -48,6 +48,7 @@ Route::prefix('event')->group(function() {
     Route::post('create', [EventsController::class, 'create']);
     Route::put('edit/{id}', [EventsController::class, 'edit']);
     Route::delete('delete/{id}', [EventsController::class, 'delete']);
+    Route::get('getEvents/{id}', [EventsController::class, 'getEvents']);
 });
 
 

@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Student;
+use DateInterval;
+use DatePeriod;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -102,6 +106,38 @@ class EventsController extends Controller
                 $response['response'] = "Event by that id doesn't exist.";
                 $http_status_code = 404;
             }
+        } catch (\Throwable $th) {
+            $response['response'] = "An error has occurred: ".$th->getMessage();
+            $http_status_code = 500;
+        }
+        return response()->json($response)->setStatusCode($http_status_code);
+    }
+
+    public function getEvents(Request $request, $id) {
+        try {
+            $student = Student::find($id);
+
+            $first_date = $student->events()->orderBy('date_start', 'asc')->first()->date_start;        //Recojo la primera fecha que haya
+            $begin = new DateTime($first_date);
+
+            $last_date = $student->events()->orderBy('date_end', 'desc')->first()->date_end;            //Recojo la ultima fecha que haya
+            $end = new DateTime($last_date);
+            // $end->modify('+1 day');
+
+            $interval = DateInterval::createFromDateString('1 day');
+            $period = new DatePeriod($begin, $interval, $end);
+
+            foreach ($period as $date) {                //Recorro todo ese intervalo
+                $date = $date->format("Y-m-d");
+
+                $event = $student->events()->where('date_start', '<=', $date)->where('date_end', '>=', $date)->get();
+                if($event) {
+                    $events[$date] = $event;
+                }
+            }
+
+            $response['response'] = $events;
+            $http_status_code = 200;
         } catch (\Throwable $th) {
             $response['response'] = "An error has occurred: ".$th->getMessage();
             $http_status_code = 500;

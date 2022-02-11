@@ -9,6 +9,13 @@ class Event extends Model
 {
     use HasFactory;
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'subject_id',
+        'student_id',
+    ];
+
     public function student() {
         return $this->belongsTo(Student::class);
     }
