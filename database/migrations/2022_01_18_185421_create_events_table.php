@@ -17,8 +17,8 @@ class CreateEventsTable extends Migration
             $table->id();
             $table->string('name');
             $table->enum('type', ['exam', 'medical', 'vacations']);
-            $table->date('date_start');
-            $table->date('date_end');
+            $table->dateTime('date_start');
+            $table->dateTime('date_end');
             $table->timestamps();
             $table->foreignId('subject_id')->constrained('subjects');
             $table->foreignId('student_id')->constrained('students');
