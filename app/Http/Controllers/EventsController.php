@@ -122,6 +122,7 @@ class EventsController extends Controller
 
             $last_date = $student->events()->orderBy('date_end', 'desc')->first()->date_end;            //Recojo la ultima fecha que haya
             $end = new DateTime($last_date);
+            $end->modify('+1 day');
 
             $interval = DateInterval::createFromDateString('1 day');
             $period = new DatePeriod($begin, $interval, $end);
@@ -129,9 +130,9 @@ class EventsController extends Controller
             foreach ($period as $date) {                //Recorro todo ese intervalo
                 $date = $date->format("Y-m-d");
 
-                $event = $student->events()->where('date_start', '<=', $date)->where('date_end', '>=', $date);
-                if($event->first()) {
-                    $events[$date] = $event->get();
+                $event = $student->events()->where('date_start', '<=', $date)->where('date_end', '>=', $date)->get();
+                if(!$event->isEmpty()) {
+                    $events[$date] = $event;
                 }
             }
 
