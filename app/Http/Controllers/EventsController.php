@@ -130,9 +130,9 @@ class EventsController extends Controller
             foreach ($period as $date) {                //Recorro todo ese intervalo
                 $date = $date->format("Y-m-d");
 
-                $event = $student->events()->where('date_start', '<=', $date)->where('date_end', '>=', $date)->get();
-                if($event) {
-                    $events[$date] = $event;
+                $event = $student->events()->where('date_start', '<=', $date)->where('date_end', '>=', $date);
+                if($event->first()) {
+                    $events[$date] = $event->get();
                 }
             }
 
