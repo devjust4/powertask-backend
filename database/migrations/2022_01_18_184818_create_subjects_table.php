@@ -17,7 +17,7 @@ class CreateSubjectsTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('color')->nullable();
-            $table->string('google_id')->unique();
+            $table->string('google_id');
             $table->timestamps();
             $table->foreignId('course_id')->nullable()->constrained('courses');
             $table->foreignId('student_id')->constrained('students');
