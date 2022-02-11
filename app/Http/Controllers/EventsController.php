@@ -122,7 +122,6 @@ class EventsController extends Controller
 
             $last_date = $student->events()->orderBy('date_end', 'desc')->first()->date_end;            //Recojo la ultima fecha que haya
             $end = new DateTime($last_date);
-            // $end->modify('+1 day');
 
             $interval = DateInterval::createFromDateString('1 day');
             $period = new DatePeriod($begin, $interval, $end);
@@ -136,7 +135,7 @@ class EventsController extends Controller
                 }
             }
 
-            $response['response'] = $events;
+            $response['events'] = $events;
             $http_status_code = 200;
         } catch (\Throwable $th) {
             $response['response'] = "An error has occurred: ".$th->getMessage();
