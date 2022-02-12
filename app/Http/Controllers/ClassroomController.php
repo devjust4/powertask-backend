@@ -87,4 +87,41 @@ class ClassroomController extends Controller
         }
         return response()->json($response)->setStatusCode($http_status_code);
     }
+    function editSubject(Request $request, $id) {
+        $data = $request->getContent();
+        if($data) {
+            try {
+                $validator = Validator::make(json_decode($data, true), [
+                    'name' => 'string',
+                    'color' => 'string',
+                ]);
+
+                if (!$validator->fails()) {
+                    $data = json_decode($data);
+
+                    if($subject = Subject::find($id)) {
+                        if(isset($data->name)) $subject->name = $data->name;
+                        if(isset($data->color)) $subject->color = $data->color;
+
+                        $subject->save();
+
+                        $response['response'] = "Subject edited properly";
+                        $http_status_code = 200;
+                    } else {
+                        $response['response'] = "Subject by that id doesn't exist.";
+                        $http_status_code = 404;
+                    }
+                } else {
+                    $response = ['status'=>0, 'msg'=>$validator->errors()->first()];
+                    $http_status_code = 400;
+                }
+            } catch (\Throwable $th) {
+                $response['response'] = "An error has occurred: ".$th->getMessage();
+                $http_status_code = 500;
+            }
+            return response()->json($response)->setStatusCode($http_status_code);
+        } else {
+            return response(null, 412);     //Ran when received data is empty    (412: Precondition failed)
+        }
+    }
 }

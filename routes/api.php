@@ -51,6 +51,11 @@ Route::prefix('event')->group(function() {
     Route::get('getEvents/{id}', [EventsController::class, 'getEvents']);
 });
 
+Route::prefix('subject')->group(function() {
+    Route::put('edit/{id}', [ClassroomController::class, 'editSubject']);
+});
+
+
 
 Route::middleware('getUserFromToken')->prefix('auth')->group(function() {
     Route::post('create', [ClassroomController::class, 'create']);
