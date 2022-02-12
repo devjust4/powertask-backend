@@ -15,7 +15,7 @@ class PeriodsController extends Controller
                 $validator = Validator::make(json_decode($data, true), [
                     'name' => 'required|string',
                     'date_start' => 'required|date_format:Y-m-d',
-                    'date_start' => 'required|date_format:Y-m-d',
+                    'date_start' => 'required|date_format:Y-m-d',      #Poner y probar |after:time_start
                     'student_id' => 'required|integer|exists:students,id',
                 ], [
                     'date_format' => 'Date format is YYYY-MM-DD (1999-03-25)',

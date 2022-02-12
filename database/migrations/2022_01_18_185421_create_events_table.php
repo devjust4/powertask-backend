@@ -19,8 +19,10 @@ class CreateEventsTable extends Migration
             $table->enum('type', ['vacation', 'exam', 'personal']);
             $table->boolean('all_day');
             $table->text('notes');
-            $table->dateTime('date_start');
-            $table->dateTime('date_end');
+            $table->date('date_start');
+            $table->date('date_end');
+            $table->time('time_start');
+            $table->time('time_end');
             $table->timestamps();
             $table->foreignId('subject_id')->constrained('subjects');
             $table->foreignId('student_id')->constrained('students');

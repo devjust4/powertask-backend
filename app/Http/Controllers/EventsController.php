@@ -21,8 +21,12 @@ class EventsController extends Controller
                     'type' => 'required|in:vacation,exam,personal',
                     'all_day' => 'required|boolean',
                     'notes' => 'required|string',
-                    'date_start' => 'required|date_format:Y-m-d H:i:s',
-                    'date_end' => 'required|date_format:Y-m-d H:i:s',
+
+                    'date_start' => 'required|date_format:Y-m-d',
+                    'date_end' => 'required|date_format:Y-m-d',
+                    'time_start' => 'required|date_format:H:i:s',
+                    'time_end' => 'required|date_format:H:i:s',
+
                     'subject_id' => 'required|integer|exists:subjects,id',
                     'student_id' => 'required|integer|exists:students,id',
                 ]);
@@ -35,8 +39,12 @@ class EventsController extends Controller
                     $event->type = $data->type;
                     $event->all_day = $data->all_day;
                     $event->notes = $data->notes;
+
                     $event->date_start = $data->date_start;
                     $event->date_end = $data->date_end;
+                    $event->time_start = $data->time_start;
+                    $event->time_end = $data->time_end;
+
                     $event->subject_id = $data->subject_id;
                     $event->student_id = $data->student_id;
 
@@ -116,36 +124,35 @@ class EventsController extends Controller
         }
         return response()->json($response)->setStatusCode($http_status_code);
     }
-
     public function getEvents(Request $request, $id) {
         try {
             $student = Student::find($id);
 
             if(!$student->events()->get()->isEmpty()) {
                 $first_date = $student->events()->orderBy('date_start', 'asc')->first()->date_start;        //Recojo la primera fecha que haya
-                $begin = new DateTime( explode(" ", $first_date)[0] . ' 00:00:00' );
+                $begin = new DateTime($first_date);
                 $begin->modify('-1 day');
 
                 $last_date = $student->events()->orderBy('date_end', 'desc')->first()->date_end;            //Recojo la ultima fecha que haya
                 $end = new DateTime($last_date);
-                // $end->modify('+1 day');
-                $end->setTime(23, 59, 59);
+                $end->modify('+1 day');
 
                 $interval = DateInterval::createFromDateString('1 day');
                 $period = new DatePeriod($begin, $interval, $end);
 
                 foreach ($period as $date) {                //Recorro todo ese intervalo
-                    $date_format = $date->format("Y-m-d");
-                    $date_comparison = $date->format("Y-m-d H:i:s");
+                    $date = $date->format("Y-m-d");
 
-                    $event = $student->events()->where('date_start', '<=', $date_comparison)->where('date_end', '>=', $date_comparison)->get();
+                    $event = $student->events()->where('date_start', '<=', $date)->where('date_end', '>=', $date)->get();
                     if(!$event->isEmpty()) {
-                        $events[$date_format] = $event;
+                        $events[$date] = $event;
                     }
                 }
 
-                $response['events'] = $events;
-                $http_status_code = 200;
+                if($events) {
+                    $response['events'] = $events;
+                    $http_status_code = 200;
+                }
             } else {
                 $response['msg'] = "User doesn't have events";
                 $http_status_code = 404;
