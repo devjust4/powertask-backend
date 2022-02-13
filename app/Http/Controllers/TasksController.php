@@ -138,14 +138,19 @@ class TasksController extends Controller
         try {
             if ($student = Student::find($id)) {
                 $tasks = $student->tasks()->get();
-                $task_array = array();
-                foreach ($tasks as $task) {
-                    $task->subtasks = $task->subtasks()->get();
-                    array_push($task_array, $task);
-                }
+                if(!$tasks->isEmpty()) {
+                    $task_array = array();
+                    foreach ($tasks as $task) {
+                        $task->subtasks = $task->subtasks()->get();
+                        array_push($task_array, $task);
+                    }
 
-                $response['response'] = $task_array;
-                $http_status_code = 200;
+                    $response['response'] = $task_array;
+                    $http_status_code = 200;
+                } else {
+                    $response['msg'] = "Student doesn't have tasks";
+                    $http_status_code = 400;
+                }
             } else {
                 $response['response'] = "Student by that id doesn't exist.";
                 $http_status_code = 404;
