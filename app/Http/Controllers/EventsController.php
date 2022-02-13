@@ -71,9 +71,15 @@ class EventsController extends Controller
             try {
                 $validator = Validator::make(json_decode($data, true), [
                     'name' => 'string',
-                    'type' => 'in:exam,medical,vacations',
+                    'type' => 'in:vacation,exam,personal',
+                    'all_day' => 'boolean',
+                    'notes' => 'string',
+
                     'date_start' => 'date_format:Y-m-d',
                     'date_end' => 'date_format:Y-m-d',
+                    'time_start' => 'date_format:H:i:s',
+                    'time_end' => 'date_format:H:i:s',
+
                     'subject_id' => 'integer|exists:subjects,id',
                 ]);
 
@@ -83,8 +89,14 @@ class EventsController extends Controller
                     if($event = Event::find($id)) {
                         if(isset($data->name)) $event->name = $data->name;
                         if(isset($data->type)) $event->type = $data->type;
+                        if(isset($data->all_day)) $event->all_day = $data->all_day;
+                        if(isset($data->notes)) $event->notes = $data->notes;
+
                         if(isset($data->date_start)) $event->date_start = $data->date_start;
                         if(isset($data->date_end)) $event->date_end = $data->date_end;
+                        if(isset($data->time_start)) $event->time_start = $data->time_start;
+                        if(isset($data->time_end)) $event->time_end = $data->time_end;
+
                         if(isset($data->subject_id)) $event->subject_id = $data->subject_id;
 
                         $event->save();
