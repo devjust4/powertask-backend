@@ -19,6 +19,7 @@ class CreateSessionsTable extends Migration
             $table->integer('duration');
             $table->integer('total_time');
             $table->timestamps();
+            $table->foreignId('task_id')->nullable()->constrained('tasks');
             $table->foreignId('student_id')->constrained('students');
         });
     }
