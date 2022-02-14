@@ -155,14 +155,29 @@ class EventsController extends Controller
                 foreach ($period as $date) {                //Recorro todo ese intervalo
                     $date = $date->format("Y-m-d");
 
-                    $event = $student->events()->where('date_start', '<=', $date)->where('date_end', '>=', $date)->get();
-                    if(!$event->isEmpty()) {
-                        $events[$date] = $event;
+                    $events = $student->events()->where('date_start', '<=', $date)->where('date_end', '>=', $date)->get();
+                    if(!$events->isEmpty()) {
+                        $array["vacation"] = array();
+                        $array["exam"] = array();
+                        $array["personal"] = array();
+
+                        foreach ($events as $event) {
+                            if($event->type == "vacation") {
+                                array_push($array["vacation"], $event);
+                            }
+                            if($event->type == "exam") {
+                                array_push($array["exam"], $event);
+                            }
+                            if($event->type == "personal") {
+                                array_push($array["personal"], $event);
+                            }
+                        }
+                        $events_array[$date] = $array;
                     }
                 }
 
                 if($events) {
-                    $response['events'] = $events;
+                    $response['events'] = $events_array;
                     $http_status_code = 200;
                 }
             } else {
