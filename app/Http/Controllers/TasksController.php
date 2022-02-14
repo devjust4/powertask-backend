@@ -145,7 +145,7 @@ class TasksController extends Controller
                         array_push($task_array, $task);
                     }
 
-                    $response['response'] = $task_array;
+                    $response['tasks'] = $task_array;
                     $http_status_code = 200;
                 } else {
                     $response['msg'] = "Student doesn't have tasks";
