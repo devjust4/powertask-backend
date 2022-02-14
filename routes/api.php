@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BlocksController;
 use App\Http\Controllers\ClassroomController;
+use App\Http\Controllers\CoursesController;
 use App\Http\Controllers\EventsController;
 use App\Http\Controllers\PeriodsController;
 use App\Http\Controllers\SubtasksController;
@@ -42,6 +43,12 @@ Route::prefix('block')->group(function() {
     Route::post('create', [BlocksController::class, 'create']);
     Route::put('edit/{id}', [BlocksController::class, 'edit']);
     Route::delete('delete/{id}', [BlocksController::class, 'delete']);
+});
+
+Route::prefix('course')->group(function() {
+    Route::post('create', [CoursesController::class, 'create']);
+    Route::put('edit/{id}', [CoursesController::class, 'edit']);
+    Route::delete('delete/{id}', [CoursesController::class, 'delete']);
 });
 
 Route::prefix('event')->group(function() {
