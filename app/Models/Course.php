@@ -9,6 +9,12 @@ class Course extends Model
 {
     use HasFactory;
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'student_id',
+    ];
+
     public function subjects() {
         return $this->hasMany(Subject::class);
     }

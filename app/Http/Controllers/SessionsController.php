@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Session;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -55,6 +56,27 @@ class SessionsController extends Controller
                 $http_status_code = 200;
             } else {
                 $response['response'] = "Session by that id doesn't exist.";
+                $http_status_code = 404;
+            }
+        } catch (\Throwable $th) {
+            $response['response'] = "An error has occurred: ".$th->getMessage();
+            $http_status_code = 500;
+        }
+        return response()->json($response)->setStatusCode($http_status_code);
+    }
+    public function list(Request $request, $id) {
+        try {
+            if ($student = Student::find($id)) {
+                $sessions = $student->sessions()->get();
+                if(!$sessions->isEmpty()) {
+                    $response['response'] = $sessions;
+                    $http_status_code = 200;
+                } else {
+                    $response['msg'] = "Student doesn't have courses";
+                    $http_status_code = 400;
+                }
+            } else {
+                $response['response'] = "User not found.";
                 $http_status_code = 404;
             }
         } catch (\Throwable $th) {

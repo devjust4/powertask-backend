@@ -50,11 +50,13 @@ Route::prefix('course')->group(function() {
     Route::post('create', [CoursesController::class, 'create']);
     Route::put('edit/{id}', [CoursesController::class, 'edit']);
     Route::delete('delete/{id}', [CoursesController::class, 'delete']);
+    Route::get('list/{id}', [CoursesController::class, 'list']);
 });
 
 Route::prefix('session')->group(function() {
     Route::post('create', [SessionsController::class, 'create']);
     Route::delete('delete/{id}', [SessionsController::class, 'delete']);
+    Route::get('list/{id}', [SessionsController::class, 'list']);
 });
 
 Route::prefix('event')->group(function() {
