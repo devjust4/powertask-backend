@@ -48,6 +48,7 @@ Route::prefix('block')->group(function() {
     Route::post('create', [BlocksController::class, 'create']);
     Route::put('edit/{id}', [BlocksController::class, 'edit']);
     Route::delete('delete/{id}', [BlocksController::class, 'delete']);
+    Route::get('list/{id}', [BlocksController::class, 'list']);
 });
 
 Route::prefix('course')->group(function() {
