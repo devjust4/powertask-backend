@@ -111,4 +111,28 @@ class SubtasksController extends Controller
         }
         return response()->json($response)->setStatusCode($http_status_code);
     }
+    public function toggleCheck(Request $request, $id) {
+        try {
+            if ($subtask = Subtask::find($id)) {
+                if($subtask->completed == true) {
+                    $subtask->completed = false;
+                    $subtask->save();
+                    $response['response'] = $subtask->completed;
+                    $http_status_code = 200;
+                } else {
+                    $subtask->completed = true;
+                    $subtask->save();
+                    $response['response'] = $subtask->completed;
+                    $http_status_code = 200;
+                }
+            } else {
+                $response['response'] = "Subtask by that id doesn't exist.";
+                $http_status_code = 404;
+            }
+        } catch (\Throwable $th) {
+            $response['response'] = "An error has occurred: ".$th->getMessage();
+            $http_status_code = 500;
+        }
+        return response()->json($response)->setStatusCode($http_status_code);
+    }
 }

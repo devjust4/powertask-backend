@@ -27,11 +27,13 @@ Route::prefix('task')->group(function() {
     Route::get('get/{id}', [TasksController::class, 'get']);
     Route::get('list/{id}', [TasksController::class, 'list']);
     Route::delete('delete/{id}', [TasksController::class, 'delete']);
+    Route::put('toggle/{id}', [TasksController::class, 'toggleCheck']);
 });
 Route::prefix('subtask')->group(function() {
     Route::post('create/{id}', [SubtasksController::class, 'create']);
     Route::put('edit/{id}', [SubtasksController::class, 'edit']);
     Route::delete('delete/{id}', [SubtasksController::class, 'delete']);
+    Route::put('toggle/{id}', [SubtasksController::class, 'toggleCheck']);
 });
 
 Route::prefix('period')->group(function() {
