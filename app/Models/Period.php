@@ -9,6 +9,11 @@ class Period extends Model
 {
     use HasFactory;
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
     public function student() {
         return $this->belongsTo(Student::class);
     }

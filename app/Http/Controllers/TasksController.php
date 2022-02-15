@@ -117,23 +117,6 @@ class TasksController extends Controller
             return response(null, 204);     //Ran when received data is empty    (412: Precondition failed)
         }
     }
-    public function get(Request $request, $id) {
-        try {
-            if ($task = Task::find($id)) {
-                $task->subtasks = $task->subtasks()->get();
-
-                $response['response'] = $task;
-                $http_status_code = 200;
-            } else {
-                $response['response'] = "Task by that id doesn't exist.";
-                $http_status_code = 404;
-            }
-        } catch (\Throwable $th) {
-            $response['response'] = "An error has occurred: ".$th->getMessage();
-            $http_status_code = 500;
-        }
-        return response()->json($response)->setStatusCode($http_status_code);
-    }
     public function list(Request $request, $id) {
         try {
             if ($student = Student::find($id)) {

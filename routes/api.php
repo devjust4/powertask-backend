@@ -40,6 +40,7 @@ Route::prefix('period')->group(function() {
     Route::post('create', [PeriodsController::class, 'create']);
     Route::put('edit/{id}', [PeriodsController::class, 'edit']);
     Route::delete('delete/{id}', [PeriodsController::class, 'delete']);
+    Route::get('list/{id}', [PeriodsController::class, 'list']);
 });
 
 Route::prefix('block')->group(function() {
