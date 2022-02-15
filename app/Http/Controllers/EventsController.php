@@ -136,7 +136,7 @@ class EventsController extends Controller
         }
         return response()->json($response)->setStatusCode($http_status_code);
     }
-    public function getEvents(Request $request, $id) {
+    public function list(Request $request, $id) {
         try {
             $student = Student::find($id);
 
