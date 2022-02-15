@@ -98,7 +98,7 @@ class CoursesController extends Controller
             if ($student = Student::find($id)) {
                 $courses = $student->courses()->get();
                 if(!$courses->isEmpty()) {
-                    $response['response'] = $courses;
+                    $response['courses'] = $courses;
                     $http_status_code = 200;
                 } else {
                     $response['msg'] = "Student doesn't have courses";
