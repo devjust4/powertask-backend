@@ -22,6 +22,6 @@ class Period extends Model
         return $this->hasMany(Block::class);
     }
     public function subjects() {
-        return $this->belongsToMany(Subject::class);
+        return $this->belongsToMany(Subject::class, 'contains');
     }
 }

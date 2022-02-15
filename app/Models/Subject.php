@@ -13,6 +13,7 @@ class Subject extends Model
         'created_at',
         'updated_at',
         'student_id',
+        'pivot',        #muestra referencias en la tabla intermedia
     ];
 
 
@@ -33,6 +34,6 @@ class Subject extends Model
         return $this->belongsTo(Student::class);
     }
     public function periods() {
-        return $this->belongsToMany(Period::class);
+        return $this->belongsToMany(Period::class, 'contains');
     }
 }

@@ -154,7 +154,8 @@ class PeriodsController extends Controller
         }
         return response()->json($response)->setStatusCode($http_status_code);
     }
-    public function getSubjects(Request $request, $id) {
+
+    /* public function getSubjects(Request $request, $id) {
         try {
             if ($period = Period::find($id)) {
                 $blocks = $period->blocks()->get();
@@ -167,6 +168,28 @@ class PeriodsController extends Controller
                     $http_status_code = 200;
                 } else {
                     $response['msg'] = "Period doesn't have blocks";
+                    $http_status_code = 400;
+                }
+            } else {
+                $response['response'] = "Period by that id doesn't exist.";
+                $http_status_code = 404;
+            }
+        } catch (\Throwable $th) {
+            $response['response'] = "An error has occurred: ".$th->getMessage();
+            $http_status_code = 500;
+        }
+        return response()->json($response)->setStatusCode($http_status_code);
+    } */
+
+    public function getSubjects(Request $request, $id) {
+        try {
+            if ($period = Period::find($id)) {
+                $subjects = $period->subjects()->get();
+                if(!$subjects->isEmpty()) {
+                    $response['subjects'] = $subjects;
+                    $http_status_code = 200;
+                } else {
+                    $response['response'] = "Period doesn't have subjects";
                     $http_status_code = 400;
                 }
             } else {
