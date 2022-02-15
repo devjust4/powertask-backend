@@ -133,7 +133,7 @@ class PeriodsController extends Controller
                     foreach ($blocks as $block) {
                         array_push($subjects, $block->subject()->first());
                     }
-                    $response['subjects'] = $subjects;
+                    $response['subjects'] = array_unique($subjects);
                     $http_status_code = 200;
                 } else {
                     $response['msg'] = "Period doesn't have blocks";
