@@ -21,4 +21,7 @@ class Period extends Model
     public function blocks() {
         return $this->hasMany(Block::class);
     }
+    public function subjects() {
+        return $this->belongsToMany(Subject::class);
+    }
 }

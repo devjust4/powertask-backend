@@ -22,9 +22,6 @@ class Subject extends Model
     public function events() {
         return $this->hasMany(Event::class);
     }
-    public function periods() {
-        return $this->hasMany(Period::class);
-    }
     public function blocks() {
         return $this->hasMany(Block::class);
     }
@@ -34,5 +31,8 @@ class Subject extends Model
 
     public function student() {
         return $this->belongsTo(Student::class);
+    }
+    public function periods() {
+        return $this->belongsToMany(Period::class);
     }
 }

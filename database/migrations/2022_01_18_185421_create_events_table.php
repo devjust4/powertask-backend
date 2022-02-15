@@ -24,7 +24,7 @@ class CreateEventsTable extends Migration
             $table->time('time_start');
             $table->time('time_end');
             $table->timestamps();
-            $table->foreignId('subject_id')->constrained('subjects');
+            $table->foreignId('subject_id')->nullable()->constrained('subjects');
             $table->foreignId('student_id')->constrained('students');
         });
     }
