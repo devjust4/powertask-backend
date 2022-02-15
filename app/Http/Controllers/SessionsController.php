@@ -72,7 +72,7 @@ class SessionsController extends Controller
                     $response['response'] = $sessions;
                     $http_status_code = 200;
                 } else {
-                    $response['msg'] = "Student doesn't have courses";
+                    $response['msg'] = "Student doesn't have sessions.";
                     $http_status_code = 400;
                 }
             } else {
