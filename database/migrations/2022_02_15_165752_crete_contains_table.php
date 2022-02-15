@@ -17,6 +17,7 @@ class CreteContainsTable extends Migration
             $table->id();
             $table->foreignId('period_id')->constrained('periods');
             $table->foreignId('subject_id')->constrained('subjects');
+            $table->timestamps();
         });
     }
 

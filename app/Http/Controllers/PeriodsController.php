@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Contain;
 use App\Models\Period;
 use App\Models\Student;
+use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -18,6 +20,7 @@ class PeriodsController extends Controller
                     'date_start' => 'required|date_format:Y-m-d',
                     'date_start' => 'required|date_format:Y-m-d',      #Poner y probar |after:time_start
                     'student_id' => 'required|integer|exists:students,id',
+                    'subjects' => 'required|array',
                 ], [
                     'date_format' => 'Date format is YYYY-MM-DD (1999-03-25)',
                 ]);
@@ -25,16 +28,43 @@ class PeriodsController extends Controller
                 if (!$validator->fails()) {
                     $data = json_decode($data);
 
-                    $period = new Period();
-                    $period->name = $data->name;
-                    $period->date_start = $data->date_start;
-                    $period->date_end = $data->date_end;
-                    $period->student_id = $data->student_id;
+                    $continue = true;
+                    $message = "";
 
-                    $period->save();
+                    foreach ($data->subjects as $subject) {
+                        if(is_numeric($subject)) {
+                            $subject_exists = Subject::find($subject);
+                            if(!$subject_exists) {
+                                $continue = false;
+                                $message = "Subject by that id doesn't exist";
+                            }
+                        } else {
+                            $continue = false;
+                            $message = "Subjects must be integers";
+                        }
+                    }
 
-                    $response['response'] = "Period created properly with id ".$period->id;
-                    $http_status_code = 201;
+                    if($continue == true) {
+                        $period = new Period();
+                        $period->name = $data->name;
+                        $period->date_start = $data->date_start;
+                        $period->date_end = $data->date_end;
+                        $period->student_id = $data->student_id;
+                        $period->save();
+
+                        foreach ($data->subjects as $subject) {
+                            $contain = new Contain();
+                            $contain->period_id = $period->id;
+                            $contain->subject_id = $subject;
+                            $contain->save();
+                        }
+
+                        $response['response'] = "Period created properly with id ".$period->id;
+                        $http_status_code = 201;
+                    } else {
+                        $response['response'] = $message;
+                        $http_status_code = 400;
+                    }
                 } else {
                     $response['response'] = $validator->errors()->first();
                     $http_status_code = 400;
