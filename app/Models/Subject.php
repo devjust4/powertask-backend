@@ -13,6 +13,7 @@ class Subject extends Model
         'created_at',
         'updated_at',
         'student_id',
+        'deleted',
         'pivot',        #muestra referencias en la tabla intermedia
     ];
 

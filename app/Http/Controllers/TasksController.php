@@ -124,8 +124,10 @@ class TasksController extends Controller
                 if(!$tasks->isEmpty()) {
                     $task_array = array();
                     foreach ($tasks as $task) {
-                        $task->subtasks = $task->subtasks()->get();
-                        array_push($task_array, $task);
+                        if($task->subject()->where('deleted', false)->first()) {
+                            $task->subtasks = $task->subtasks()->get();
+                            array_push($task_array, $task);
+                        }
                     }
 
                     $response['tasks'] = $task_array;

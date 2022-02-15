@@ -184,7 +184,7 @@ class PeriodsController extends Controller
     public function getSubjects(Request $request, $id) {
         try {
             if ($period = Period::find($id)) {
-                $subjects = $period->subjects()->get();
+                $subjects = $period->subjects()->where('deleted', false)->get();
                 if(!$subjects->isEmpty()) {
                     $response['subjects'] = $subjects;
                     $http_status_code = 200;
