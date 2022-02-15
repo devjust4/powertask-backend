@@ -41,6 +41,7 @@ Route::prefix('period')->group(function() {
     Route::put('edit/{id}', [PeriodsController::class, 'edit']);
     Route::delete('delete/{id}', [PeriodsController::class, 'delete']);
     Route::get('list/{id}', [PeriodsController::class, 'list']);
+    Route::get('getSubjects/{id}', [PeriodsController::class, 'getSubjects']);
 });
 
 Route::prefix('block')->group(function() {

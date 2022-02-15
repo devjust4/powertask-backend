@@ -21,6 +21,7 @@ class CreateBlocksTable extends Migration
             $table->timestamps();
             $table->foreignId('student_id')->constrained('students');
             $table->foreignId('subject_id')->constrained('subjects');
+            $table->foreignId('period_id')->constrained('periods');
         });
     }
 

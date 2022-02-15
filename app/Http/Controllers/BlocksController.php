@@ -18,6 +18,7 @@ class BlocksController extends Controller
                     'day' => 'required|integer',
                     'student_id' => 'required|integer|exists:students,id',
                     'subject_id' => 'required|integer|exists:subjects,id',
+                    'period_id' => 'required|integer|exists:periods,id',
                 ]);
 
                 if (!$validator->fails()) {
@@ -29,6 +30,7 @@ class BlocksController extends Controller
                     $block->day = $data->day;
                     $block->student_id = $data->student_id;
                     $block->subject_id = $data->subject_id;
+                    $block->period_id = $data->period_id;
 
                     $block->save();
 
