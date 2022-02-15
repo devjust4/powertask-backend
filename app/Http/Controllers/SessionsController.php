@@ -69,7 +69,7 @@ class SessionsController extends Controller
             if ($student = Student::find($id)) {
                 $sessions = $student->sessions()->get();
                 if(!$sessions->isEmpty()) {
-                    $response['response'] = $sessions;
+                    $response['sessions'] = $sessions;
                     $http_status_code = 200;
                 } else {
                     $response['msg'] = "Student doesn't have sessions.";
