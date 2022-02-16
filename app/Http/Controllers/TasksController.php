@@ -18,7 +18,7 @@ class TasksController extends Controller
                     'name' => 'required|string',
                     'date_handover' => 'required|date_format:Y-m-d',
                     'description' => 'required|string',
-                    'subject_id' => 'nullable|int',
+                    'subject_id' => 'int|exists:subjects,id',
                 ], [
                     'date_format' => 'The format doesn\'t match with YYYY-MM-DD (e.g. 1999-03-25)',
                 ]);
@@ -62,13 +62,13 @@ class TasksController extends Controller
         if($data) {
             try {
                 $validator = Validator::make(json_decode($data, true), [
-                    'name' => 'nullable|string',
-                    'date_completed' => 'nullable|date_format:Y-m-d',
-                    'date_handover' => 'nullable|date_format:Y-m-d',
-                    'mark' => 'nullable|integer',
-                    'description' => 'nullable|string',
-                    'completed' => 'nullable|boolean',
-                    'subject_id' => 'nullable|int',
+                    'name' => 'string',
+                    'date_completed' => 'date_format:Y-m-d',
+                    'date_handover' => 'date_format:Y-m-d',
+                    'mark' => 'integer',
+                    'description' => 'string',
+                    'completed' => 'boolean',
+                    'subject_id' => 'integer|exists:subjects,id',
                 ], [
                     'date_format' => 'The format doesn\'t match with YYYY-MM-DD (e.g. 1999-03-25)',
                 ]);
@@ -83,13 +83,7 @@ class TasksController extends Controller
                         if(isset($data->mark)) $task->mark = $data->mark;
                         if(isset($data->description)) $task->description = $data->description;
                         if(isset($data->completed)) $task->completed = $data->completed;
-                        if(isset($data->subject_id)) {
-                            if (Subject::find($data->subject_id)) {
-                                $task->subject_id = $data->subject_id;
-                            } else {
-                                return response('Subject id doesn\'t match any subject')->setStatusCode(400);
-                            }
-                        }
+                        if(isset($data->subject_id)) $task->subject_id = $data->subject_id;
 
                         $task->save();
 
@@ -118,15 +112,13 @@ class TasksController extends Controller
             if ($student = Student::find($id)) {
                 $tasks = $student->tasks()->get();
                 if(!$tasks->isEmpty()) {
-                    $task_array = array();
                     foreach ($tasks as $task) {
                         if($task->subject()->where('deleted', false)->first()) {
                             $task->subtasks = $task->subtasks()->get();
-                            array_push($task_array, $task);
                         }
                     }
 
-                    $response['tasks'] = $task_array;
+                    $response['tasks'] = $tasks;
                     $http_status_code = 200;
                 } else {
                     $response['msg'] = "Student doesn't have tasks";

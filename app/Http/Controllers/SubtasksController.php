@@ -54,10 +54,9 @@ class SubtasksController extends Controller
         if($data) {
             try {
                 $validator = Validator::make(json_decode($data, true), [
-                    'name' => 'nullable|string',
-                    'description' => 'nullable|string',
-                    'completed' => 'nullable|boolean',
-                    // 'task_id' => 'nullable|int',          #Para poder editar la tarea a la que pertenecen
+                    'name' => 'string',
+                    'description' => 'string',
+                    'completed' => 'boolean',
                 ]);
 
                 if (!$validator->fails()) {
@@ -67,13 +66,6 @@ class SubtasksController extends Controller
                         if(isset($data->name)) $subtask->name = $data->name;
                         if(isset($data->description)) $subtask->description = $data->description;
                         if(isset($data->completed)) $subtask->completed = $data->completed;
-                        // if(isset($data->task_id)) {          #Para poder editar la tarea a la que pertenecen
-                        //     if (Task::find($data->task_id)) {
-                        //         $subtask->task_id = $data->task_id;
-                        //     } else {
-                        //         return response('Task id doesn\'t match any task')->setStatusCode(400);
-                        //     }
-                        // }
                         $subtask->save();
 
                         $response['response'] = "Subtask edited properly";
