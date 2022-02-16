@@ -17,7 +17,6 @@ class BlocksController extends Controller
                     'time_start' => 'required|date_format:H:i',
                     'time_end' => 'required|date_format:H:i|after:time_start',
                     'day' => 'required|integer',
-                    'student_id' => 'required|integer|exists:students,id',
                     'subject_id' => 'required|integer|exists:subjects,id',
                     'period_id' => 'required|integer|exists:periods,id',
                 ]);
@@ -29,7 +28,7 @@ class BlocksController extends Controller
                     $block->time_start = $data->time_start;
                     $block->time_end = $data->time_end;
                     $block->day = $data->day;
-                    $block->student_id = $data->student_id;
+                    $block->student_id = $request->student->id;
                     $block->subject_id = $data->subject_id;
                     $block->period_id = $data->period_id;
 
@@ -107,8 +106,9 @@ class BlocksController extends Controller
         }
         return response()->json($response)->setStatusCode($http_status_code);
     }
-    public function list(Request $request, $id) {
+    public function list(Request $request) {
         try {
+            $id = $request->student->id;
             if ($period = Period::find($id)) {
                 $blocks = $period->blocks()->get();
                 if(!$blocks->isEmpty()) {

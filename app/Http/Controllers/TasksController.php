@@ -18,7 +18,6 @@ class TasksController extends Controller
                     'name' => 'required|string',
                     'date_handover' => 'required|date_format:Y-m-d',
                     'description' => 'required|string',
-                    'student_id' => 'required|int',
                     'subject_id' => 'nullable|int',
                 ], [
                     'date_format' => 'The format doesn\'t match with YYYY-MM-DD (e.g. 1999-03-25)',
@@ -31,12 +30,8 @@ class TasksController extends Controller
                     $task->name = $data->name;
                     $task->date_handover = $data->date_handover;
                     $task->description = $data->description;
+                    $task->student_id = $request->student->id;
 
-                    if (Student::find($data->student_id)) {
-                        $task->student_id = $data->student_id;
-                    } else {
-                        return response('Student id doesn\'t match any student')->setStatusCode(400);
-                    }
                     if(isset($data->subject_id)) {
                         if (Subject::find($data->subject_id)) {
                             $task->subject_id = $data->subject_id;
@@ -117,8 +112,9 @@ class TasksController extends Controller
             return response(null, 204);     //Ran when received data is empty    (412: Precondition failed)
         }
     }
-    public function list(Request $request, $id) {
+    public function list(Request $request) {
         try {
+            $id = $request->student->id;
             if ($student = Student::find($id)) {
                 $tasks = $student->tasks()->get();
                 if(!$tasks->isEmpty()) {

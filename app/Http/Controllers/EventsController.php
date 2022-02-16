@@ -28,7 +28,6 @@ class EventsController extends Controller
                     'time_end' => 'required|date_format:H:i:s',
 
                     'subject_id' => 'required|integer|exists:subjects,id',
-                    'student_id' => 'required|integer|exists:students,id',
                 ]);
 
                 if (!$validator->fails()) {
@@ -46,7 +45,7 @@ class EventsController extends Controller
                     $event->time_end = $data->time_end;
 
                     $event->subject_id = $data->subject_id;
-                    $event->student_id = $data->student_id;
+                    $event->student_id = $request->student->id;
 
                     $event->save();
 
@@ -136,8 +135,9 @@ class EventsController extends Controller
         }
         return response()->json($response)->setStatusCode($http_status_code);
     }
-    public function list(Request $request, $id) {
+    public function list(Request $request) {
         try {
+            $id = $request->student->id;
             $student = Student::find($id);
 
             if(!$student->events()->get()->isEmpty()) {

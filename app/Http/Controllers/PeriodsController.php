@@ -19,7 +19,6 @@ class PeriodsController extends Controller
                     'name' => 'required|string',
                     'date_start' => 'required|date_format:Y-m-d',
                     'date_start' => 'required|date_format:Y-m-d',      #Poner y probar |after:time_start
-                    'student_id' => 'required|integer|exists:students,id',
                     'subjects' => 'required|array',
                 ], [
                     'date_format' => 'Date format is YYYY-MM-DD (1999-03-25)',
@@ -49,7 +48,7 @@ class PeriodsController extends Controller
                         $period->name = $data->name;
                         $period->date_start = $data->date_start;
                         $period->date_end = $data->date_end;
-                        $period->student_id = $data->student_id;
+                        $period->student_id = $request->student->id;
                         $period->save();
 
                         foreach ($data->subjects as $subject) {
@@ -133,8 +132,9 @@ class PeriodsController extends Controller
         }
         return response()->json($response)->setStatusCode($http_status_code);
     }
-    public function list(Request $request, $id) {
+    public function list(Request $request) {
         try {
+            $id = $request->student->id;
             if ($student = Student::find($id)) {
                 $periods = $student->periods()->get();
                 if(!$periods->isEmpty()) {

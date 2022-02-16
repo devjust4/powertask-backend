@@ -19,6 +19,7 @@ class CreateStudentsTable extends Migration
             $table->string('email')->unique();
             $table->string('image_url');
             $table->string('google_id')->unique();
+            $table->string('api_token')->nullable()->unique();
             $table->timestamps();
         });
     }

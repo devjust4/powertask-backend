@@ -15,7 +15,6 @@ class CoursesController extends Controller
             try {
                 $validator = Validator::make(json_decode($data, true), [
                     'name' => 'required|string',
-                    'student_id' => 'required|integer|exists:students,id',
                 ]);
 
                 if (!$validator->fails()) {
@@ -23,7 +22,7 @@ class CoursesController extends Controller
 
                     $course = new Course();
                     $course->name = $data->name;
-                    $course->student_id = $data->student_id;
+                    $course->student_id = $request->student->id;
 
                     $course->save();
 
@@ -54,8 +53,7 @@ class CoursesController extends Controller
                     $data = json_decode($data);
 
                     if($course = Course::find($id)) {
-                        if(isset($data->name)) $course->name = $data->name;
-
+                        $course->name = $data->name;
                         $course->save();
 
                         $response['response'] = "Course edited properly";

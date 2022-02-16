@@ -18,7 +18,6 @@ class SessionsController extends Controller
                     'duration' => 'required|integer',
                     'total_time' => 'required|integer',
                     'task_id' => 'integer|exists:tasks,id',
-                    'student_id' => 'required|integer|exists:students,id',
                 ]);
 
                 if (!$validator->fails()) {
@@ -29,7 +28,7 @@ class SessionsController extends Controller
                     $session->duration = $data->duration;
                     $session->total_time = $data->total_time;
                     if(isset($data->task_id)) $session->task_id = $data->task_id;
-                    $session->student_id = $data->student_id;
+                    $session->student_id = $request->student->id;
 
                     $session->save();
 
@@ -64,8 +63,9 @@ class SessionsController extends Controller
         }
         return response()->json($response)->setStatusCode($http_status_code);
     }
-    public function list(Request $request, $id) {
+    public function list(Request $request) {
         try {
+            $id = $request->student->id;
             if ($student = Student::find($id)) {
                 $sessions = $student->sessions()->get();
                 if(!$sessions->isEmpty()) {

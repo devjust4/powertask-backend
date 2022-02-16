@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,12 +20,14 @@ class DatabaseSeeder extends Seeder
             'email' => 'danixidev@gmail.com',
             'image_url' => 'image01.png',
             'google_id' => '0',
+            'api_token' => Hash::make('danixi'),
         ]);
         DB::table('students')->insert([
             'name' => 'Daniel Torres',
             'email' => 'danitorres@gmail.com',
             'image_url' => 'image01.png',
             'google_id' => '1',
+            'api_token' => Hash::make('danito'),
         ]);
 
         DB::table('courses')->insert([
