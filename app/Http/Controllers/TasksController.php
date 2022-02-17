@@ -137,9 +137,14 @@ class TasksController extends Controller
     public function delete(Request $request, $id) {
         try {
             if ($task = Task::find($id)) {
-                $task->delete();
-                $response['response'] = "Task deleted successfully.";
-                $http_status_code = 200;
+                if($task->google_id == null) {
+                    $task->delete();
+                    $response['response'] = "Task deleted successfully.";
+                    $http_status_code = 200;
+                } else {
+                    $response['response'] = "Task can't be deleted.";
+                    $http_status_code = 403;
+                }
             } else {
                 $response['response'] = "Task by that id doesn't exist.";
                 $http_status_code = 404;

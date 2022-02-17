@@ -6,6 +6,8 @@ use App\Http\Controllers\CoursesController;
 use App\Http\Controllers\EventsController;
 use App\Http\Controllers\PeriodsController;
 use App\Http\Controllers\SessionsController;
+use App\Http\Controllers\StudentsController;
+use App\Http\Controllers\SubjectsController;
 use App\Http\Controllers\SubtasksController;
 use App\Http\Controllers\TasksController;
 use App\Models\Student;
@@ -76,15 +78,13 @@ Route::middleware('checkApiToken')->group(function () {
     });
 
     Route::prefix('subject')->group(function() {
-        Route::put('edit/{id}', [ClassroomController::class, 'editSubject']);
+        Route::put('edit/{id}', [SubjectsController::class, 'edit']);
+        Route::middleware('getUserFromToken')->get('list', [SubjectsController::class, 'list']);
     });
 
 
-    Route::middleware('getUserFromToken')->prefix('auth')->group(function() {
-        Route::post('create', [ClassroomController::class, 'create']);
-        Route::get('getSubjects', [ClassroomController::class, 'getSubjects']);
-    });
 });
 
+Route::middleware('getUserFromToken')->post('loginRegister', [StudentsController::class, 'loginRegister']);
 
 

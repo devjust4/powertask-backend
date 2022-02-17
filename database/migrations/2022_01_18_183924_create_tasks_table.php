@@ -21,6 +21,7 @@ class CreateTasksTable extends Migration
             $table->integer('mark')->nullable();
             $table->string('description');
             $table->boolean('completed')->nullable();
+            $table->string('google_id')->nullable();
             $table->timestamps();
         });
     }
