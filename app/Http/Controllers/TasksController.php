@@ -128,7 +128,6 @@ class TasksController extends Controller
 
                     foreach ($google_tasks as $google_task) {
                         $submission = $service->courses_courseWork_studentSubmissions->listCoursesCourseWorkStudentSubmissions($google_task->courseId, $google_task->id);
-                        // $submission = $service->courses_courseWork_studentSubmissions->listCoursesCourseWorkStudentSubmissions("458803316828", "458803317576");
                         $submission = $submission->studentSubmissions[0];
 
                         $task_ref = Task::where('google_id', $google_task->id)->first();
@@ -141,24 +140,20 @@ class TasksController extends Controller
                             if($google_task->description) $task->description = $google_task->description;
                             if($google_task->dueDate) $task->date_handover = $google_task->dueDate->year.'-'.$google_task->dueDate->month.'-'.$google_task->dueDate->day;
 
-                            if($submission->assignedGrade) $task_ref->mark = $submission->assignedGrade;
-                            if($submission->updateTime) $task_ref->date_completed = explode("T", $submission->updateTime)[0];
+                            if($submission->assignedGrade) $task->mark = $submission->assignedGrade;
+                            if($submission->updateTime) $task->date_completed = explode("T", $submission->updateTime)[0];
 
                             switch ($submission->state) {
-                                case 'CREATED':
-                                    $task_ref->completed = false;
-                                    break;
                                 case 'TURNED_IN':
-                                    $task_ref->completed = true;
+                                    $task->completed = 1;
                                     break;
                                 case 'RETURNED':
-                                    $task_ref->completed = true;
+                                    $task->completed = 1;
                                     break;
                                 default:
-                                    # code...
+                                    $task->completed = 0;
                                     break;
                             }
-
                             $task->save();
                         } else {
                             $task_ref->name = $google_task->title;
@@ -170,17 +165,14 @@ class TasksController extends Controller
                             if($submission->updateTime) $task_ref->date_completed = explode("T", $submission->updateTime)[0];
 
                             switch ($submission->state) {
-                                case 'CREATED':
-                                    $task_ref->completed = false;
-                                    break;
                                 case 'TURNED_IN':
-                                    $task_ref->completed = true;
+                                    $task_ref->completed = 1;
                                     break;
                                 case 'RETURNED':
-                                    $task_ref->completed = true;
+                                    $task_ref->completed = 1;
                                     break;
                                 default:
-                                    # code...
+                                $task_ref->completed = 0;
                                     break;
                             }
                             $task_ref->save();
