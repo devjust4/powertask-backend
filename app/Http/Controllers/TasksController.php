@@ -121,18 +121,47 @@ class TasksController extends Controller
 
                 foreach ($student->subjects()->get() as $subject) {
                     $service = new Classroom($client);
+
                     $google_tasks = $service->courses_courseWork->listCoursesCourseWork($subject->google_id)->courseWork;
                 }
 
                 foreach ($google_tasks as $google_task) {
-                    if(!$student->tasks()->where('google_id', $google_task->id)->first()) {
+                    $submission = $service->courses_courseWork_studentSubmissions->listCoursesCourseWorkStudentSubmissions($google_task->courseId, $google_task->id);
+                    $submission = $submission->studentSubmissions[0];
+
+                    $task_ref = Task::where('google_id', $google_task->id)->first();
+                    if(!$task_ref) {
                         $task = new Task();
                         $task->student_id = $request->student->id;
+                        $task->google_id = $google_task->id;
+
                         $task->name = $google_task->title;
                         if($google_task->description) $task->description = $google_task->description;
-                        $task->google_id = $google_task->id;
                         if($google_task->dueDate) $task->date_handover = $google_task->dueDate->year.'-'.$google_task->dueDate->month.'-'.$google_task->dueDate->day;
+
+                        if($submission->assignedGrade) $task_ref->mark = $submission->assignedGrade;
+                        // if($submission->updateTime) {
+                        //     $task_ref->date_completed = explode("T", $submission->updateTime)[0];
+                        //     $task_ref->completed = true;
+                        // } else {
+                        //     $task_ref->completed = false;
+                        // }
                         $task->save();
+                    } else {
+                        $task_ref->name = $google_task->title;
+                        if($google_task->description) $task_ref->description = $google_task->description;
+                        if($google_task->dueDate) $task_ref->date_handover = $google_task->dueDate->year.'-'.$google_task->dueDate->month.'-'.$google_task->dueDate->day;
+                        if($google_task->description) $task_ref->description = $google_task->description;
+
+
+                        if($submission->assignedGrade) $task_ref->mark = $submission->assignedGrade;
+                        // if($submission->updateTime) {
+                        //     $task_ref->date_completed = explode("T", $submission->updateTime)[0];
+                        //     $task_ref->completed = true;
+                        // } else {
+                        //     $task_ref->completed = false;
+                        // }
+                        $task_ref->save();
                     }
                 }
 
