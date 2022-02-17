@@ -31,7 +31,7 @@ Route::middleware('checkApiToken')->group(function () {
     Route::prefix('task')->group(function() {
         Route::post('create', [TasksController::class, 'create']);
         Route::put('edit/{id}', [TasksController::class, 'edit']);
-        Route::get('list', [TasksController::class, 'list']);
+        Route::middleware('getUserFromToken')->get('list', [TasksController::class, 'list']);
         Route::delete('delete/{id}', [TasksController::class, 'delete']);
         Route::put('toggle/{id}', [TasksController::class, 'toggleCheck']);
     });

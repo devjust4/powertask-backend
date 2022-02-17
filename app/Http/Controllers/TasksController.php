@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Student;
 use App\Models\Subject;
 use App\Models\Task;
+use Google\Service\Classroom;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -108,8 +109,33 @@ class TasksController extends Controller
     }
     public function list(Request $request) {
         try {
+            $user = $request->user;
             $id = $request->student->id;
             if ($student = Student::find($id)) {
+
+                $client = new \Google\Client();
+                $client->setAuthConfig('../laravel_id_secret.json');
+                $client->addScope('https://www.googleapis.com/auth/classroom.course-work.readonly');
+                $client->addScope('https://www.googleapis.com/auth/classroom.student-submissions.me.readonly');
+                $client->setAccessToken($user->token);
+
+                foreach ($student->subjects()->get() as $subject) {
+                    $service = new Classroom($client);
+                    $google_tasks = $service->courses_courseWork->listCoursesCourseWork($subject->google_id)->courseWork;
+                }
+
+                foreach ($google_tasks as $google_task) {
+                    if(!$student->tasks()->where('google_id', $google_task->id)->first()) {
+                        $task = new Task();
+                        $task->student_id = $request->student->id;
+                        $task->name = $google_task->title;
+                        if($google_task->description) $task->description = $google_task->description;
+                        $task->google_id = $google_task->id;
+                        if($google_task->dueDate) $task->date_handover = $google_task->dueDate->year.'-'.$google_task->dueDate->month.'-'.$google_task->dueDate->day;
+                        $task->save();
+                    }
+                }
+
                 $tasks = $student->tasks()->get();
                 if(!$tasks->isEmpty()) {
                     foreach ($tasks as $task) {
