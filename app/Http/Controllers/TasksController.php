@@ -18,6 +18,7 @@ class TasksController extends Controller
                 $validator = Validator::make(json_decode($data, true), [
                     'name' => 'required|string',
                     'date_handover' => 'required|date_format:Y-m-d',
+                    'date_start' => 'date_format:Y-m-d',
                     'description' => 'required|string',
                     'subject_id' => 'int|exists:subjects,id',
                 ], [
@@ -30,6 +31,7 @@ class TasksController extends Controller
                     $task = new Task();
                     $task->name = $data->name;
                     $task->date_handover = $data->date_handover;
+                    if(isset($data->date_start)) $task->date_start = $data->date_start;
                     $task->description = $data->description;
                     $task->student_id = $request->student->id;
 
@@ -64,7 +66,7 @@ class TasksController extends Controller
             try {
                 $validator = Validator::make(json_decode($data, true), [
                     'name' => 'string',
-                    'date_completed' => 'date_format:Y-m-d',
+                    'date_start' => 'date_format:Y-m-d',
                     'date_handover' => 'date_format:Y-m-d',
                     'mark' => 'integer',
                     'description' => 'string',
@@ -79,7 +81,7 @@ class TasksController extends Controller
 
                     if($task = Task::find($id)) {
                         if(isset($data->name)) $task->name = $data->name;
-                        if(isset($data->date_completed)) $task->date_completed = $data->date_completed;
+                        if(isset($data->date_start)) $task->date_start = $data->date_start;
                         if(isset($data->date_handover)) $task->date_handover = $data->date_handover;
                         if(isset($data->mark)) $task->mark = $data->mark;
                         if(isset($data->description)) $task->description = $data->description;
@@ -141,7 +143,6 @@ class TasksController extends Controller
                             if($google_task->dueDate) $task->date_handover = $google_task->dueDate->year.'-'.$google_task->dueDate->month.'-'.$google_task->dueDate->day;
 
                             if($submission->assignedGrade) $task->mark = $submission->assignedGrade;
-                            if($submission->updateTime) $task->date_completed = explode("T", $submission->updateTime)[0];
 
                             switch ($submission->state) {
                                 case 'TURNED_IN':
@@ -162,7 +163,6 @@ class TasksController extends Controller
                             if($google_task->description) $task_ref->description = $google_task->description;
 
                             if($submission->assignedGrade) $task_ref->mark = $submission->assignedGrade;
-                            if($submission->updateTime) $task_ref->date_completed = explode("T", $submission->updateTime)[0];
 
                             switch ($submission->state) {
                                 case 'TURNED_IN':
