@@ -184,6 +184,7 @@ class TasksController extends Controller
                         foreach ($tasks as $task) {
                             if($task->subject()->where('deleted', false)->first()) {
                                 $task->subtasks = $task->subtasks()->get();
+                                $task->subject = $task->subject()->get();
                             }
                         }
 

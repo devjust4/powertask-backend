@@ -10,6 +10,7 @@ class Task extends Model
     use HasFactory;
 
     protected $hidden = [
+        'subject_id',
         'created_at',
         'updated_at',
         'student_id',
