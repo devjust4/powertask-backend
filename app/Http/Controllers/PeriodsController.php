@@ -58,7 +58,7 @@ class PeriodsController extends Controller
                             $contain->save();
                         }
 
-                        $response['response'] = "Period created properly with id ".$period->id;
+                        $response['id'] = $period->id;
                         $http_status_code = 201;
                     } else {
                         $response['response'] = $message;

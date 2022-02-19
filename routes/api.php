@@ -64,7 +64,7 @@ Route::middleware('checkApiToken')->group(function () {
     });
 
     Route::prefix('block')->group(function() {
-        Route::post('create', [BlocksController::class, 'create']);
+        Route::post('create/{id}', [BlocksController::class, 'create']);
         Route::put('edit/{id}', [BlocksController::class, 'edit']);
         Route::delete('delete/{id}', [BlocksController::class, 'delete']);
         Route::get('list', [BlocksController::class, 'list']);
