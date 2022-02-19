@@ -20,14 +20,14 @@ class EventsController extends Controller
                     'name' => 'required|string',
                     'type' => 'required|in:vacation,exam,personal',
                     'all_day' => 'required|boolean',
-                    'notes' => 'required|string',
+                    'notes' => 'sometimes|string',
 
                     'date_start' => 'required|date_format:Y-m-d',
-                    'date_end' => 'required|date_format:Y-m-d',
-                    'time_start' => 'required|date_format:H:i:s',
-                    'time_end' => 'required|date_format:H:i:s',
+                    'date_end' => 'required|date_format:Y-m-d|after_or_equal:date_start',
+                    'time_start' => 'required_unless:all_day,true|date_format:H:i:s',
+                    'time_end' => 'required_unless:all_day,true|date_format:H:i:s|after_or_equal:time_start',
 
-                    'subject_id' => 'required|integer|exists:subjects,id',
+                    'subject_id' => 'sometimes|integer|exists:subjects,id',
                 ]);
 
                 if (!$validator->fails()) {
@@ -37,19 +37,20 @@ class EventsController extends Controller
                     $event->name = $data->name;
                     $event->type = $data->type;
                     $event->all_day = $data->all_day;
-                    $event->notes = $data->notes;
+                    if(isset($data->notes)) $event->notes = $data->notes;
 
                     $event->date_start = $data->date_start;
                     $event->date_end = $data->date_end;
-                    $event->time_start = $data->time_start;
-                    $event->time_end = $data->time_end;
 
-                    $event->subject_id = $data->subject_id;
+                    if(isset($data->time_start)) $event->time_start = $data->time_start;
+                    if(isset($data->time_end)) $event->time_end = $data->time_end;
+
+                    if(isset($data->subject_id)) $event->subject_id = $data->subject_id;
                     $event->student_id = $request->student->id;
 
                     $event->save();
 
-                    $response['response'] = "Event created properly with id ".$event->id;
+                    $response['id'] = $event->id;
                     $http_status_code = 201;
                 } else {
                     $response['response'] = $validator->errors()->first();

@@ -32,7 +32,7 @@ class SessionsController extends Controller
 
                     $session->save();
 
-                    $response['response'] = "Session created properly with id ".$session->id;
+                    $response['id'] = $session->id;
                     $http_status_code = 201;
                 } else {
                     $response['response'] = $validator->errors()->first();

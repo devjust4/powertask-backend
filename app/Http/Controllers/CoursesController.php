@@ -26,7 +26,7 @@ class CoursesController extends Controller
 
                     $course->save();
 
-                    $response['response'] = "Course created properly with id ".$course->id;
+                    $response['id'] = $course->id;
                     $http_status_code = 201;
                 } else {
                     $response['response'] = $validator->errors()->first();

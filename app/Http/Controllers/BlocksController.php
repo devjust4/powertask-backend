@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Validator;
 
 class BlocksController extends Controller
 {
-    function create(Request $request) {
+    function create(Request $request, $id) {
         $data = $request->getContent();
         if($data) {
             try {
@@ -18,7 +18,6 @@ class BlocksController extends Controller
                     'time_end' => 'required|date_format:H:i|after:time_start',
                     'day' => 'required|integer',
                     'subject_id' => 'required|integer|exists:subjects,id',
-                    'period_id' => 'required|integer|exists:periods,id',
                 ]);
 
                 if (!$validator->fails()) {
@@ -30,11 +29,11 @@ class BlocksController extends Controller
                     $block->day = $data->day;
                     $block->student_id = $request->student->id;
                     $block->subject_id = $data->subject_id;
-                    $block->period_id = $data->period_id;
+                    $block->period_id = $id;
 
                     $block->save();
 
-                    $response['response'] = "Block created properly with id ".$block->id;
+                    $response['id'] = $block->id;
                     $http_status_code = 201;
                 } else {
                     $response['response'] = $validator->errors()->first();

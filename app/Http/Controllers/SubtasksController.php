@@ -16,7 +16,6 @@ class SubtasksController extends Controller
             try {
                 $validator = Validator::make(json_decode($data, true), [
                     'name' => 'required|string',
-                    'description' => 'required|string',
                 ]);
 
                 if (!$validator->fails()) {
@@ -24,7 +23,6 @@ class SubtasksController extends Controller
 
                     $subtask = new Subtask();
                     $subtask->name = $data->name;
-                    $subtask->description = $data->description;
 
                     if (Task::find($id)) {
                         $subtask->task_id = $id;
@@ -34,7 +32,7 @@ class SubtasksController extends Controller
 
                     $subtask->save();
 
-                    $response['response'] = "Subtask created properly with id ".$subtask->id;
+                    $response['id'] = $subtask->id;
                     $http_status_code = 201;
                 } else {
                     $response['response'] = $validator->errors()->first();
@@ -54,18 +52,14 @@ class SubtasksController extends Controller
         if($data) {
             try {
                 $validator = Validator::make(json_decode($data, true), [
-                    'name' => 'string',
-                    'description' => 'string',
-                    'completed' => 'boolean',
+                    'name' => 'required|string',
                 ]);
 
                 if (!$validator->fails()) {
                     $data = json_decode($data);
 
                     if($subtask = Subtask::find($id)) {
-                        if(isset($data->name)) $subtask->name = $data->name;
-                        if(isset($data->description)) $subtask->description = $data->description;
-                        if(isset($data->completed)) $subtask->completed = $data->completed;
+                        $subtask->name = $data->name;
                         $subtask->save();
 
                         $response['response'] = "Subtask edited properly";
@@ -109,12 +103,12 @@ class SubtasksController extends Controller
                 if($subtask->completed == true) {
                     $subtask->completed = false;
                     $subtask->save();
-                    $response['response'] = $subtask->completed;
+                    $response['response'] = 0;
                     $http_status_code = 200;
                 } else {
                     $subtask->completed = true;
                     $subtask->save();
-                    $response['response'] = $subtask->completed;
+                    $response['response'] = 1;
                     $http_status_code = 200;
                 }
             } else {
