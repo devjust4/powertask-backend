@@ -74,7 +74,7 @@ class SubjectsController extends Controller
                             $subject->save();
                         }
                     }
-                    $response['response'] = $student->subjects()->where('deleted', false)->get();
+                    $response['subjects'] = $student->subjects()->where('deleted', false)->get();
                     $http_status_code = 200;
                 } else {
                     $response['response'] = "Student not found";

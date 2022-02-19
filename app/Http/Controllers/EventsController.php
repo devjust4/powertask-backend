@@ -76,11 +76,11 @@ class EventsController extends Controller
                     'notes' => 'string',
 
                     'date_start' => 'date_format:Y-m-d',
-                    'date_end' => 'date_format:Y-m-d',
-                    'time_start' => 'date_format:H:i:s',
-                    'time_end' => 'date_format:H:i:s',
+                    'date_end' => 'date_format:Y-m-d|after_or_equal:date_start',
+                    'time_start' => 'prohibited_if:all_day,true|date_format:H:i:s',
+                    'time_end' => 'prohibited_if:all_day,true|date_format:H:i:s|after_or_equal:time_start',
 
-                    'subject_id' => 'integer|exists:subjects,id',
+                    'subject_id' => 'sometimes|integer|exists:subjects,id',
                 ]);
 
                 if (!$validator->fails()) {
