@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Student;
 use App\Models\Subject;
+use App\Models\Subtask;
 use App\Models\Task;
 use Google\Service\Classroom;
 use Illuminate\Http\Request;
@@ -20,6 +21,7 @@ class TasksController extends Controller
                     'date_start' => 'sometimes|date_format:Y-m-d',
                     'description' => 'sometimes|string',
                     'subject_id' => 'sometimes|int|exists:subjects,id',
+                    'subtasks' => 'sometimes|array',
                 ], [
                     'date_format' => 'The format doesn\'t match with YYYY-MM-DD (e.g. 1999-03-25)',
                 ]);
@@ -40,8 +42,17 @@ class TasksController extends Controller
                             return response('Subject id doesn\'t match any subject')->setStatusCode(400);
                         }
                     }
-
                     $task->save();
+
+                    if(isset($data->subtasks)) {
+                        foreach ($data->subtasks as $subtask_data) {
+                            $subtask = new Subtask();
+                            $subtask->name = $subtask_data->name;
+                            $subtask->completed = $subtask_data->completed;
+                            $subtask->task_id = $task->id;
+                            $subtask->save();
+                        }
+                    }
 
                     $response['id'] = $task->id;
                     $http_status_code = 201;
