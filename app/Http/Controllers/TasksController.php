@@ -69,16 +69,21 @@ class TasksController extends Controller
             return response(null, 412);     //Ran when received data is empty    (412: Precondition failed)
         }
     }
-    public function edit(Request $request, $id) {
+    public function edit(Request $request) {
         $data = $request->getContent();
         if($data) {
             try {
                 $validator = Validator::make(json_decode($data, true), [
-                    'name' => 'string',
-                    'date_start' => 'date_format:Y-m-d',
-                    'description' => 'string',
-                    'completed' => 'boolean',
-                    'subject_id' => 'integer|exists:subjects,id',
+                    'id' => 'required|integer|exists:tasks,id',
+                    'name' => 'required|string',
+                    'date_start' => 'sometimes|nullable|date_format:Y-m-d',
+                    'description' => 'sometimes|string',
+                    'completed' => 'sometimes|nullable|boolean',
+                    'subject_id' => 'sometimes|int|exists:subjects,id',
+                    'subtasks' => 'sometimes|array',
+                    'subtasks.*.id' => 'sometimes|integer',
+                    'subtasks.*.name' => 'required|string',
+                    'subtasks.*.completed' => 'sometimes|nullable|boolean',
                 ], [
                     'date_format' => 'The format doesn\'t match with YYYY-MM-DD (e.g. 1999-03-25)',
                 ]);
@@ -86,14 +91,33 @@ class TasksController extends Controller
                 if (!$validator->fails()) {
                     $data = json_decode($data);
 
-                    if($task = Task::find($id)) {
+                    if($task = Task::find($data->id)) {
                         if(isset($data->name)) $task->name = $data->name;
                         if(isset($data->date_start)) $task->date_start = $data->date_start;
                         if(isset($data->description)) $task->description = $data->description;
-                        if(isset($data->completed)) $task->completed = $data->completed;
+                        if(isset($data->completed)) {
+                            $task->completed = $data->completed;
+                        } else {
+                            $task->completed = false;
+                        }
                         if(isset($data->subject_id)) $task->subject_id = $data->subject_id;
-
                         $task->save();
+
+                        foreach ($data->subtasks as $subtask_data) {
+                            if(isset($subtask_data->id)) {
+                                if($subtask = Subtask::find($subtask_data->id)) {
+                                    if(isset($subtask_data->name)) $subtask->name = $subtask_data->name;
+                                    if(isset($subtask_data->completed)) $subtask->completed = $subtask_data->completed;
+                                    $subtask->save();
+                                }
+                            } else {
+                                $subtask = new Subtask();
+                                $subtask->name = $subtask_data->name;
+                                if(isset($subtask_data->completed)) $subtask->completed = $subtask_data->completed;
+                                $subtask->task_id = $task->id;
+                                $subtask->save();
+                            }
+                        }
 
                         $response['response'] = "Task edited properly";
                         $http_status_code = 200;
