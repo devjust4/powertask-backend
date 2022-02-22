@@ -111,7 +111,7 @@ class BlocksController extends Controller
             if ($period = Period::find($id)) {
                 $blocks = $period->blocks()->get();
                 if(!$blocks->isEmpty()) {
-                    $response['blocks'] = $blocks;
+                    $response['blocks'] = $blocks->makeVisible(['student_id', 'period_id']);
                     $http_status_code = 200;
                 } else {
                     $response['msg'] = "Period doesn't have blocks.";

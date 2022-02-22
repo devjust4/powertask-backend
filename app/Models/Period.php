@@ -14,12 +14,12 @@ class Period extends Model
         'updated_at',
     ];
 
-    public function student() {
-        return $this->belongsTo(Student::class);
-    }
-
     public function blocks() {
         return $this->hasMany(Block::class);
+    }
+
+    public function student() {
+        return $this->belongsTo(Student::class);
     }
     public function subjects() {
         return $this->belongsToMany(Subject::class, 'contains');

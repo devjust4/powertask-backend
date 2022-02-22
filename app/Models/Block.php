@@ -12,6 +12,8 @@ class Block extends Model
     protected $hidden = [
         'created_at',
         'updated_at',
+        'student_id',
+        'period_id',
     ];
 
     public function student() {

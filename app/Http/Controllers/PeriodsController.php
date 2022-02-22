@@ -119,6 +119,17 @@ class PeriodsController extends Controller
     public function delete(Request $request, $id) {
         try {
             if ($period = Period::find($id)) {
+
+                if($blocks = $period->blocks()->get()) {
+                    foreach ($blocks as $block) {
+                        $block->delete();
+                    }
+                }
+                if($subjects = $period->subjects()->get()) {
+                    foreach ($subjects as $subject) {
+                        Contain::where('period_id', $id)->where('subject_id', $subject->id)->first()->delete();
+                    }
+                }
                 $period->delete();
                 $response['response'] = "Period deleted successfully.";
                 $http_status_code = 200;
