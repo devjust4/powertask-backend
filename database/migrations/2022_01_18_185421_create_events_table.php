@@ -21,8 +21,8 @@ class CreateEventsTable extends Migration
             $table->text('notes')->nullable();
             $table->date('date_start');
             $table->date('date_end');
-            $table->time('time_start')->nullable();
-            $table->time('time_end')->nullable();
+            $table->double('timestamp_start');
+            $table->double('timestamp_end');
             $table->timestamps();
             $table->foreignId('subject_id')->nullable()->constrained('subjects');
             $table->foreignId('student_id')->constrained('students');

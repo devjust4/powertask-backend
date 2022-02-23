@@ -22,10 +22,8 @@ class EventsController extends Controller
                     'all_day' => 'required|boolean',
                     'notes' => 'sometimes|string',
 
-                    'date_start' => 'required|date_format:Y-m-d',
-                    'date_end' => 'required|date_format:Y-m-d|after_or_equal:date_start',
-                    'time_start' => 'required_unless:all_day,true|date_format:H:i:s',
-                    'time_end' => 'required_unless:all_day,true|date_format:H:i:s|after_or_equal:time_start',
+                    'timestamp_start' => 'required|numeric',
+                    'timestamp_end' => 'required|numeric|gte:timestamp_start',
 
                     'subject_id' => 'sometimes|integer|exists:subjects,id',
                 ]);
@@ -39,11 +37,11 @@ class EventsController extends Controller
                     $event->all_day = $data->all_day;
                     if(isset($data->notes)) $event->notes = $data->notes;
 
-                    $event->date_start = $data->date_start;
-                    $event->date_end = $data->date_end;
+                    $event->timestamp_start = $data->timestamp_start;
+                    $event->timestamp_end = $data->timestamp_end;
 
-                    if(isset($data->time_start)) $event->time_start = $data->time_start;
-                    if(isset($data->time_end)) $event->time_end = $data->time_end;
+                    $event->date_start = date("Y-m-d", $data->timestamp_start);
+                    $event->date_end = date("Y-m-d", $data->timestamp_end);
 
                     if(isset($data->subject_id)) $event->subject_id = $data->subject_id;
                     $event->student_id = $request->student->id;
@@ -136,6 +134,7 @@ class EventsController extends Controller
         }
         return response()->json($response)->setStatusCode($http_status_code);
     }
+
     public function list(Request $request) {
         try {
             $id = $request->student->id;
@@ -169,7 +168,7 @@ class EventsController extends Controller
                             if($event->type == "exam") array_push($array["exam"], $event);
                             if($event->type == "personal") array_push($array["personal"], $event);
                         }
-                        $events_array[$date] = $array;
+                        $events_array[strtotime($date)] = $array;
                     }
                 }
 
