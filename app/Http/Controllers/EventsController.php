@@ -143,7 +143,6 @@ class EventsController extends Controller
             if(!$student->events()->get()->isEmpty()) {
                 $first_date = $student->events()->orderBy('date_start', 'asc')->first()->date_start;        //Recojo la primera fecha que haya
                 $begin = new DateTime($first_date);
-                $begin->modify('-1 day');
 
                 $last_date = $student->events()->orderBy('date_end', 'desc')->first()->date_end;            //Recojo la ultima fecha que haya
                 $end = new DateTime($last_date);
