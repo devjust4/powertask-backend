@@ -92,6 +92,8 @@ class StudentsController extends Controller
                                 $submission = $service->courses_courseWork_studentSubmissions->listCoursesCourseWorkStudentSubmissions($google_task->courseId, $google_task->id);
                                 $submission = $submission->studentSubmissions[0];
 
+                                dd($google_task);
+
                                 $task_ref = Task::where('google_id', $google_task->id)->first();
                                 if(!$task_ref) {
                                     $task = new Task();
