@@ -233,10 +233,10 @@ class StudentsController extends Controller
 
         try {
             $validatedData = $request->validate([
-                'image' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
+                'image' => 'required|image|mimes:jpg,png,jpeg,gif,svg',
             ]);
 
-            $path = $base_url.$request->file('image')->store('public/images');
+            $path = $request->file('image')->store('public/images');
 
             $student = Student::find($request->student->id);
             $student->image_url = $path;
