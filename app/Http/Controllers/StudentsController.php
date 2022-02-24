@@ -76,7 +76,7 @@ class StudentsController extends Controller
                     $events_array = array();
 
                     if(!$subjects->isEmpty()) {
-                        if($student->subjects()->where('google_id', '<>', null)->first()) {
+                        if(!$student->subjects()->where('google_id', '<>', null)->isEmpty()) {
                             $client = new \Google\Client();
                             $client->setAuthConfig('../laravel_id_secret.json');
                             $client->addScope('https://www.googleapis.com/auth/classroom.course-work.readonly');
@@ -85,7 +85,9 @@ class StudentsController extends Controller
 
                             $service = new Classroom($client);
                             foreach ($subjects as $subject) {
-                                $google_tasks = $service->courses_courseWork->listCoursesCourseWork($subject->google_id)->courseWork;
+                                if($subject->google_id != null) {
+                                    $google_tasks = $service->courses_courseWork->listCoursesCourseWork($subject->google_id)->courseWork;
+                                }
                             }
 
                             foreach ($google_tasks as $google_task) {
