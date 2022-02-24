@@ -76,7 +76,7 @@ class StudentsController extends Controller
                     $events_array = array();
 
                     if(!$subjects->isEmpty()) {
-                        if(!$student->subjects()->where('google_id', '<>', null)->isEmpty()) {
+                        if(!$student->subjects()->where('google_id', '<>', null)->get()->isEmpty()) {
                             $client = new \Google\Client();
                             $client->setAuthConfig('../laravel_id_secret.json');
                             $client->addScope('https://www.googleapis.com/auth/classroom.course-work.readonly');
