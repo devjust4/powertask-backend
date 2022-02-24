@@ -94,12 +94,9 @@ class StudentsController extends Controller
 
 
                                 $task_ref = Task::where('google_id', $google_task->id)->first();
-                                print("linea 97");
                                 if(!$task_ref) {
                                     $task = new Task();
-                                    print("linea 101");
                                     $task->student_id = $request->student->id;
-                                    print("linea 103");
                                     $task->google_id = $google_task->id;
 
                                     $task->name = $google_task->title;
