@@ -97,10 +97,11 @@ class StudentsController extends Controller
                                 print("linea 97");
                                 if(!$task_ref) {
                                     $task = new Task();
-                                    $task->student_id = $request->student->id;
                                     print("linea 101");
-                                    $task->google_id = $google_task->id;
+                                    die;
+                                    $task->student_id = $request->student->id;
                                     print("linea 103");
+                                    $task->google_id = $google_task->id;
 
                                     $task->name = $google_task->title;
                                     if($google_task->description) $task->description = $google_task->description;
