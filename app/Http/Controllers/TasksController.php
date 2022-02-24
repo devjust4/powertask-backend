@@ -143,68 +143,70 @@ class TasksController extends Controller
             $user = $request->user;
             $id = $request->student->id;
             if ($student = Student::find($id)) {
-                $subjects = $student->subjects()->get();
+                $subjects = $student->subjects();
 
-                if(!$subjects->isEmpty()) {
-                    $client = new \Google\Client();
-                    $client->setAuthConfig('../laravel_id_secret.json');
-                    $client->addScope('https://www.googleapis.com/auth/classroom.course-work.readonly');
-                    $client->addScope('https://www.googleapis.com/auth/classroom.student-submissions.me.readonly');
-                    $client->setAccessToken($user->token);
+                if(!$subjects->get()->isEmpty()) {
+                    if($subjects->where('google_id', '<>', null)->first()) {
+                        $client = new \Google\Client();
+                        $client->setAuthConfig('../laravel_id_secret.json');
+                        $client->addScope('https://www.googleapis.com/auth/classroom.course-work.readonly');
+                        $client->addScope('https://www.googleapis.com/auth/classroom.student-submissions.me.readonly');
+                        $client->setAccessToken($user->token);
 
-                    $service = new Classroom($client);
-                    foreach ($subjects as $subject) {
-                        $google_tasks = $service->courses_courseWork->listCoursesCourseWork($subject->google_id)->courseWork;
-                    }
+                        $service = new Classroom($client);
+                        foreach ($subjects as $subject) {
+                            $google_tasks = $service->courses_courseWork->listCoursesCourseWork($subject->google_id)->courseWork;
+                        }
 
-                    foreach ($google_tasks as $google_task) {
-                        $submission = $service->courses_courseWork_studentSubmissions->listCoursesCourseWorkStudentSubmissions($google_task->courseId, $google_task->id);
-                        $submission = $submission->studentSubmissions[0];
+                        foreach ($google_tasks as $google_task) {
+                            $submission = $service->courses_courseWork_studentSubmissions->listCoursesCourseWorkStudentSubmissions($google_task->courseId, $google_task->id);
+                            $submission = $submission->studentSubmissions[0];
 
-                        $task_ref = Task::where('google_id', $google_task->id)->first();
-                        if(!$task_ref) {
-                            $task = new Task();
-                            $task->student_id = $request->student->id;
-                            $task->google_id = $google_task->id;
+                            $task_ref = Task::where('google_id', $google_task->id)->first();
+                            if(!$task_ref) {
+                                $task = new Task();
+                                $task->student_id = $request->student->id;
+                                $task->google_id = $google_task->id;
 
-                            $task->name = $google_task->title;
-                            if($google_task->description) $task->description = $google_task->description;
-                            if($google_task->dueDate) $task->date_handover = $google_task->dueDate->year.'-'.$google_task->dueDate->month.'-'.$google_task->dueDate->day;
+                                $task->name = $google_task->title;
+                                if($google_task->description) $task->description = $google_task->description;
+                                if($google_task->dueDate) $task->date_handover = $google_task->dueDate->year.'-'.$google_task->dueDate->month.'-'.$google_task->dueDate->day;
 
-                            if($submission->assignedGrade) $task->mark = $submission->assignedGrade;
+                                if($submission->assignedGrade) $task->mark = $submission->assignedGrade;
 
-                            switch ($submission->state) {
-                                case 'TURNED_IN':
-                                    $task->completed = 1;
-                                    break;
-                                case 'RETURNED':
-                                    $task->completed = 1;
-                                    break;
-                                default:
-                                    $task->completed = 0;
-                                    break;
+                                switch ($submission->state) {
+                                    case 'TURNED_IN':
+                                        $task->completed = 1;
+                                        break;
+                                    case 'RETURNED':
+                                        $task->completed = 1;
+                                        break;
+                                    default:
+                                        $task->completed = 0;
+                                        break;
+                                }
+                                $task->save();
+                            } else {
+                                $task_ref->name = $google_task->title;
+                                if($google_task->description) $task_ref->description = $google_task->description;
+                                if($google_task->dueDate) $task_ref->date_handover = $google_task->dueDate->year.'-'.$google_task->dueDate->month.'-'.$google_task->dueDate->day;
+                                if($google_task->description) $task_ref->description = $google_task->description;
+
+                                if($submission->assignedGrade) $task_ref->mark = $submission->assignedGrade;
+
+                                switch ($submission->state) {
+                                    case 'TURNED_IN':
+                                        $task_ref->completed = 1;
+                                        break;
+                                    case 'RETURNED':
+                                        $task_ref->completed = 1;
+                                        break;
+                                    default:
+                                    $task_ref->completed = 0;
+                                        break;
+                                }
+                                $task_ref->save();
                             }
-                            $task->save();
-                        } else {
-                            $task_ref->name = $google_task->title;
-                            if($google_task->description) $task_ref->description = $google_task->description;
-                            if($google_task->dueDate) $task_ref->date_handover = $google_task->dueDate->year.'-'.$google_task->dueDate->month.'-'.$google_task->dueDate->day;
-                            if($google_task->description) $task_ref->description = $google_task->description;
-
-                            if($submission->assignedGrade) $task_ref->mark = $submission->assignedGrade;
-
-                            switch ($submission->state) {
-                                case 'TURNED_IN':
-                                    $task_ref->completed = 1;
-                                    break;
-                                case 'RETURNED':
-                                    $task_ref->completed = 1;
-                                    break;
-                                default:
-                                $task_ref->completed = 0;
-                                    break;
-                            }
-                            $task_ref->save();
                         }
                     }
 
