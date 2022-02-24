@@ -89,3 +89,6 @@ Route::middleware('getUserFromToken')->post('loginRegister', [StudentsController
 Route::middleware(['getUserFromToken', 'checkApiToken'])->post('initialDownload', [StudentsController::class, 'initialDownload']);
 
 
+Route::middleware('checkApiToken')->post('uploadImage', [StudentsController::class, 'uploadImage']);
+
+

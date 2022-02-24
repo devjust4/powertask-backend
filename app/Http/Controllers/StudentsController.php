@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Google\Service\Classroom;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class StudentsController extends Controller
 {
@@ -221,6 +222,31 @@ class StudentsController extends Controller
             Log::channel('errors')->info('[app/Http/Controllers/AuthController.php : create] An error has ocurred', [
                 'error' => $th->getMessage(),
             ]);
+        }
+        return response()->json($response)->setStatusCode($http_status_code);
+    }
+
+
+    function uploadImage(Request $request) {
+        $base_url = "http://powertask.kurokiji.com/";
+
+        try {
+            $validatedData = $request->validate([
+                'image' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
+            ]);
+
+            $path = $base_url.$request->file('image')->store('public/images');
+
+            $student = Student::find($request->student->id);
+            $student->image_url = $path;
+            $student->save();
+
+            $response['response'] = "Image uploaded to:";
+            $response['url'] = $path;
+            $http_status_code = 200;
+        } catch (\Throwable $th) {
+            $response['response'] = "An error has occurred: ".$th->getMessage();
+            $http_status_code = 500;
         }
         return response()->json($response)->setStatusCode($http_status_code);
     }
