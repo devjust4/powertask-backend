@@ -25,7 +25,7 @@ class StudentsController extends Controller
                 $student->email = $user->email;
                 $student->image_url = $user->avatar;
                 $student->google_id = $user->id;
-                $student->api_token = Hash::make($user->google_id.$user->email);
+                $student->api_token = Hash::make($user->id.$user->email);
 
                 $student->save();
 
