@@ -10,6 +10,7 @@ class Subject extends Model
     use HasFactory;
 
     protected $hidden = [
+        'course_id',
         'created_at',
         'updated_at',
         'student_id',

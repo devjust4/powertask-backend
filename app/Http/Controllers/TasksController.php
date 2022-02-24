@@ -143,10 +143,10 @@ class TasksController extends Controller
             $user = $request->user;
             $id = $request->student->id;
             if ($student = Student::find($id)) {
-                $subjects = $student->subjects();
+                $subjects = $student->subjects()->get();
 
-                if(!$subjects->get()->isEmpty()) {
-                    if($subjects->where('google_id', '<>', null)->first()) {
+                if(!$subjects->isEmpty()) {
+                    if($student->subjects()->where('google_id', '<>', null)->first()) {
                         $client = new \Google\Client();
                         $client->setAuthConfig('../laravel_id_secret.json');
                         $client->addScope('https://www.googleapis.com/auth/classroom.course-work.readonly');
@@ -212,16 +212,16 @@ class TasksController extends Controller
 
                     $tasks = $student->tasks()->get();
                     if(!$tasks->isEmpty()) {
-                        $tasks_array = array();
+                        // $tasks_array = array();
                         foreach ($tasks as $task) {
                             if($task->subject()->where('deleted', false)->first() || $task->subject()->first() == null) {
                                 $task->subtasks = $task->subtasks()->get();
                                 $task->subject = $task->subject()->first();
-                                array_push($tasks_array, $task);
+                                // array_push($tasks_array, $task);
                             }
                         }
 
-                        $response['tasks'] = $tasks_array;
+                        $response['tasks'] = $tasks;
                         $http_status_code = 200;
                     } else {
                         $response['msg'] = "Student doesn't have tasks";
