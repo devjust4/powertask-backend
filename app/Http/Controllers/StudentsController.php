@@ -25,7 +25,7 @@ class StudentsController extends Controller
                 $student->email = $user->email;
                 $student->image_url = $user->avatar;
                 $student->google_id = $user->id;
-                $student->api_token = Hash::make(now().$user->id.$user->email);
+                $student->api_token = Hash::make($user->google_id.$user->email);
 
                 $student->save();
 
@@ -87,7 +87,7 @@ class StudentsController extends Controller
                             foreach ($subjects as $subject) {
                                 $google_tasks = $service->courses_courseWork->listCoursesCourseWork($subject->google_id)->courseWork;
                             }
-dd($google_tasks);
+
                             foreach ($google_tasks as $google_task) {
                                 $submission = $service->courses_courseWork_studentSubmissions->listCoursesCourseWorkStudentSubmissions($google_task->courseId, $google_task->id);
                                 $submission = $submission->studentSubmissions[0];
