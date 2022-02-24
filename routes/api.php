@@ -85,7 +85,7 @@ Route::middleware('checkApiToken')->group(function () {
 
 });
 
-Route::middleware('getUserFromToken')->post('loginRegister', [StudentsController::class, 'loginRegister']);
+Route::middleware(['getUserFromToken', 'checkApiToken'])->post('loginRegister', [StudentsController::class, 'loginRegister']);
 Route::middleware('getUserFromToken')->post('initialDownload', [StudentsController::class, 'initialDownload']);
 
 

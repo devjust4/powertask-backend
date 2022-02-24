@@ -98,7 +98,6 @@ class StudentsController extends Controller
                                 if(!$task_ref) {
                                     $task = new Task();
                                     print("linea 101");
-                                    die;
                                     $task->student_id = $request->student->id;
                                     print("linea 103");
                                     $task->google_id = $google_task->id;
