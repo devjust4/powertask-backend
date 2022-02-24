@@ -229,6 +229,7 @@ class StudentsController extends Controller
 
     function uploadImage(Request $request) {
         $base_url = "http://powertask.kurokiji.com/";
+        // $base_url = "http://localhost:8888/powertask-backend/";
 
         try {
             $validatedData = $request->validate([
