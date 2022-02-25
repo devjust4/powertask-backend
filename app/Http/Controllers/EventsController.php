@@ -164,7 +164,10 @@ class EventsController extends Controller
                             if($event->all_day == true) $event->makeHidden(['time_start', 'time_end']);
 
                             if($event->type == "vacation") array_push($array["vacation"], $event);
-                            if($event->type == "exam") array_push($array["exam"], $event);
+                            if($event->type == "exam") {
+                                $event->subject = $event->subject()->first();
+                                array_push($array["exam"], $event);
+                            }
                             if($event->type == "personal") array_push($array["personal"], $event);
                         }
                         $events_array[strtotime($date)] = $array;

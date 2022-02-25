@@ -10,9 +10,12 @@ class Event extends Model
     use HasFactory;
 
     protected $hidden = [
+        'date_start',
+        'date_end',
         'created_at',
         'updated_at',
         'student_id',
+        'subject_id',
     ];
 
     public function student() {

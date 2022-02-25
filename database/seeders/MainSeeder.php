@@ -79,6 +79,7 @@ class MainSeeder extends Seeder
                     'timestamp_start' => $timestamp_start,
                     'timestamp_end' => $timestamp_end,
                     'student_id' => $student_id,
+                    'subject_id' => rand(1, $tasks_repetitions),
                 ]);
             }
         }
