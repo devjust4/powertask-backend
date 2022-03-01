@@ -13,6 +13,7 @@ class Block extends Model
         'created_at',
         'updated_at',
         'student_id',
+        'subject_id',
         'period_id',
     ];
 

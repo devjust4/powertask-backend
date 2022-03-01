@@ -105,14 +105,19 @@ class BlocksController extends Controller
         }
         return response()->json($response)->setStatusCode($http_status_code);
     }
-    public function list(Request $request) {
+    public function list(Request $request, $id) {
         try {
-            $id = $request->student->id;
             if ($period = Period::find($id)) {
-                $blocks = $period->blocks()->get();
+                $blocks = $period->blocks()->orderBy('day', 'asc')->get();
                 if(!$blocks->isEmpty()) {
-                    $response['blocks'] = $blocks->makeVisible(['student_id', 'period_id']);
-                    $http_status_code = 200;
+                    foreach ($blocks as $block) {
+                        $block->subject = $block->subject()->first();
+                        $blocks_array[$block->id] = $block;
+                    }
+                    if($blocks_array) {
+                        $response['blocks'] = $blocks_array;
+                        $http_status_code = 200;
+                    }
                 } else {
                     $response['msg'] = "Period doesn't have blocks.";
                     $http_status_code = 400;
