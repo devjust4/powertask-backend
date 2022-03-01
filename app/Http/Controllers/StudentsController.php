@@ -229,14 +229,14 @@ class StudentsController extends Controller
 
     function uploadImage(Request $request) {
         $base_url = "http://powertask.kurokiji.com/";
-        // $base_url = "http://localhost:8888/powertask-backend/";
 
         try {
-            $validatedData = $request->validate([
+            $request->validate([
                 'image' => 'required|image|mimes:jpg,png,jpeg,gif,svg',
             ]);
 
             $path = $request->file('image')->store('public/images');
+            $path = $base_url.'public/storage/images'.explode('images', $path)[1];
 
             $student = Student::find($request->student->id);
             $student->image_url = $path;
