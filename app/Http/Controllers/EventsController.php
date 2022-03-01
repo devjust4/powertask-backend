@@ -135,7 +135,7 @@ class EventsController extends Controller
         return response()->json($response)->setStatusCode($http_status_code);
     }
 
-    public function list(Request $request) {
+    public function deprecatedList(Request $request) {
         try {
             $id = $request->student->id;
             $student = Student::find($id);
@@ -175,6 +175,31 @@ class EventsController extends Controller
                 }
 
                 if($events) {
+                    $response['events'] = $events_array;
+                    $http_status_code = 200;
+                }
+            } else {
+                $response['msg'] = "User doesn't have events";
+                $http_status_code = 404;
+            }
+        } catch (\Throwable $th) {
+            $response['response'] = "An error has occurred: ".$th->getMessage();
+            $http_status_code = 500;
+        }
+        return response()->json($response)->setStatusCode($http_status_code);
+    }
+
+    public function list(Request $request) {
+        try {
+            $id = $request->student->id;
+            $student = Student::find($id);
+            $events = $student->events()->orderBy('timestamp_start', 'asc')->get();
+
+            if(!$events->isEmpty()) {
+                foreach ($events as $event) {
+                    $events_array[$event->id] = $event;
+                }
+                if($events_array) {
                     $response['events'] = $events_array;
                     $http_status_code = 200;
                 }

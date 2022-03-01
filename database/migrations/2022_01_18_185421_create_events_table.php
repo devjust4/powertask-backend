@@ -19,8 +19,8 @@ class CreateEventsTable extends Migration
             $table->enum('type', ['vacation', 'exam', 'personal']);
             $table->boolean('all_day');
             $table->text('notes')->nullable();
-            $table->date('date_start');
-            $table->date('date_end');
+            // $table->date('date_start');
+            // $table->date('date_end');
             $table->double('timestamp_start');
             $table->double('timestamp_end');
             $table->timestamps();
