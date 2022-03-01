@@ -17,11 +17,11 @@ class PeriodsController extends Controller
             try {
                 $validator = Validator::make(json_decode($data, true), [
                     'name' => 'required|string',
-                    'date_start' => 'required|date_format:Y-m-d',
-                    'date_start' => 'required|date_format:Y-m-d',      #Poner y probar |after:time_start
+
+                    'date_start' => 'required|numeric',
+                    'date_start' => 'required|numeric|gte:date_start',
+
                     'subjects' => 'required|array',
-                ], [
-                    'date_format' => 'Date format is YYYY-MM-DD (1999-03-25)',
                 ]);
 
                 if (!$validator->fails()) {
@@ -82,9 +82,10 @@ class PeriodsController extends Controller
         if($data) {
             try {
                 $validator = Validator::make(json_decode($data, true), [
-                    'name' => 'string',
-                    'date_start' => 'date_format:Y-m-d',
-                    'date_start' => 'date_format:Y-m-d',
+                    'name' => 'sometimes|string',
+                    'date_start' => 'sometimes|numeric',
+                    'date_start' => 'sometimes|numeric|gte:date_start',
+                    'subjects' => 'sometimes|array',
                 ]);
 
                 if (!$validator->fails()) {
@@ -96,6 +97,15 @@ class PeriodsController extends Controller
                         if(isset($data->date_end)) $period->date_end = $data->date_end;
 
                         $period->save();
+
+                        foreach($data->subjects as $subject) {
+                            if(!Contain::where('period_id', $period->id)->where('subject_id', $subject)->first()) {
+                                $contain = new Contain();
+                                $contain->period_id = $period->id;
+                                $contain->subject_id = $subject;
+                                $contain->save();
+                            }
+                        }
 
                         $response['response'] = "Period edited properly";
                         $http_status_code = 200;

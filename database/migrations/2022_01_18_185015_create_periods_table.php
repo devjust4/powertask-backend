@@ -16,8 +16,8 @@ class CreatePeriodsTable extends Migration
         Schema::create('periods', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->date('date_start');
-            $table->date('date_end');
+            $table->double('date_start');
+            $table->double('date_end');
             $table->timestamps();
             $table->foreignId('student_id')->constrained('students');
         });
