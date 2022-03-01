@@ -188,7 +188,9 @@ class TasksController extends Controller
                             } else {
                                 $task_ref->name = $google_task->title;
                                 if($google_task->description) $task_ref->description = $google_task->description;
-                                if($google_task->dueDate) $task_ref->date_handover = $google_task->dueDate->year.'-'.$google_task->dueDate->month.'-'.$google_task->dueDate->day;
+                                if($google_task->dueDate) {
+                                    $task_ref->date_handover = strtotime($google_task->dueDate->year.'-'.$google_task->dueDate->month.'-'.$google_task->dueDate->day);
+                                }
                                 if($google_task->description) $task_ref->description = $google_task->description;
 
                                 if($submission->assignedGrade) $task_ref->mark = $submission->assignedGrade;
