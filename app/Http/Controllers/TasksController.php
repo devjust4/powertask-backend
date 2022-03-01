@@ -18,12 +18,10 @@ class TasksController extends Controller
             try {
                 $validator = Validator::make(json_decode($data, true), [
                     'name' => 'required|string',
-                    'date_start' => 'sometimes|date_format:Y-m-d',
+                    'date_start' => 'sometimes|numeric',
                     'description' => 'sometimes|string',
                     'subject_id' => 'sometimes|int|exists:subjects,id',
                     'subtasks' => 'sometimes|array',
-                ], [
-                    'date_format' => 'The format doesn\'t match with YYYY-MM-DD (e.g. 1999-03-25)',
                 ]);
 
                 if (!$validator->fails()) {
@@ -76,16 +74,15 @@ class TasksController extends Controller
                 $validator = Validator::make(json_decode($data, true), [
                     'id' => 'required|integer|exists:tasks,id',
                     'name' => 'required|string',
-                    'date_start' => 'sometimes|nullable|date_format:Y-m-d',
+                    'date_start' => 'sometimes|nullable|numeric',
                     'description' => 'sometimes|string',
                     'completed' => 'sometimes|nullable|boolean',
                     'subject_id' => 'sometimes|int|exists:subjects,id',
-                    'subtasks' => 'sometimes|array',
+
+                    'subtasks' => 'sometimes|array',            #Validate arrays on requests
                     'subtasks.*.id' => 'sometimes|integer',
                     'subtasks.*.name' => 'required|string',
                     'subtasks.*.completed' => 'sometimes|nullable|boolean',
-                ], [
-                    'date_format' => 'The format doesn\'t match with YYYY-MM-DD (e.g. 1999-03-25)',
                 ]);
 
                 if (!$validator->fails()) {
@@ -170,7 +167,9 @@ class TasksController extends Controller
 
                                 $task->name = $google_task->title;
                                 if($google_task->description) $task->description = $google_task->description;
-                                if($google_task->dueDate) $task->date_handover = $google_task->dueDate->year.'-'.$google_task->dueDate->month.'-'.$google_task->dueDate->day;
+                                if($google_task->dueDate) {
+                                    $task->date_handover = strtotime($google_task->dueDate->year.'-'.$google_task->dueDate->month.'-'.$google_task->dueDate->day);
+                                }
 
                                 if($submission->assignedGrade) $task->mark = $submission->assignedGrade;
 
