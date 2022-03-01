@@ -164,6 +164,7 @@ class TasksController extends Controller
                                 $task = new Task();
                                 $task->student_id = $request->student->id;
                                 $task->google_id = $google_task->id;
+                                $task->subject_id = Subject::where('google_id', $google_task->courseId)->first()->id;
 
                                 $task->name = $google_task->title;
                                 if($google_task->description) $task->description = $google_task->description;
@@ -213,12 +214,10 @@ class TasksController extends Controller
 
                     $tasks = $student->tasks()->get();
                     if(!$tasks->isEmpty()) {
-                        // $tasks_array = array();
                         foreach ($tasks as $task) {
                             if($task->subject()->where('deleted', false)->first() || $task->subject()->first() == null) {
                                 $task->subtasks = $task->subtasks()->get();
                                 $task->subject = $task->subject()->first();
-                                // array_push($tasks_array, $task);
                             }
                         }
 
