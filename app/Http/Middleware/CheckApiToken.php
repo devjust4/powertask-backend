@@ -25,13 +25,17 @@ class CheckApiToken
                     $request->student = $student;
                     return $next($request);
                 } else {
-                    return response('Api token not valid', 401);
+                    $response['response'] = "Api token not valid";
+                    $http_status_code = 401;
                 }
             } else {
-                return response('No api token', 401);
+                $response['response'] = "No api token";
+                $http_status_code = 401;
             }
         } catch (\Throwable $th) {
-            return response($th->getMessage(), 500);
+            $response['response'] = $th->getMessage();
+            $http_status_code = 500;
         }
+        return response()->json($response)->setStatusCode($http_status_code);
     }
 }
