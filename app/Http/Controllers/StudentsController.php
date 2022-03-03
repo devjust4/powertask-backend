@@ -148,16 +148,12 @@ class StudentsController extends Controller
 
                         $tasks = $student->tasks()->get();
                         if(!$tasks->isEmpty()) {
-                            // $tasks_array = array();
                             foreach ($tasks as $task) {
                                 if($task->subject()->where('deleted', false)->first() || $task->subject()->first() == null) {
                                     $task->subtasks = $task->subtasks()->get();
                                     $task->subject = $task->subject()->first();
-                                    // array_push($tasks_array, $task);
                                 }
                             }
-
-                            $http_status_code = 200;
                         }
                     }
 
@@ -165,11 +161,10 @@ class StudentsController extends Controller
 
                     if(!$events->isEmpty()) {
                         foreach ($events as $event) {
+                            if($event->type == "exam") {
+                                $event->subject = $event->subject()->first();
+                            }
                             $events_array[$event->id] = $event;
-                        }
-                        if($events_array) {
-                            $response['events'] = $events_array;
-                            $http_status_code = 200;
                         }
                     }
 
