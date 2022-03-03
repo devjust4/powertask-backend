@@ -83,12 +83,17 @@ Route::middleware('checkApiToken')->group(function () {
     });
 
 
+    Route::prefix('student')->group(function() {
+        Route::middleware('getUserFromToken')->post('initialDownload', [StudentsController::class, 'initialDownload']);
+
+        Route::post('edit', [StudentsController::class, 'edit']);
+        Route::post('uploadImage', [StudentsController::class, 'uploadImage']);
+    });
+
 });
 
 Route::middleware('getUserFromToken')->post('loginRegister', [StudentsController::class, 'loginRegister']);
-Route::middleware(['getUserFromToken', 'checkApiToken'])->post('initialDownload', [StudentsController::class, 'initialDownload']);
 
 
-Route::middleware('checkApiToken')->post('uploadImage', [StudentsController::class, 'uploadImage']);
 
 

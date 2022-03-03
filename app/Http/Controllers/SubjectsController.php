@@ -81,7 +81,7 @@ class SubjectsController extends Controller
                     $http_status_code = 404;
                 }
             } else {
-                $response['response'] = "User doesn't exist";
+                $response['response'] = "Student doesn't exist";
                 $http_status_code = 404;
             }
         } catch (\Throwable $th) {

@@ -172,7 +172,7 @@ class EventsController extends Controller
                     $http_status_code = 200;
                 }
             } else {
-                $response['response'] = "User doesn't have events";
+                $response['response'] = "Student doesn't have events";
                 $http_status_code = 404;
             }
         } catch (\Throwable $th) {
@@ -200,7 +200,7 @@ class EventsController extends Controller
                     $http_status_code = 200;
                 }
             } else {
-                $response['response'] = "User doesn't have events";
+                $response['response'] = "Student doesn't have events";
                 $http_status_code = 404;
             }
         } catch (\Throwable $th) {

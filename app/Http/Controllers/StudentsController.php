@@ -179,7 +179,7 @@ class StudentsController extends Controller
                     $http_status_code = 404;
                 }
             } else {
-                $response['response'] = "User doesn't exist";
+                $response['response'] = "Student doesn't exist";
                 $http_status_code = 404;
             }
 
@@ -207,6 +207,37 @@ class StudentsController extends Controller
             ]);
         }
         return response()->json($response)->setStatusCode($http_status_code);
+    }
+
+    public function edit(Request $request) {
+        $data = $request->getContent();
+        if($data) {
+            try {
+                $validator = Validator::make(json_decode($data, true), [
+                    'name' => 'required|string',
+                ]);
+
+                if (!$validator->fails()) {
+                    $data = json_decode($data);
+
+                    $student = Student::find($request->student->id);
+                    $student->name = $data->name;
+                    $student->save();
+
+                    $response['response'] = "Student edited properly.";
+                    $http_status_code = 200;
+                } else {
+                    $response['response'] = $validator->errors()->first();
+                    $http_status_code = 400;
+                }
+            } catch (\Throwable $th) {
+                $response['response'] = "An error has occurred: ".$th->getMessage();
+                $http_status_code = 500;
+            }
+            return response()->json($response)->setStatusCode($http_status_code);
+        } else {
+            return response(null, 204);     //Ran when received data is empty    (412: Precondition failed)
+        }
     }
 
 

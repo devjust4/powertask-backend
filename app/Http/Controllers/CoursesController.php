@@ -103,7 +103,7 @@ class CoursesController extends Controller
                     $http_status_code = 400;
                 }
             } else {
-                $response['response'] = "User not found.";
+                $response['response'] = "Student not found.";
                 $http_status_code = 404;
             }
         } catch (\Throwable $th) {
