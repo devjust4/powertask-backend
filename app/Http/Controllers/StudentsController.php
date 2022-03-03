@@ -324,8 +324,19 @@ class StudentsController extends Controller
             $student = Student::find($request->student->id);
             $tasks = $student->tasks()->get();
 
-            dd($tasks);
+            $completed = 0;
+            $total = 0;
 
+            foreach ($tasks as $task) {
+                if($task->completed) {
+                    $completed++;
+                }
+                $total++;
+            }
+
+            $response['completed'] = $completed;
+            $response['total'] = $total;
+            $http_status_code = 200;
         } catch (\Throwable $th) {
             $response['response'] = "An error has occurred: ".$th->getMessage();
             $http_status_code = 500;
