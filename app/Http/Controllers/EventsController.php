@@ -197,6 +197,9 @@ class EventsController extends Controller
 
             if(!$events->isEmpty()) {
                 foreach ($events as $event) {
+                    if($event->type == "exam") {
+                        $event->subject = $event->subject()->first();
+                    }
                     $events_array[$event->id] = $event;
                 }
                 if($events_array) {
