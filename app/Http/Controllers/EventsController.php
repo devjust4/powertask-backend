@@ -40,9 +40,6 @@ class EventsController extends Controller
                     $event->timestamp_start = $data->timestamp_start;
                     $event->timestamp_end = $data->timestamp_end;
 
-                    $event->date_start = date("Y-m-d", $data->timestamp_start);
-                    $event->date_end = date("Y-m-d", $data->timestamp_end);
-
                     if(isset($data->subject_id)) $event->subject_id = $data->subject_id;
                     $event->student_id = $request->student->id;
 
