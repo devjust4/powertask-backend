@@ -70,10 +70,8 @@ class EventsController extends Controller
                     'all_day' => 'boolean',
                     'notes' => 'string',
 
-                    'date_start' => 'date_format:Y-m-d',
-                    'date_end' => 'date_format:Y-m-d|after_or_equal:date_start',
-                    'time_start' => 'prohibited_if:all_day,true|date_format:H:i:s',
-                    'time_end' => 'prohibited_if:all_day,true|date_format:H:i:s|after_or_equal:time_start',
+                    'timestamp_start' => 'required|numeric',
+                    'timestamp_end' => 'required|numeric|gte:timestamp_start',
 
                     'subject_id' => 'sometimes|integer|exists:subjects,id',
                 ]);
@@ -87,10 +85,8 @@ class EventsController extends Controller
                         if(isset($data->all_day)) $event->all_day = $data->all_day;
                         if(isset($data->notes)) $event->notes = $data->notes;
 
-                        if(isset($data->date_start)) $event->date_start = $data->date_start;
-                        if(isset($data->date_end)) $event->date_end = $data->date_end;
-                        if(isset($data->time_start)) $event->time_start = $data->time_start;
-                        if(isset($data->time_end)) $event->time_end = $data->time_end;
+                        if(isset($data->timestamp_start)) $event->timestamp_start = $data->timestamp_start;
+                        if(isset($data->timestamp_end)) $event->timestamp_end = $data->timestamp_end;
 
                         if(isset($data->subject_id)) $event->subject_id = $data->subject_id;
 
