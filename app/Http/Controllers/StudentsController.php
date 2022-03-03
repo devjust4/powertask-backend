@@ -345,4 +345,37 @@ class StudentsController extends Controller
         }
         return response()->json($response)->setStatusCode($http_status_code);
     }
+    function widget_markAverage(Request $request) {
+        try {
+            $student = Student::find($request->student->id);
+            $period = $student->periods()->where('date_start', '<=', time())->where('date_end', '>=', time())->first();
+            $subjects = $period->subjects()->where('deleted', true)->get();
+
+            $tasks = array();
+            foreach ($subjects as $subject) {
+                foreach ($subject->tasks()->get() as $task) {
+                    array_push($tasks, $task);
+                }
+            }
+
+            if($tasks) {
+                $mark = 0;
+                $count = 0;
+
+                foreach ($tasks as $task) {
+                    if($task->mark) {
+                        $mark += $task->mark;
+                        $count++;
+                    }
+                }
+
+                $response['average'] = $mark / $count;
+                $http_status_code = 200;
+            }
+        } catch (\Throwable $th) {
+            $response['response'] = "An error has occurred: ".$th->getMessage();
+            $http_status_code = 500;
+        }
+        return response()->json($response)->setStatusCode($http_status_code);
+    }
 }

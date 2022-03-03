@@ -93,6 +93,7 @@ Route::middleware('checkApiToken')->group(function () {
             Route::get('totalSessionTime', [StudentsController::class, 'widget_totalSessionTime']);
             Route::get('daysUntilPeriodEnds', [StudentsController::class, 'widget_daysUntilPeriodEnds']);
             Route::get('completedTasks', [StudentsController::class, 'widget_completedTasks']);
+            Route::get('markAverage', [StudentsController::class, 'widget_markAverage']);
         });
     });
 });
