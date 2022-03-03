@@ -77,7 +77,7 @@ class BlocksController extends Controller
                         $http_status_code = 404;
                     }
                 } else {
-                    $response = ['status'=>0, 'msg'=>$validator->errors()->first()];
+                    $response['response'] =$validator->errors()->first();
                     $http_status_code = 400;
                 }
             } catch (\Throwable $th) {
@@ -119,7 +119,7 @@ class BlocksController extends Controller
                         $http_status_code = 200;
                     }
                 } else {
-                    $response['msg'] = "Period doesn't have blocks.";
+                    $response['response'] = "Period doesn't have blocks.";
                     $http_status_code = 400;
                 }
             } else {

@@ -63,7 +63,7 @@ class CoursesController extends Controller
                         $http_status_code = 404;
                     }
                 } else {
-                    $response = ['status'=>0, 'msg'=>$validator->errors()->first()];
+                    $response['response'] =$validator->errors()->first();
                     $http_status_code = 400;
                 }
             } catch (\Throwable $th) {
@@ -99,7 +99,7 @@ class CoursesController extends Controller
                     $response['courses'] = $courses;
                     $http_status_code = 200;
                 } else {
-                    $response['msg'] = "Student doesn't have courses";
+                    $response['response'] = "Student doesn't have courses";
                     $http_status_code = 400;
                 }
             } else {

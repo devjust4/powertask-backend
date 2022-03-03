@@ -37,7 +37,7 @@ class SubjectsController extends Controller
                         $http_status_code = 404;
                     }
                 } else {
-                    $response = ['status'=>0, 'msg'=>$validator->errors()->first()];
+                    $response['response'] = $validator->errors()->first();
                     $http_status_code = 400;
                 }
             } catch (\Throwable $th) {

@@ -224,11 +224,11 @@ class TasksController extends Controller
                         $response['tasks'] = $tasks;
                         $http_status_code = 200;
                     } else {
-                        $response['msg'] = "Student doesn't have tasks";
+                        $response['response'] = "Student doesn't have tasks";
                         $http_status_code = 400;
                     }
                 } else {
-                    $response['msg'] = "Student doesn't have subjects";
+                    $response['response'] = "Student doesn't have subjects";
                     $http_status_code = 400;
                 }
 
