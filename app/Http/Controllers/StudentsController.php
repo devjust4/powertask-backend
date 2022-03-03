@@ -278,9 +278,11 @@ class StudentsController extends Controller
                     $response['minutes'] = $minutes;
                     $response['seconds'] = $seconds;
                 }
+                $http_status_code = 200;
+            } else {
+                $response['response'] = "Student doesn't have sessions.";
+                $http_status_code = 404;
             }
-
-            $http_status_code = 200;
         } catch (\Throwable $th) {
             $response['response'] = "An error has occurred: ".$th->getMessage();
             $http_status_code = 500;
@@ -292,7 +294,7 @@ class StudentsController extends Controller
             $student = Student::find($request->student->id);
             $period = $student->periods()->where('date_start', '<=', time())->where('date_end', '>=', time())->first();
 
-            if($period) {
+            if(!$period->isEmpty()) {
                 $start = $period->date_start;
                 $finish = $period->date_end;
 
@@ -312,6 +314,9 @@ class StudentsController extends Controller
                 $response['days'] = $days;
                 $response['percentage'] = $percentage;
                 $http_status_code = 200;
+            } else {
+                $response['response'] = "Student doesn't have period.";
+                $http_status_code = 404;
             }
         } catch (\Throwable $th) {
             $response['response'] = "An error has occurred: ".$th->getMessage();
@@ -324,7 +329,7 @@ class StudentsController extends Controller
             $student = Student::find($request->student->id);
             $tasks = $student->tasks()->get();
 
-            if($tasks) {
+            if(!$tasks->isEmpty()) {
                 $completed = 0;
                 $total = 0;
 
@@ -338,6 +343,9 @@ class StudentsController extends Controller
                 $response['completed'] = $completed;
                 $response['total'] = $total;
                 $http_status_code = 200;
+            } else {
+                $response['response'] = "Student doesn't have tasks.";
+                $http_status_code = 404;
             }
         } catch (\Throwable $th) {
             $response['response'] = "An error has occurred: ".$th->getMessage();
@@ -349,28 +357,39 @@ class StudentsController extends Controller
         try {
             $student = Student::find($request->student->id);
             $period = $student->periods()->where('date_start', '<=', time())->where('date_end', '>=', time())->first();
-            $subjects = $period->subjects()->where('deleted', true)->get();
+            if($period) {
+                $subjects = $period->subjects()->where('deleted', true)->get();
 
-            $tasks = array();
-            foreach ($subjects as $subject) {
-                foreach ($subject->tasks()->get() as $task) {
-                    array_push($tasks, $task);
-                }
-            }
-
-            if($tasks) {
-                $mark = 0;
-                $count = 0;
-
-                foreach ($tasks as $task) {
-                    if($task->mark) {
-                        $mark += $task->mark;
-                        $count++;
+                $tasks = array();
+                foreach ($subjects as $subject) {
+                    $allTasks = $subject->tasks()->get();
+                    if(!$allTasks->isEmpty()) {
+                        foreach ($allTasks as $task) {
+                            array_push($tasks, $task);
+                        }
                     }
                 }
 
-                $response['average'] = $mark / $count;
-                $http_status_code = 200;
+                if($tasks) {
+                    $mark = 0;
+                    $count = 0;
+
+                    foreach ($tasks as $task) {
+                        if($task->mark) {
+                            $mark += $task->mark;
+                            $count++;
+                        }
+                    }
+
+                    $response['average'] = $mark / $count;
+                    $http_status_code = 200;
+                } else {
+                    $response['response'] = "Student doesn't have tasks.";
+                    $http_status_code = 404;
+                }
+            } else {
+                $response['response'] = "Student doesn't have period.";
+                $http_status_code = 404;
             }
         } catch (\Throwable $th) {
             $response['response'] = "An error has occurred: ".$th->getMessage();
