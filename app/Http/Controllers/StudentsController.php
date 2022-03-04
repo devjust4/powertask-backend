@@ -309,7 +309,7 @@ class StudentsController extends Controller
 
                 $days = round(($finish - time()) / 86400);      //Precision can be switched, calculation returns double
 
-                $percentage = round(((time() - $start) / ($finish - $start)), 2);         //Returns percentage with a decimal precision of 2 of the current period's completion
+                $percentage = floatval(round(((time() - $start) / ($finish - $start)), 2));         //Returns percentage with a decimal precision of 2 of the current period's completion
 
                 $response['days'] = $days;
                 $response['percentage'] = $percentage;
