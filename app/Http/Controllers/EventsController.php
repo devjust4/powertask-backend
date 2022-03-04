@@ -186,7 +186,7 @@ class EventsController extends Controller
         try {
             $id = $request->student->id;
             $student = Student::find($id);
-            $events = $student->events()->orderBy('timestamp_start', 'asc')->get();
+            $events = $student->events()->get();
 
             if(!$events->isEmpty()) {
                 foreach ($events as $event) {

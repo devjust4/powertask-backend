@@ -157,7 +157,7 @@ class StudentsController extends Controller
                         }
                     }
 
-                    $events = $student->events()->orderBy('timestamp_start', 'asc')->get();
+                    $events = $student->events()->get();
 
                     if(!$events->isEmpty()) {
                         foreach ($events as $event) {
@@ -294,7 +294,7 @@ class StudentsController extends Controller
             $student = Student::find($request->student->id);
             $period = $student->periods()->where('date_start', '<=', time())->where('date_end', '>=', time())->first();
 
-            if(!$period->isEmpty()) {
+            if($period) {
                 $start = $period->date_start;
                 $finish = $period->date_end;
 
@@ -309,7 +309,7 @@ class StudentsController extends Controller
 
                 $days = round(($finish - time()) / 86400);      //Precision can be switched, calculation returns double
 
-                $percentage = round(((time() - $start) / ($finish - $start)) * 100, 2);         //Returns percentage with a decimal precision of 2 of the current period's completion
+                $percentage = round(((time() - $start) / ($finish - $start)), 1);         //Returns percentage with a decimal precision of 2 of the current period's completion
 
                 $response['days'] = $days;
                 $response['percentage'] = $percentage;
