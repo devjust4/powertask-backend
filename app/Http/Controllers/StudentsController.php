@@ -98,7 +98,7 @@ class StudentsController extends Controller
                                     $task = new Task();
                                     $task->student_id = $request->student->id;
                                     $task->google_id = $google_task->id;
-                                    $task->subject_id = Subject::where('google_id', $google_task->courseId)->first()->id;
+                                    $task->subject_id = Subject::where('google_id', $google_task->courseId)->where('student_id',$student->id)->first()->id;
 
                                     $task->name = $google_task->title;
                                     if($google_task->description) $task->description = $google_task->description;
