@@ -11,7 +11,6 @@ class Student extends Model
 
     protected $hidden = [
         'google_id',
-        'api_token',
         'created_at',
         'updated_at',
     ];
