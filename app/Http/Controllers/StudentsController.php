@@ -176,6 +176,7 @@ class StudentsController extends Controller
                             $events_array[$event->id] = $event;
                         }
                     }
+                    unset($events);
 
                     $http_status_code = 200;
                 } else {
