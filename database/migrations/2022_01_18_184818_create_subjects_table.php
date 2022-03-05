@@ -16,7 +16,7 @@ class CreateSubjectsTable extends Migration
         Schema::create('subjects', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('color')->default('30B0C7');
+            $table->string('color')->default('#30B0C7');
             $table->string('google_id')->nullable();
             $table->boolean('deleted')->default(false);
             $table->timestamps();
