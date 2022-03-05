@@ -30,10 +30,12 @@ class StudentsController extends Controller
 
                 $student->save();
 
+                $response['new'] = true;
                 $response['token'] = $student->api_token;
                 $http_status_code = 201;
             } else {
                 $student = Student::where('google_id', $user->id)->first();
+                $response['new'] = false;
                 $response['token'] = $student->api_token;
                 $http_status_code = 400;
             }
