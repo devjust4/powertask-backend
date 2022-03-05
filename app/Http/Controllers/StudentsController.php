@@ -37,7 +37,7 @@ class StudentsController extends Controller
                 $student = Student::where('google_id', $user->id)->first();
                 $response['new'] = $request->header('new', 0);
                 $response['token'] = $student->api_token;
-                $http_status_code = 400;
+                $http_status_code = 200;
             }
         } catch (\Throwable $th) {
             $response['response'] = "An error has occurred: ".$th->getMessage();
