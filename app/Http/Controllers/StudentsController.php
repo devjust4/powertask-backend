@@ -196,17 +196,20 @@ class StudentsController extends Controller
 
 
             if($http_status_code == 200) {
-                $student->tasks = $tasks;
-                $student->subjects = $subjects;
+                if($tasks) $student->tasks = $tasks;
+                if($subjects) $student->subjects = $subjects;
 
                 $periods = $student->periods()->get();
-                foreach($periods as $period) {
-                    $period->blocks = $period->blocks()->get();
+                if(!$periods->isEmpty()) {
+                    foreach($periods as $period) {
+                        $period->blocks = $period->blocks()->get();
+                    }
+                    $student->periods = $periods;
                 }
-                $student->periods = $periods;
 
-                $student->sessions = $student->sessions()->get();
-                $student->events = $events_array;
+                $sessions = $student->sessions()->get();
+                if(!$sessions->isEmpty()) $student->sessions = $sessions;
+                if($events_array) $student->events = $events_array;
 
                 $response['student'] = $student;
             }
