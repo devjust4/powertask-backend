@@ -10,6 +10,8 @@ class Student extends Model
     use HasFactory;
 
     protected $hidden = [
+        'google_id',
+        'api_token',
         'created_at',
         'updated_at',
     ];
