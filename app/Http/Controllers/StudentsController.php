@@ -71,10 +71,12 @@ class StudentsController extends Controller
                             $subject->google_id = $course->id;
                             $subject->student_id = $student->id;
                             $subject->save();
+                            unset($subject);
                         }
                     }
+                    unset($courses);
 
-                    $subjects = $student->subjects()->get();
+                    $subjects = $student->subjects()->where('deleted', false)->get();
 
                     $events_array = array();
 
@@ -87,6 +89,7 @@ class StudentsController extends Controller
                             $client->setAccessToken($user->token);
 
                             $service = new Classroom($client);
+                            unset($client);
                             foreach ($subjects as $subject) {
                                 $google_tasks = $service->courses_courseWork->listCoursesCourseWork($subject->google_id)->courseWork;
                             }
@@ -122,6 +125,7 @@ class StudentsController extends Controller
                                             break;
                                     }
                                     $task->save();
+                                    unset($task);
                                 } else {
                                     $task_ref->name = $google_task->title;
                                     if($google_task->description) $task_ref->description = $google_task->description;
@@ -145,7 +149,10 @@ class StudentsController extends Controller
                                     }
                                     $task_ref->save();
                                 }
+                                unset($task_ref);
+                                unset($submission);
                             }
+                            unset($google_tasks);
                         }
 
                         $tasks = $student->tasks()->get();
@@ -183,7 +190,7 @@ class StudentsController extends Controller
 
             if($http_status_code == 200) {
                 $student->tasks = $tasks;
-                $student->subjects = $student->subjects()->where('deleted', false)->get();
+                $student->subjects = $subjects;
 
                 $periods = $student->periods()->get();
                 foreach($periods as $period) {
