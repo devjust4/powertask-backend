@@ -19,7 +19,7 @@ class StudentsController extends Controller
     function loginRegister(Request $request) {
         try {
             $user = $request->user;
-            if($request->header('new')) $new = $request->header('new', -1);
+            $new = $request->header('new', -1);
 
             if(!Student::where('email', $user->email)->first()) {
                 $student = new Student();
