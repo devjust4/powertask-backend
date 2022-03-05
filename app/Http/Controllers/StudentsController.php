@@ -92,8 +92,12 @@ class StudentsController extends Controller
 
                             $service = new Classroom($client);
                             unset($client);
+                            $google_tasks = array();
                             foreach ($subjects as $subject) {
-                                $google_tasks = $service->courses_courseWork->listCoursesCourseWork($subject->google_id)->courseWork;
+                                $courseworks = $service->courses_courseWork->listCoursesCourseWork($subject->google_id)->courseWork;
+                                foreach ($courseworks as $coursework) {
+                                    array_push($google_tasks, $coursework);
+                                }
                             }
 
                             foreach ($google_tasks as $google_task) {
