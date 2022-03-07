@@ -81,7 +81,6 @@ class StudentsController extends Controller
                             $subject->save();
                         }
                     }
-                    die;
 
                     foreach ($courses as $course) {
                         if(!$course->enrollmentCode) {
@@ -102,7 +101,7 @@ class StudentsController extends Controller
                     $events_array = array();
 
                     if(!$subjects->isEmpty()) {
-                        if($student->subjects()->where('google_id', '<>', null)->first()) {
+                        if($student->subjects()->where('google_id', '<>', null)->where('deleted', false)->first()) {
                             $client = new \Google\Client();
                             $client->setAuthConfig('../laravel_id_secret.json');
                             $client->addScope('https://www.googleapis.com/auth/classroom.course-work.readonly');
@@ -183,9 +182,11 @@ class StudentsController extends Controller
                         $tasks = $student->tasks()->get();
                         if(!$tasks->isEmpty()) {
                             foreach ($tasks as $task) {
-                                if($task->subject()->where('deleted', false)->first() || $task->subject()->first() == null) {
+                                if(!$task->subject()->where('deleted', true)->first()) {
                                     $task->subtasks = $task->subtasks()->get();
                                     $task->subject = $task->subject()->first();
+                                } else {
+                                    $task->forget();
                                 }
                             }
                         }
