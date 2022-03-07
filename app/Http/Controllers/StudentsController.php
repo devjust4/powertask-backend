@@ -64,6 +64,25 @@ class StudentsController extends Controller
                     $service = new Classroom($client);
                     $courses = $service->courses->listCourses()->courses;
 
+                    $subjects = Subject::all();
+                    if(!$subjects->isEmpty()) {
+                        foreach ($subjects as $subject) {
+                            $exists = false;
+                            foreach ($courses as $course) {
+                                if($subject->google_id == $course->id) {
+                                    $exists = true;
+                                }
+                            }
+                            if(!$exists) {
+                                $subject->deleted = true;
+                            } else {
+                                $subject->deleted = false;
+                            }
+                            $subject->save();
+                        }
+                    }
+                    die;
+
                     foreach ($courses as $course) {
                         if(!$course->enrollmentCode) {
                             if(!Subject::where('google_id', $course->id)->where('student_id', $student->id)->first()) {
