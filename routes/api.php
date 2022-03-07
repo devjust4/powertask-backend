@@ -90,6 +90,7 @@ Route::middleware('checkApiToken')->group(function () {
         Route::post('uploadImage', [StudentsController::class, 'uploadImage']);
 
         Route::prefix('widget')->group(function() {
+            Route::get('getAllWidgetInfo', [StudentsController::class, 'getAllWidgetInfo']);
             Route::get('totalSessionTime', [StudentsController::class, 'widget_totalSessionTime']);
             Route::get('daysUntilPeriodEnds', [StudentsController::class, 'widget_daysUntilPeriodEnds']);
             Route::get('completedTasks', [StudentsController::class, 'widget_completedTasks']);
