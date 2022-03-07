@@ -21,7 +21,7 @@ class PeriodsController extends Controller
                     'date_start' => 'required|numeric',
                     'date_start' => 'required|numeric|gte:date_start',
 
-                    'subjects' => 'required|array',
+                    'subjects' => 'required|json',
                 ]);
 
                 if (!$validator->fails()) {
@@ -30,9 +30,9 @@ class PeriodsController extends Controller
                     $continue = true;
                     $message = "";
 
-                    foreach ($data->subjects as $subject) {
-                        if(is_numeric($subject)) {
-                            $subject_exists = Subject::find($subject);
+                    foreach (json_decode($data->subjects) as $subject_id) {
+                        if(is_numeric($subject_id)) {
+                            $subject_exists = Subject::find($subject_id);
                             if(!$subject_exists) {
                                 $continue = false;
                                 $message = "Subject by that id doesn't exist";
