@@ -386,7 +386,7 @@ class StudentsController extends Controller
                 $taskCounter['total'] = 0;
             }
 
-            $response['session'] = $sessionTime;
+            $response['sessionTime'] = $sessionTime;
             $response['periodDays'] = $periodDays;
             $response['averageMark'] = $averageMark;
             $response['taskCounter'] = $taskCounter;
