@@ -30,9 +30,11 @@ class PeriodsController extends Controller
                     $continue = true;
                     $message = "";
 
-                    foreach (json_decode($data->subjects) as $subject_id) {
-                        if(is_numeric($subject_id)) {
-                            $subject_exists = Subject::find($subject_id);
+                    $subjects = json_decode($data->subjects);
+
+                    foreach ($subjects as $subject) {
+                        if(is_numeric($subject)) {
+                            $subject_exists = Subject::find($subject);
                             if(!$subject_exists) {
                                 $continue = false;
                                 $message = "Subject by that id doesn't exist";
@@ -51,7 +53,7 @@ class PeriodsController extends Controller
                         $period->student_id = $request->student->id;
                         $period->save();
 
-                        foreach ($data->subjects as $subject) {
+                        foreach ($subjects as $subject) {
                             $contain = new Contain();
                             $contain->period_id = $period->id;
                             $contain->subject_id = $subject;
