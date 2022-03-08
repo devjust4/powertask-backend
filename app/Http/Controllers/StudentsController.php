@@ -247,7 +247,7 @@ class StudentsController extends Controller
                                 }
                             }
                             $average = $mark / $count;
-                            $averageMark['average'] = round($average, 2);
+                            $averageMark['average'] = round($average, 1);
                         }
                     } else {
                         $periodDays['days'] = 0;
@@ -435,7 +435,7 @@ class StudentsController extends Controller
                         }
                     }
                     $average = $mark / $count;
-                    $averageMark['average'] = round($average, 2);
+                    $averageMark['average'] = round($average, 1);
                 }
             } else {
                 $periodDays['days'] = 0;
