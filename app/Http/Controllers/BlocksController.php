@@ -6,6 +6,7 @@ use App\Models\Block;
 use App\Models\Period;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use PhpParser\JsonDecoder;
 
 class BlocksController extends Controller
 {
@@ -14,26 +15,34 @@ class BlocksController extends Controller
         if($data) {
             try {
                 $validator = Validator::make(json_decode($data, true), [
-                    'time_start' => 'required|date_format:H:i',
-                    'time_end' => 'required|date_format:H:i|after:time_start',
-                    'day' => 'required|integer',
-                    'subject_id' => 'required|integer|exists:subjects,id',
+                    'blocks' => 'required|json',
+                    // 'time_start' => 'required|date_format:H:i',
+                    // 'time_end' => 'required|date_format:H:i|after:time_start',
+                    // 'day' => 'required|integer',
+                    // 'subject_id' => 'required|integer|exists:subjects,id',
                 ]);
 
                 if (!$validator->fails()) {
                     $data = json_decode($data);
 
-                    $block = new Block();
-                    $block->time_start = $data->time_start;
-                    $block->time_end = $data->time_end;
-                    $block->day = $data->day;
-                    $block->student_id = $request->student->id;
-                    $block->subject_id = $data->subject_id;
-                    $block->period_id = $id;
+                    $block_days = json_decode($data->blocks);
 
-                    $block->save();
+                    if($block_days) {
+                        foreach ($block_days as $day => $block_day) {
+                            foreach ($block_day as $block_data) {
+                                $block = new Block();
+                                $block->time_start = $block_data->timeStart;
+                                $block->time_end = $block_data->timeEnd;
+                                $block->day = $day;
+                                $block->student_id = $request->student->id;
+                                $block->subject_id = $block_data->subjectID;
+                                $block->period_id = $id;
 
-                    $response['id'] = $block->id;
+                                $block->save();
+                            }
+                        }
+                    }
+                    $response['response'] = "Blocks created properly";
                     $http_status_code = 201;
                 } else {
                     $response['response'] = $validator->errors()->first();

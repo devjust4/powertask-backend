@@ -15,8 +15,8 @@ class CreateBlocksTable extends Migration
     {
         Schema::create('blocks', function (Blueprint $table) {
             $table->id();
-            $table->time('time_start');
-            $table->time('time_end');
+            $table->double('time_start');
+            $table->double('time_end');
             $table->integer('day');
             $table->timestamps();
             $table->foreignId('student_id')->constrained('students');
