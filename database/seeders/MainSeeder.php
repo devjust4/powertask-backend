@@ -67,13 +67,16 @@ class MainSeeder extends Seeder
                     for ($i=1; $i <= 10; $i++) {
                         $quantity = rand(2,4);
                         $duration = rand(600,900);
-                        DB::table('sessions')->insert([
-                            'quantity' => $quantity,
-                            'duration' => $duration,
-                            'total_time' => ($quantity*$duration)+rand(0, 60),
-                            'task_id' => array_rand($tasks),
-                            'student_id' => $student->id,
-                        ]);
+                        $task = array_rand($tasks);
+                        do {
+                            DB::table('sessions')->insert([
+                                'quantity' => $quantity,
+                                'duration' => $duration,
+                                'total_time' => ($quantity*$duration)+rand(0, 60),
+                                'task_id' => $task,
+                                'student_id' => $student->id,
+                            ]);
+                        } while ($task != 0);
                     }
                 }
 
