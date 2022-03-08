@@ -22,7 +22,7 @@ class MainSeeder extends Seeder
         foreach ($students as $student) {
             $subject_ids = array();
 
-            if($student->periods()->get()->isEmpty()) {
+            if($student->periods()->get()->isEmpty() && !$student->tasks()->get()->isEmpty()) {
                 DB::table('periods')->insert([
                     'name' => "Primer trimestre",
                     'date_start' => "1631704831",
