@@ -18,117 +18,56 @@ class MainSeeder extends Seeder
      */
     public function run()
     {
-        $faker = Faker::create('en_US');
-        $tasks_repetitions = 20;
-        $events_repetitions = 200;
-
-        $event_types = ['personal', 'exam', 'vacation'];
-
         $students = Student::all();
-
         foreach ($students as $student) {
-            $student_id = $student->id;
-
-            for ($i=1; $i <= $tasks_repetitions; $i++) {
-
-                DB::table('subjects')->insert([
-                    'name' => $faker->numerify('Asignatura ###'),
-                    'google_id' => Str::random(12),
-                    'deleted' => 0,
-                    'student_id' => $student_id,
-                    'color' => $faker->hexcolor,
+            if($student->periods()->get()->isEmpty()) {
+                DB::table('periods')->insert([
+                    'name' => "Primer trimestre",
+                    'date_start' => "1631704831",
+                    'date_end' => "1640258431",
+                    'student_id' => $student->id,
+                ]);
+                DB::table('periods')->insert([
+                    'name' => "Segundo trimestre",
+                    'date_start' => "1641813631",
+                    'date_end' => "1648466431",
+                    'student_id' => $student->id,
+                ]);
+                DB::table('periods')->insert([
+                    'name' => "Tercer trimestre",
+                    'date_start' => "1648552831",
+                    'date_end' => "1655292031",
+                    'student_id' => $student->id,
                 ]);
 
-                if ($i%2 == 1) {
-                    DB::table('tasks')->insert([
-                        'name' => $faker->sentence($nbWords = 3, $variableNbWords = true),
-                        'description' => $faker->text($maxNbChars = 200),
-                        'subject_id' => rand(1, $i),
-                        'student_id' => $student_id,
-                        'mark' => $faker->randomDigit,
-                        'google_id' => Str::random(12),
+                $period_id = $student->periods()->where('name', 'Segundo trimestre')->first()->id;
+                $subject_ids = array();
+                foreach ($student->subjects()->get() as $subject) {
+                    DB::table('contains')->insert([
+                        'period_id' => $period_id,
+                        'subject_id' => $subject->id,
                     ]);
-                } else {
-                    DB::table('tasks')->insert([
-                        'name' => $faker->sentence($nbWords = 3, $variableNbWords = true),
-                        'description' => $faker->text($maxNbChars = 200),
-                        'subject_id' => rand(1, $i),
-                        'student_id' => $student_id,
-                    ]);
+                    array_push($subject_ids, $subject->id);
                 }
-                DB::table('tasks')->insert([
-                    'name' => $faker->sentence($nbWords = 3, $variableNbWords = true),
-                    'description' =>  $faker->text($maxNbChars = 200),
-                    'subject_id' => rand(1, $i),
-                    'student_id' => $student_id,
-                ]);
 
-                DB::table('subtasks')->insert([
-                    'name' => $faker->sentence($nbWords = 3, $variableNbWords = true),
-                    'completed' => rand(0, 1),
-                    'task_id' => rand(1, $i),
-                ]);
-                DB::table('subtasks')->insert([
-                    'name' => $faker->sentence($nbWords = 3, $variableNbWords = true),
-                    'completed' => rand(0, 1),
-                    'task_id' => rand(1, $i),
-                ]);
-                DB::table('subtasks')->insert([
-                    'name' => Str::random(10),
-                    'completed' => rand(0, 1),
-                    'task_id' => rand(1, $i),
-                ]);
-            }
-
-
-            for ($i=1; $i <= $events_repetitions; $i++) {
-                $timestamp_start = mt_rand(time()-2592000, time());
-                $timestamp_end = mt_rand(time(), time()+2592000);
-            $type = $faker->randomElement($array = array ('vacation','personal','exam'));
-            $randomName = $faker->sentence($nbWords = 2, $variableNbWords = true);
-            switch ($type) {
-                    case 'vacation':
-                        DB::table('events')->insert([
-                            'name' => "Fiesta $randomName",
-                            'type' => 'vacation',
-                            'all_day' => 1,
-                            'date_start' => date('Y-m-d', $timestamp_start),
-                            'date_end' => date('Y-m-d', $timestamp_start),
-                            'timestamp_start' => $timestamp_start,
-                            'timestamp_end' => $timestamp_start,
-                            'student_id' => $student_id,
-                        ]);
-                        break;
-                    case 'personal':
-                        DB::table('events')->insert([
-                            'name' => "Evento $randomName",
-                            'type' => 'personal',
-                            'all_day' => rand(0, 1),
-                            'date_start' => date('Y-m-d', $timestamp_start),
-                            'date_end' => date('Y-m-d', $timestamp_end),
-                            'timestamp_start' => $timestamp_start,
-                            'timestamp_end' => $timestamp_end,
-                            'student_id' => $student_id,
-                        ]);
-                        break;
-                    case 'exam':
-                        DB::table('events')->insert([
-                            'name' => "Examen $randomName",
-                            'type' => 'exam',
-                            'all_day' => 0,
-                            'date_start' => date('Y-m-d', $timestamp_start),
-                            'date_end' => date('Y-m-d', $timestamp_start + (60*60)),
-                            'timestamp_start' => $timestamp_start,
-                            'timestamp_end' => $timestamp_start + (60*60),
-                            'student_id' => $student_id,
-                            'subject_id' => rand(1, $tasks_repetitions),
-                        ]);
-                        break;
-
-                    default:
-                        break;
+                for ($i=1; $i <= 5; $i++) {
+                    $subject_id = array_rand($subject_ids);
+                    $this->createBlock(1646730000, 1646736000, $i, $student->id, $subject_id, $period_id);
+                    $this->createBlock(1646737200, 1646743200, $i, $student->id, $subject_id, $period_id);
+                    $this->createBlock(1646744400, 1646750400, $i, $student->id, $subject_id, $period_id);
                 }
             }
         }
+    }
+
+    public function createBlock($time_start, $time_end, $day, $student_id, $subject_id, $period_id) {
+        DB::table('blocks')->insert([
+            'time_start' => $time_start,
+            'time_end' => $time_end,
+            'day' => $day,
+            'student_id' => $student_id,
+            'subject_id' => $subject_id,
+            'period_id' => $period_id,
+        ]);
     }
 }
