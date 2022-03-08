@@ -135,18 +135,12 @@ class StudentsController extends Controller
                                         $task->date_handover = strtotime($google_task->dueDate->year.'-'.$google_task->dueDate->month.'-'.$google_task->dueDate->day);
                                     }
 
-                                    if($submission->assignedGrade) $task->mark = $submission->assignedGrade;
+                                    if($submission->assignedGrade) $task->mark = ($submission->assignedGrade / $google_task->maxPoints) * 10;
 
                                     switch ($submission->state) {
-                                        case 'TURNED_IN':
-                                            $task->completed = 1;
-                                            break;
-                                        case 'RETURNED':
-                                            $task->completed = 1;
-                                            break;
-                                        default:
-                                            $task->completed = 0;
-                                            break;
+                                        case 'TURNED_IN': $task->completed = 1; break;
+                                        case 'RETURNED': $task->completed = 1; break;
+                                        default: $task->completed = 0; break;
                                     }
                                     $task->save();
                                     unset($task);
@@ -158,18 +152,12 @@ class StudentsController extends Controller
                                     }
                                     if($google_task->description) $task_ref->description = $google_task->description;
 
-                                    if($submission->assignedGrade) $task_ref->mark = $submission->assignedGrade;
+                                    if($submission->assignedGrade) $task_ref->mark = ($submission->assignedGrade / $google_task->maxPoints) * 10;
 
                                     switch ($submission->state) {
-                                        case 'TURNED_IN':
-                                            $task_ref->completed = 1;
-                                            break;
-                                        case 'RETURNED':
-                                            $task_ref->completed = 1;
-                                            break;
-                                        default:
-                                        $task_ref->completed = 0;
-                                            break;
+                                        case 'TURNED_IN': $task_ref->completed = 1; break;
+                                        case 'RETURNED': $task_ref->completed = 1; break;
+                                        default: $task_ref->completed = 0; break;
                                     }
                                     $task_ref->save();
                                 }
@@ -259,7 +247,7 @@ class StudentsController extends Controller
                                 }
                             }
                             $average = $mark / $count;
-                            $averageMark['average'] = $average;
+                            $averageMark['average'] = round($average, 2);
                         }
                     } else {
                         $periodDays['days'] = 0;
@@ -447,7 +435,7 @@ class StudentsController extends Controller
                         }
                     }
                     $average = $mark / $count;
-                    $averageMark['average'] = $average;
+                    $averageMark['average'] = round($average, 2);
                 }
             } else {
                 $periodDays['days'] = 0;

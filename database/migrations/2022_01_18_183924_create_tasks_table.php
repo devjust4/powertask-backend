@@ -18,7 +18,7 @@ class CreateTasksTable extends Migration
             $table->string('name');
             $table->double('date_start')->nullable();
             $table->double('date_handover')->nullable();
-            $table->integer('mark')->nullable();
+            $table->float('mark')->nullable();
             $table->text('description')->nullable();
             $table->boolean('completed')->nullable();
             $table->string('google_id')->nullable();
