@@ -337,7 +337,7 @@ class StudentsController extends Controller
                 $periodDays['days'] = $days;
                 $periodDays['percentage'] = $percentage;
 
-                $subjects = $period->subjects()->where('deleted', true)->get();
+                $subjects = $period->subjects()->where('deleted', false)->get();
 
                 $tasks = array();
                 foreach ($subjects as $subject) {
