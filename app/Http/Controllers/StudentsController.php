@@ -203,6 +203,94 @@ class StudentsController extends Controller
                     }
                     unset($events);
 
+                    $sessions = $student->sessions()->get();
+                    if(!$sessions->isEmpty()) {
+                        $time = 0;                              //Time in seconds
+                        foreach ($sessions as $session) {
+                            $time += $session->total_time;
+                        }
+
+                        if($time) {
+                            $hours = intval($time / 3600);
+                            $minutes = intval(($time % 3600) / 60);
+                            // $seconds = intval(($time % 3600) % 60);
+
+                            $sessionTime['hours'] = $hours;
+                            $sessionTime['minutes'] = $minutes;
+                        }
+                    } else {
+                        $sessionTime['hours'] = 0;
+                        $sessionTime['minutes'] = 0;
+                    }
+
+                    $period = $student->periods()->where('date_start', '<=', time())->where('date_end', '>=', time())->first();
+                    if($period) {
+                        $start = $period->date_start;
+                        $finish = $period->date_end;
+
+                        $days = 0;
+                        $percentage = 0;
+
+                        $days = round(($finish - time()) / 86400);      //Precision can be switched, calculation returns double
+                        $percentage = floatval(round(((time() - $start) / ($finish - $start)), 2));         //Returns percentage with a decimal precision of 2 of the current period's completion
+
+                        $periodDays['days'] = $days;
+                        $periodDays['percentage'] = $percentage;
+
+                        $subjects = $period->subjects()->where('deleted', false)->get();
+
+                        $tasks = array();
+                        foreach ($subjects as $subject) {
+                            $allTasks = $subject->tasks()->get();
+                            if(!$allTasks->isEmpty()) {
+                                foreach ($allTasks as $task) {
+                                    array_push($tasks, $task);
+                                }
+                            }
+                        }
+                        if($tasks) {
+                            $mark = 0;
+                            $count = 0;
+
+                            foreach ($tasks as $task) {
+                                if($task->mark) {
+                                    $mark += $task->mark;
+                                    $count++;
+                                }
+                            }
+                            $average = $mark / $count;
+                            $averageMark['average'] = $average;
+                        }
+                    } else {
+                        $periodDays['days'] = 0;
+                        $periodDays['percentage'] = 0;
+                        $averageMark['average'] = 0;
+                    }
+
+                    $tasks = $student->tasks()->get();
+                    if(!$tasks->isEmpty()) {
+                        $completed = 0;
+                        $total = 0;
+
+                        foreach ($tasks as $task) {
+                            if($task->completed) {
+                                $completed++;
+                            }
+                            $total++;
+                        }
+
+                        $taskCounter['completed'] = $completed;
+                        $taskCounter['total'] = $total;
+                    } else {
+                        $taskCounter['completed'] = 0;
+                        $taskCounter['total'] = 0;
+                    }
+
+                    $widgets['sessionTime'] = $sessionTime;
+                    $widgets['periodDays'] = $periodDays;
+                    $widgets['averageMark'] = $averageMark;
+                    $widgets['taskCounter'] = $taskCounter;
+
                     $http_status_code = 200;
                 } else {
                     $response['response'] = "Student not found";
@@ -213,9 +301,9 @@ class StudentsController extends Controller
                 $http_status_code = 404;
             }
 
-
             if($http_status_code == 200) {
-                if($tasks_array) $student->tasks = $tasks_array;
+                $student->widgets = $widgets;
+                if($tasks) $student->tasks = $tasks_array;
                 if($subjects) $student->subjects = $subjects;
 
                 $periods = $student->periods()->get();
@@ -229,6 +317,7 @@ class StudentsController extends Controller
                 $sessions = $student->sessions()->get();
                 if(!$sessions->isEmpty()) $student->sessions = $sessions;
                 if($events_array) $student->events = $events_array;
+
 
                 $response['student'] = $student;
             }
@@ -385,10 +474,12 @@ class StudentsController extends Controller
                 $taskCounter['total'] = 0;
             }
 
-            $response['sessionTime'] = $sessionTime;
-            $response['periodDays'] = $periodDays;
-            $response['averageMark'] = $averageMark;
-            $response['taskCounter'] = $taskCounter;
+            $widgets['sessionTime'] = $sessionTime;
+            $widgets['periodDays'] = $periodDays;
+            $widgets['averageMark'] = $averageMark;
+            $widgets['taskCounter'] = $taskCounter;
+
+            $response['widgets'] = $widgets;
 
             $http_status_code = 200;
         } catch (\Throwable $th) {
