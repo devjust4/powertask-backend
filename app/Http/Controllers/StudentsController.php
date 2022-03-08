@@ -180,20 +180,19 @@ class StudentsController extends Controller
                         }
 
                         $tasks = $student->tasks()->get();
+                        $tasks_array = array();
                         if(!$tasks->isEmpty()) {
                             foreach ($tasks as $task) {
                                 if(!$task->subject()->where('deleted', true)->first()) {
                                     $task->subtasks = $task->subtasks()->get();
                                     $task->subject = $task->subject()->first();
-                                } else {
-                                    $task->forget();
+                                    array_push($tasks_array, $task);
                                 }
                             }
                         }
                     }
 
                     $events = $student->events()->get();
-
                     if(!$events->isEmpty()) {
                         foreach ($events as $event) {
                             if($event->type == "exam") {
@@ -216,7 +215,7 @@ class StudentsController extends Controller
 
 
             if($http_status_code == 200) {
-                if($tasks) $student->tasks = $tasks;
+                if($tasks_array) $student->tasks = $tasks_array;
                 if($subjects) $student->subjects = $subjects;
 
                 $periods = $student->periods()->get();
