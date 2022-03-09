@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Block;
 use App\Models\Contain;
 use App\Models\Period;
 use App\Models\Student;
 use App\Models\Subject;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class PeriodsController extends Controller
@@ -21,7 +23,8 @@ class PeriodsController extends Controller
                     'date_start' => 'required|numeric',
                     'date_start' => 'required|numeric|gte:date_start',
 
-                    'subjects' => 'required|json',
+                    'subjects' => 'required|array',
+                    'subjects.*.id' => 'required|numeric',
                 ]);
 
                 if (!$validator->fails()) {
@@ -30,11 +33,9 @@ class PeriodsController extends Controller
                     $continue = true;
                     $message = "";
 
-                    $subjects = json_decode($data->subjects);
-
-                    foreach ($subjects as $subject) {
-                        if(is_numeric($subject)) {
-                            $subject_exists = Subject::find($subject);
+                    foreach ($data->subjects as $subject) {
+                        if(is_numeric($subject->id)) {
+                            $subject_exists = Subject::find($subject->id);
                             if(!$subject_exists) {
                                 $continue = false;
                                 $message = "Subject by that id doesn't exist";
@@ -53,10 +54,10 @@ class PeriodsController extends Controller
                         $period->student_id = $request->student->id;
                         $period->save();
 
-                        foreach ($subjects as $subject) {
+                        foreach ($data->subjects as $subject) {
                             $contain = new Contain();
                             $contain->period_id = $period->id;
-                            $contain->subject_id = $subject;
+                            $contain->subject_id = $subject->id;
                             $contain->save();
                         }
 
@@ -84,10 +85,18 @@ class PeriodsController extends Controller
         if($data) {
             try {
                 $validator = Validator::make(json_decode($data, true), [
-                    'name' => 'sometimes|string',
-                    'date_start' => 'sometimes|numeric',
-                    'date_start' => 'sometimes|numeric|gte:date_start',
-                    'subjects' => 'sometimes|array',
+                    'name' => 'required|string',
+                    'date_start' => 'required|numeric',
+                    'date_start' => 'required|numeric|gte:date_start',
+
+                    'subjects' => 'required|array',
+                    'subjects.*.id' => 'required|numeric',
+
+                    'blocks' => 'required|array',
+                    'blocks.*.time_start' => 'required|numeric',
+                    'blocks.*.time_end' => 'required|numeric',
+                    'blocks.*.day' => 'required|numeric',
+                    'blocks.*.subject_id' => 'required|numeric|exists:subjects,id',
                 ]);
 
                 if (!$validator->fails()) {
@@ -97,17 +106,21 @@ class PeriodsController extends Controller
                         if(isset($data->name)) $period->name = $data->name;
                         if(isset($data->date_start)) $period->date_start = $data->date_start;
                         if(isset($data->date_end)) $period->date_end = $data->date_end;
-
                         $period->save();
 
+                        Contain::where('period_id', $period->id)->delete();
+                        $insert_data = array();
                         foreach($data->subjects as $subject) {
-                            if(!Contain::where('period_id', $period->id)->where('subject_id', $subject)->first()) {
-                                $contain = new Contain();
-                                $contain->period_id = $period->id;
-                                $contain->subject_id = $subject;
-                                $contain->save();
-                            }
+                            array_push($insert_data, ['period_id' => $period->id, 'subject_id' => $subject->id]);
                         }
+                        DB::table('contains')->insert($insert_data);
+
+                        Block::where('period_id', $period->id)->delete();
+                        $insert_data = array();
+                        foreach($data->subjects as $subject) {
+                            array_push($insert_data, ['time_start' => $data->blocks->time_start, 'time_end' => $data->blocks->time_end, 'day' => $data->blocks->day, 'subject_id' => $data->blocks->subject_id]);
+                        }
+                        DB::table('blocks')->insert($insert_data);
 
                         $response['response'] = "Period edited properly";
                         $http_status_code = 200;
