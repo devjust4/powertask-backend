@@ -96,7 +96,7 @@ class PeriodsController extends Controller
                     'blocks.*.time_start' => 'required|numeric',
                     'blocks.*.time_end' => 'required|numeric',
                     'blocks.*.day' => 'required|numeric',
-                    'blocks.*.subject_id' => 'required|numeric|exists:subjects,id',
+                    'blocks.*.subject.*.id' => 'required|numeric',
                 ]);
 
                 if (!$validator->fails()) {
