@@ -246,8 +246,10 @@ class StudentsController extends Controller
                                     $count++;
                                 }
                             }
-                            $average = $mark / $count;
-                            $averageMark['average'] = round($average, 1);
+                            if($count) {
+                                $average = $mark / $count;
+                                $averageMark['average'] = round($average, 1);
+                            }
                         }
                     } else {
                         $periodDays['days'] = 0;
