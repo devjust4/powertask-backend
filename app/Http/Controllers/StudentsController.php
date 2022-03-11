@@ -208,8 +208,12 @@ class StudentsController extends Controller
                 $periods = $student->periods()->get();
                 if(!$periods->isEmpty()) {
                     foreach($periods as $period) {
-                        $period->blocks = $period->blocks()->get();
-                        $student->subjects = $period->subjects()->get();
+                        $blocks = $period->blocks()->get();
+                        foreach($blocks as $block) {
+                            $block->subject = $block->subject()->first();
+                        }
+                        $period->blocks = $blocks;
+                        $period->subjects = $period->subjects()->get();
                     }
                     $student->periods = $periods;
                 }

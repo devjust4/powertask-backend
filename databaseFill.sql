@@ -9,9 +9,9 @@
 
 INSERT INTO `periods` (`name`, `date_start`, `date_end`, `created_at`, `updated_at`, `student_id`)
 VALUES
-	('Primer trimestre', 1631704831, 1640258431, NULL, NULL, STUDENT_ID),
-	('Segundo trimestre', 1641813631, 1648466431, NULL, NULL, STUDENT_ID),
-	('Tercer trimestre', 1648552831, 1655292031, NULL, NULL, STUDENT_ID);
+	('Primer trimestre', 1631704831, 1640258431, NULL, NULL, 1),
+	('Segundo trimestre', 1641813631, 1648466431, NULL, NULL, 1),
+	('Tercer trimestre', 1648552831, 1655292031, NULL, NULL, 1);
 
 INSERT INTO `contains` (`period_id`, `subject_id`, `created_at`, `updated_at`)
 VALUES
@@ -33,25 +33,25 @@ VALUES
 
 INSERT INTO `blocks` (`time_start`, `time_end`, `day`, `created_at`, `updated_at`, `student_id`, `subject_id`, `period_id`)
 VALUES
-	('09:00:00', '10:40:00', 1, NULL, NULL, STUDENT_ID, 1, 2),
-	('11:00:00', '12:40:00', 1, NULL, NULL, STUDENT_ID, 3, 2),
-	('13:00:00', '14:40:00', 1, NULL, NULL, STUDENT_ID, 4, 2),
+	('1646730000', '1646736000', 1, NULL, NULL, 1, 1, 2),
+	('1646737200', '1646743200', 1, NULL, NULL, 1, 3, 2),
+	('1646744400', '1646750400', 1, NULL, NULL, 1, 4, 2),
 
-	('09:00:00', '10:40:00', 2, NULL, NULL, STUDENT_ID, 4, 2),
-	('11:00:00', '12:40:00', 2, NULL, NULL, STUDENT_ID, 4, 2),
-	('13:00:00', '14:40:00', 1, NULL, NULL, STUDENT_ID, 2, 2),
+	('1646730000', '1646736000', 2, NULL, NULL, 1, 4, 2),
+	('1646737200', '1646743200', 2, NULL, NULL, 1, 4, 2),
+	('1646744400', '1646750400', 1, NULL, NULL, 1, 2, 2),
 
-	('09:00:00', '10:40:00', 3, NULL, NULL, STUDENT_ID, 5, 2),
-	('11:00:00', '12:40:00', 3, NULL, NULL, STUDENT_ID, 6, 2),
-	('13:00:00', '14:40:00', 3, NULL, NULL, STUDENT_ID, 6, 2),
+	('1646730000', '1646736000', 3, NULL, NULL, 1, 5, 2),
+	('1646737200', '1646743200', 3, NULL, NULL, 1, 6, 2),
+	('1646744400', '1646750400', 3, NULL, NULL, 1, 6, 2),
 
-	('09:00:00', '10:40:00', 4, NULL, NULL, STUDENT_ID, 7, 2),
-	('11:00:00', '12:40:00', 4, NULL, NULL, STUDENT_ID, 1, 2),
-	('13:00:00', '14:40:00', 4, NULL, NULL, STUDENT_ID, 2, 2),
+	('1646730000', '1646736000', 4, NULL, NULL, 1, 7, 2),
+	('1646737200', '1646743200', 4, NULL, NULL, 1, 1, 2),
+	('1646744400', '1646750400', 4, NULL, NULL, 1, 2, 2),
 
-	('09:00:00', '10:40:00', 5, NULL, NULL, STUDENT_ID, 3, 2),
-	('11:00:00', '12:40:00', 5, NULL, NULL, STUDENT_ID, 4, 2),
-	('13:00:00', '14:40:00', 5, NULL, NULL, STUDENT_ID, 7, 2);
+	('1646730000', '1646736000', 5, NULL, NULL, 1, 3, 2),
+	('1646737200', '1646743200', 5, NULL, NULL, 1, 4, 2),
+	('1646744400', '1646750400', 5, NULL, NULL, 1, 7, 2);
 
 
 
@@ -60,10 +60,10 @@ VALUES
 
 INSERT INTO `sessions` (`quantity`, `duration`, `total_time`, `created_at`, `updated_at`, `task_id`, `student_id`)
 VALUES
-	(2, 900, 1920, NULL, NULL, 1, STUDENT_ID),
-	(4, 900, 3600, NULL, NULL, 4, STUDENT_ID),
-	(5, 600, 3060, NULL, NULL, 2, STUDENT_ID),
-	(2, 1600, 3000, NULL, NULL, 3, STUDENT_ID);
+	(2, 900, 1920, NULL, NULL, 1, 1),
+	(4, 900, 3600, NULL, NULL, 4, 1),
+	(5, 600, 3060, NULL, NULL, 2, 1),
+	(2, 1600, 3000, NULL, NULL, 3, 1);
 
 
 -- EVENTOS
@@ -71,9 +71,9 @@ VALUES
 INSERT INTO `events` (`name`, `type`, `all_day`, `notes`, `timestamp_start`, `timestamp_end`, `created_at`, `updated_at`, `subject_id`, `student_id`)
 VALUES
 	('Dia del carmen', 'vacation', 1, 'Notas del dia del carmen', 1657929600, 1658015999, NULL, NULL, NULL, 1),
-	('Dia del padre', 'vacation', 1, 'Notas del dia del padre', 1655596800, 1655683199, NULL, NULL, NULL, STUDENT_ID),
-	('Dia de la madre', 'vacation', 1, 'Notas del dia de la madre', 1651363200, 1651449599, NULL, NULL, NULL, STUDENT_ID),
-	('Dia de la mujer', 'vacation', 1, 'Notas del dia de la mujer', 1646697600, 1646783999, NULL, NULL, NULL, STUDENT_ID),
-	('Exámen empresa', 'exam', 0, 'Notas de examen de empresa', 1647334800, 1647344400, NULL, NULL, 1, STUDENT_ID),
-	('Exámen matematicas', 'exam', 0, 'Notas de examen de matematicas', 1648900800, 1648906800, NULL, NULL, 2, STUDENT_ID),
-	('Cita medica', 'personal', 0, 'Notas de cita medica', 1652436600, 1652439600, NULL, NULL, NULL, STUDENT_ID);
+	('Dia del padre', 'vacation', 1, 'Notas del dia del padre', 1655596800, 1655683199, NULL, NULL, NULL, 1),
+	('Dia de la madre', 'vacation', 1, 'Notas del dia de la madre', 1651363200, 1651449599, NULL, NULL, NULL, 1),
+	('Dia de la mujer', 'vacation', 1, 'Notas del dia de la mujer', 1646697600, 1646783999, NULL, NULL, NULL, 1),
+	('Exámen empresa', 'exam', 0, 'Notas de examen de empresa', 1647334800, 1647344400, NULL, NULL, 1, 1),
+	('Exámen matematicas', 'exam', 0, 'Notas de examen de matematicas', 1648900800, 1648906800, NULL, NULL, 2, 1),
+	('Cita medica', 'personal', 0, 'Notas de cita medica', 1652436600, 1652439600, NULL, NULL, NULL, 1);
