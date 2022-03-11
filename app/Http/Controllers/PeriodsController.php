@@ -96,7 +96,7 @@ class PeriodsController extends Controller
                     'blocks.*.time_start' => 'required|numeric',
                     'blocks.*.time_end' => 'required|numeric',
                     'blocks.*.day' => 'required|numeric',
-                    'blocks.*.subject.*.id' => 'required|numeric',
+                    'blocks.*.subject.id' => 'required|numeric',
                 ]);
 
                 if (!$validator->fails()) {
@@ -117,8 +117,8 @@ class PeriodsController extends Controller
 
                         Block::where('period_id', $period->id)->delete();
                         $insert_data = array();
-                        foreach($data->subjects as $subject) {
-                            array_push($insert_data, ['time_start' => $data->blocks->time_start, 'time_end' => $data->blocks->time_end, 'day' => $data->blocks->day, 'subject_id' => $data->blocks->subject_id]);
+                        foreach($data->blocks as $block) {
+                            array_push($insert_data, ['time_start' => $block->time_start, 'time_end' => $block->time_end, 'day' => $block->day, 'subject_id' => $block->subject->id]);
                         }
                         DB::table('blocks')->insert($insert_data);
 
