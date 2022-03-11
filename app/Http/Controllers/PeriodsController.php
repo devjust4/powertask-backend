@@ -118,8 +118,9 @@ class PeriodsController extends Controller
                         Block::where('period_id', $period->id)->delete();
                         $insert_data = array();
                         foreach($data->blocks as $block) {
-                            array_push($insert_data, ['time_start' => $block->time_start, 'time_end' => $block->time_end, 'day' => $block->day, 'subject_id' => $block->subject->id]);
+                            array_push($insert_data, ['time_start' => $block->time_start, 'time_end' => $block->time_end, 'day' => $block->day, 'subject_id' => $block->subject->id, 'student_id' => $request->student->id, 'period_id' => $period->id]);
                         }
+                        // dd($insert_data);
                         DB::table('blocks')->insert($insert_data);
 
                         $response['response'] = "Period edited properly";
