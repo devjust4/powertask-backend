@@ -249,6 +249,8 @@ class StudentsController extends Controller
                             if($count) {
                                 $average = $mark / $count;
                                 $averageMark['average'] = round($average, 1);
+                            } else {
+                                $averageMark['average'] = 0;
                             }
                         }
                     } else {
