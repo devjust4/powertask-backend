@@ -24,49 +24,36 @@ class PeriodsController extends Controller
                     'date_start' => 'required|numeric|gte:date_start',
 
                     'subjects' => 'required|array',
-                    'subjects.*.id' => 'required|numeric',
+                    'subjects.*.id' => 'required|numeric|exists:subjects,id',
+                    'subjects.*.name' => 'required|string',
+                    'subjects.*.color' => 'required|string',
                 ]);
 
                 if (!$validator->fails()) {
                     $data = json_decode($data);
 
-                    $continue = true;
-                    $message = "";
+                    $period = new Period();
+                    $period->name = $data->name;
+                    $period->date_start = $data->date_start;
+                    $period->date_end = $data->date_end;
+                    $period->student_id = $request->student->id;
+                    $period->save();
 
                     foreach ($data->subjects as $subject) {
-                        if(is_numeric($subject->id)) {
-                            $subject_exists = Subject::find($subject->id);
-                            if(!$subject_exists) {
-                                $continue = false;
-                                $message = "Subject by that id doesn't exist";
-                            }
-                        } else {
-                            $continue = false;
-                            $message = "Subjects must be integers";
+                        $contain = new Contain();
+                        $contain->period_id = $period->id;
+                        $contain->subject_id = $subject->id;
+                        $contain->save();
+
+                        if($subject_ref = Subject::where('id', $subject->id)->first()) {
+                            $subject_ref->name = $subject->name;
+                            $subject_ref->color = $subject->color;
+                            $subject_ref->save();
                         }
                     }
 
-                    if($continue == true) {
-                        $period = new Period();
-                        $period->name = $data->name;
-                        $period->date_start = $data->date_start;
-                        $period->date_end = $data->date_end;
-                        $period->student_id = $request->student->id;
-                        $period->save();
-
-                        foreach ($data->subjects as $subject) {
-                            $contain = new Contain();
-                            $contain->period_id = $period->id;
-                            $contain->subject_id = $subject->id;
-                            $contain->save();
-                        }
-
-                        $response['id'] = $period->id;
-                        $http_status_code = 201;
-                    } else {
-                        $response['response'] = $message;
-                        $http_status_code = 400;
-                    }
+                    $response['id'] = $period->id;
+                    $http_status_code = 201;
                 } else {
                     $response['response'] = $validator->errors()->first();
                     $http_status_code = 400;
@@ -90,7 +77,9 @@ class PeriodsController extends Controller
                     'date_start' => 'required|numeric|gte:date_start',
 
                     'subjects' => 'required|array',
-                    'subjects.*.id' => 'required|numeric',
+                    'subjects.*.id' => 'required|numeric|exists:subjects,id',
+                    'subjects.*.name' => 'required|string',
+                    'subjects.*.color' => 'required|string',
 
                     'blocks' => 'required|array',
                     'blocks.*.time_start' => 'required|numeric',
@@ -112,6 +101,11 @@ class PeriodsController extends Controller
                         $insert_data = array();
                         foreach($data->subjects as $subject) {
                             array_push($insert_data, ['period_id' => $period->id, 'subject_id' => $subject->id]);
+                            if($subject_ref = Subject::where('id', $subject->id)->first()) {
+                                $subject_ref->name = $subject->name;
+                                $subject_ref->color = $subject->color;
+                                $subject_ref->save();
+                            }
                         }
                         DB::table('contains')->insert($insert_data);
 
