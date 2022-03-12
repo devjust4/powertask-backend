@@ -24,7 +24,7 @@ class PeriodsController extends Controller
                     'date_start' => 'required|numeric|gte:date_start',
 
                     'subjects' => 'required|array',
-                    'subjects.*.id' => 'required|numeric|exists:subjects,id',
+                    'subjects.*.id' => 'required|numeric',
                     'subjects.*.name' => 'required|string',
                     'subjects.*.color' => 'required|string',
                 ]);
@@ -77,7 +77,7 @@ class PeriodsController extends Controller
                     'date_start' => 'required|numeric|gte:date_start',
 
                     'subjects' => 'required|array',
-                    'subjects.*.id' => 'required|numeric|exists:subjects,id',
+                    'subjects.*.id' => 'required|numeric',
                     'subjects.*.name' => 'required|string',
                     'subjects.*.color' => 'required|string',
 
