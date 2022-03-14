@@ -164,7 +164,7 @@ class TasksController extends Controller
                             $submission = $service->courses_courseWork_studentSubmissions->listCoursesCourseWorkStudentSubmissions($google_task->courseId, $google_task->id);
                             $submission = $submission->studentSubmissions[0];
 
-                            $task_ref = Task::where('google_id', $google_task->id)->first();
+                            $task_ref = Task::where('google_id', $google_task->id)->where('student_id', $student->id)->first();
                             if(!$task_ref) {
                                 $task = new Task();
                                 $task->student_id = $request->student->id;
