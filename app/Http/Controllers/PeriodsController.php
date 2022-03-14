@@ -81,7 +81,7 @@ class PeriodsController extends Controller
                     'subjects.*.name' => 'required|string',
                     'subjects.*.color' => 'required|string',
 
-                    'blocks' => 'required|array',
+                    'blocks' => 'sometimes|array',
                     'blocks.*.time_start' => 'required|numeric',
                     'blocks.*.time_end' => 'required|numeric',
                     'blocks.*.day' => 'required|numeric',
@@ -110,13 +110,14 @@ class PeriodsController extends Controller
                         }
                         DB::table('contains')->insert($insert_data);
 
-                        Block::where('period_id', $period->id)->delete();
-                        $insert_data = array();
-                        foreach($data->blocks as $block) {
-                            array_push($insert_data, ['time_start' => $block->time_start, 'time_end' => $block->time_end, 'day' => $block->day, 'subject_id' => $block->subject->id, 'student_id' => $request->student->id, 'period_id' => $period->id]);
+                        if($data->blocks) {
+                            Block::where('period_id', $period->id)->delete();
+                            $insert_data = array();
+                            foreach($data->blocks as $block) {
+                                array_push($insert_data, ['time_start' => $block->time_start, 'time_end' => $block->time_end, 'day' => $block->day, 'subject_id' => $block->subject->id, 'student_id' => $request->student->id, 'period_id' => $period->id]);
+                            }
+                            DB::table('blocks')->insert($insert_data);
                         }
-
-                        DB::table('blocks')->insert($insert_data);
 
                         $response['response'] = "Period edited properly";
                         $http_status_code = 200;
