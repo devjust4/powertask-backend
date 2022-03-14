@@ -143,7 +143,7 @@ class TasksController extends Controller
                 $subjects = $student->subjects()->get();
 
                 if(!$subjects->isEmpty()) {
-                    if($student->subjects()->where('google_id', '<>', null)->first()) {
+                    if($student->subjects()->where('google_id', '<>', null)->where('deleted', false)->first()) {
                         $client = new \Google\Client();
                         $client->setAuthConfig('../laravel_id_secret.json');
                         $client->addScope('https://www.googleapis.com/auth/classroom.course-work.readonly');
@@ -151,8 +151,13 @@ class TasksController extends Controller
                         $client->setAccessToken($user->token);
 
                         $service = new Classroom($client);
+                        unset($client);
+                        $google_tasks = array();
                         foreach ($subjects as $subject) {
-                            $google_tasks = $service->courses_courseWork->listCoursesCourseWork($subject->google_id)->courseWork;
+                            $courseworks = $service->courses_courseWork->listCoursesCourseWork($subject->google_id)->courseWork;
+                            foreach ($courseworks as $coursework) {
+                                array_push($google_tasks, $coursework);
+                            }
                         }
 
                         foreach ($google_tasks as $google_task) {
@@ -172,20 +177,15 @@ class TasksController extends Controller
                                     $task->date_handover = strtotime($google_task->dueDate->year.'-'.$google_task->dueDate->month.'-'.$google_task->dueDate->day);
                                 }
 
-                                if($submission->assignedGrade) $task->mark = $submission->assignedGrade;
+                                if($submission->assignedGrade) $task->mark = ($submission->assignedGrade / $google_task->maxPoints) * 10;
 
                                 switch ($submission->state) {
-                                    case 'TURNED_IN':
-                                        $task->completed = 1;
-                                        break;
-                                    case 'RETURNED':
-                                        $task->completed = 1;
-                                        break;
-                                    default:
-                                        $task->completed = 0;
-                                        break;
+                                    case 'TURNED_IN': $task->completed = 1; break;
+                                    case 'RETURNED': $task->completed = 1; break;
+                                    default: $task->completed = 0; break;
                                 }
                                 $task->save();
+                                unset($task);
                             } else {
                                 $task_ref->name = $google_task->title;
                                 if($google_task->description) $task_ref->description = $google_task->description;
@@ -194,30 +194,29 @@ class TasksController extends Controller
                                 }
                                 if($google_task->description) $task_ref->description = $google_task->description;
 
-                                if($submission->assignedGrade) $task_ref->mark = $submission->assignedGrade;
+                                if($submission->assignedGrade) $task_ref->mark = ($submission->assignedGrade / $google_task->maxPoints) * 10;
 
                                 switch ($submission->state) {
-                                    case 'TURNED_IN':
-                                        $task_ref->completed = 1;
-                                        break;
-                                    case 'RETURNED':
-                                        $task_ref->completed = 1;
-                                        break;
-                                    default:
-                                    $task_ref->completed = 0;
-                                        break;
+                                    case 'TURNED_IN': $task_ref->completed = 1; break;
+                                    case 'RETURNED': $task_ref->completed = 1; break;
+                                    default: $task_ref->completed = 0; break;
                                 }
                                 $task_ref->save();
                             }
+                            unset($task_ref);
+                            unset($submission);
                         }
+                        unset($google_tasks);
                     }
 
                     $tasks = $student->tasks()->get();
+                    $tasks_array = array();
                     if(!$tasks->isEmpty()) {
                         foreach ($tasks as $task) {
-                            if($task->subject()->where('deleted', false)->first() || $task->subject()->first() == null) {
+                            if(!$task->subject()->where('deleted', true)->first()) {
                                 $task->subtasks = $task->subtasks()->get();
                                 $task->subject = $task->subject()->first();
+                                array_push($tasks_array, $task);
                             }
                         }
 
@@ -231,7 +230,6 @@ class TasksController extends Controller
                     $response['response'] = "Student doesn't have subjects";
                     $http_status_code = 400;
                 }
-
             } else {
                 $response['response'] = "Student by that id doesn't exist.";
                 $http_status_code = 404;
