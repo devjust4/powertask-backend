@@ -173,7 +173,7 @@ class PeriodsController extends Controller
                         if($blocks = $period->blocks()->get()) {
                             $period->blocks = $blocks;
                             foreach($blocks as $block) {
-                                $period->subject = $block->subject()->first();
+                                $block->subject = $block->subject()->first();
                             }
                         }
                     }
