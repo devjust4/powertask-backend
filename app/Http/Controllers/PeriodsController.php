@@ -104,6 +104,7 @@ class PeriodsController extends Controller
                             if($subject_ref = Subject::where('id', $subject->id)->first()) {
                                 $subject_ref->name = $subject->name;
                                 $subject_ref->color = $subject->color;
+                                $subject_ref->deleted = $subject_ref->deleted;
                                 $subject_ref->save();
                             }
                         }
