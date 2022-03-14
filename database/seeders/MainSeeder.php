@@ -53,10 +53,9 @@ class MainSeeder extends Seeder
                     }
 
                     for ($i=1; $i <= 5; $i++) {
-                        $subject_id = array_rand($subject_ids);
-                        $this->createBlock(1646730000, 1646736000, $i, $student->id, $subject_id, $period_id);
-                        $this->createBlock(1646737200, 1646743200, $i, $student->id, $subject_id, $period_id);
-                        $this->createBlock(1646744400, 1646750400, $i, $student->id, $subject_id, $period_id);
+                        $this->createBlock(1646730000, 1646736000, $i, $student->id, $subject_ids[array_rand($subject_ids)], $period_id);
+                        $this->createBlock(1646737200, 1646743200, $i, $student->id, $subject_ids[array_rand($subject_ids)], $period_id);
+                        $this->createBlock(1646744400, 1646750400, $i, $student->id, $subject_ids[array_rand($subject_ids)], $period_id);
                     }
                 }
 
@@ -67,35 +66,23 @@ class MainSeeder extends Seeder
                     for ($i=1; $i <= 10; $i++) {
                         $quantity = rand(2,4);
                         $duration = rand(600,900);
-                        $task = array_rand($tasks);
-                        do {
-                            if($task != 0) {
-                                DB::table('sessions')->insert([
-                                    'quantity' => $quantity,
-                                    'duration' => $duration,
-                                    'total_time' => ($quantity*$duration)+rand(0, 60),
-                                    'task_id' => $task,
-                                    'student_id' => $student->id,
-                                ]);
-                            }
-                        } while ($task == 0);
+                        DB::table('sessions')->insert([
+                            'quantity' => $quantity,
+                            'duration' => $duration,
+                            'total_time' => ($quantity*$duration)+rand(0, 60),
+                            'task_id' => $tasks[array_rand($tasks)],
+                            'student_id' => $student->id,
+                        ]);
                     }
                 }
 
                 if($student->events()->get()->isEmpty()) {
-                    $examen1 = array_rand($subject_ids);
-                    $examen2 = array_rand($subject_ids);
-
                     $this->createEvent('Dia del carmen', 'vacation', 1, 'Notas del dia del carmen', 1657929600, 1658015999, NULL, NULL, NULL, $student->id);
                     $this->createEvent('Dia del padre', 'vacation', 1, 'Notas del dia del padre', 1655596800, 1655683199, NULL, NULL, NULL, $student->id);
                     $this->createEvent('Dia de la madre', 'vacation', 1, 'Notas del dia de la madre', 1651363200, 1651449599, NULL, NULL, NULL, $student->id);
                     $this->createEvent('Dia de la mujer', 'vacation', 1, 'Notas del dia de la mujer', 1646697600, 1646783999, NULL, NULL, NULL, $student->id);
-                    do {
-                        if($examen1 != 0) $this->createEvent('Exámen empresa', 'exam', 0, 'Notas de examen de empresa', 1647334800, 1647344400, NULL, NULL, $examen1, $student->id);
-                    } while ($examen1 == 0);
-                    do {
-                        if($examen2 != 0) $this->createEvent('Exámen matematicas', 'exam', 0, 'Notas de examen de matematicas', 1648900800, 1648906800, NULL, NULL, $examen2, $student->id);
-                    } while ($examen2 == 0);
+                    $this->createEvent('Exámen empresa', 'exam', 0, 'Notas de examen de empresa', 1647334800, 1647344400, NULL, NULL, $subject_ids[array_rand($subject_ids)], $student->id);
+                    $this->createEvent('Exámen matematicas', 'exam', 0, 'Notas de examen de matematicas', 1648900800, 1648906800, NULL, NULL, $subject_ids[array_rand($subject_ids)], $student->id);
                     $this->createEvent('Cita medica', 'personal', 0, 'Notas de cita medica', 1652436600, 1652439600, NULL, NULL, NULL, $student->id);
                 }
             }
@@ -103,18 +90,14 @@ class MainSeeder extends Seeder
     }
 
     public function createBlock($time_start, $time_end, $day, $student_id, $subject_id, $period_id) {
-        do {
-            if($subject_id != 0) {
-                DB::table('blocks')->insert([
-                    'time_start' => $time_start,
-                    'time_end' => $time_end,
-                    'day' => $day,
-                    'student_id' => $student_id,
-                    'subject_id' => $subject_id,
-                    'period_id' => $period_id,
-                ]);
-            }
-        } while ($subject_id == 0);
+        DB::table('blocks')->insert([
+            'time_start' => $time_start,
+            'time_end' => $time_end,
+            'day' => $day,
+            'student_id' => $student_id,
+            'subject_id' => $subject_id,
+            'period_id' => $period_id,
+        ]);
     }
     public function createEvent($name, $type, $all_day, $notes, $timestamp_start, $timestamp_end, $nullable1, $nullable2, $subject_id, $student_id) {
         DB::table('events')->insert([
