@@ -114,7 +114,7 @@ class PeriodsController extends Controller
                         foreach($data->blocks as $block) {
                             array_push($insert_data, ['time_start' => $block->time_start, 'time_end' => $block->time_end, 'day' => $block->day, 'subject_id' => $block->subject->id, 'student_id' => $request->student->id, 'period_id' => $period->id]);
                         }
-                        // dd($insert_data);
+
                         DB::table('blocks')->insert($insert_data);
 
                         $response['response'] = "Period edited properly";
@@ -170,7 +170,12 @@ class PeriodsController extends Controller
                 $periods = $student->periods()->get();
                 if(!$periods->isEmpty()) {
                     foreach ($periods as $period) {
-                        $period->blocks = $period->blocks()->get();
+                        if($blocks = $period->blocks()->get()) {
+                            $period->blocks = $blocks;
+                            foreach($blocks as $block) {
+                                $period->subject = $block->subject()->first();
+                            }
+                        }
                     }
                     $response['periods'] = $periods;
                     $http_status_code = 200;
