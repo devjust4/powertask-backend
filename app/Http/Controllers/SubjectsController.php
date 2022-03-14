@@ -65,15 +65,37 @@ class SubjectsController extends Controller
                     $service = new Classroom($client);
                     $courses = $service->courses->listCourses()->courses;
 
-                    foreach ($courses as $course) {
-                        if(!Subject::where('google_id', $course->id)->where('student_id', $student->id)->first()) {
-                            $subject = new Subject();
-                            $subject->name = $course->name;
-                            $subject->google_id = $course->id;
-                            $subject->student_id = $student->id;
+                    $subjects = Subject::all();
+                    if(!$subjects->isEmpty()) {
+                        foreach ($subjects as $subject) {
+                            $exists = false;
+                            foreach ($courses as $course) {
+                                if($subject->google_id == $course->id) {
+                                    $exists = true;
+                                }
+                            }
+                            if(!$exists) {
+                                $subject->deleted = true;
+                            } else {
+                                $subject->deleted = false;
+                            }
                             $subject->save();
                         }
                     }
+                    foreach ($courses as $course) {
+                        if(!$course->enrollmentCode) {
+                            if(!Subject::where('google_id', $course->id)->where('student_id', $student->id)->first()) {
+                                $subject = new Subject();
+                                $subject->name = $course->name;
+                                $subject->google_id = $course->id;
+                                $subject->student_id = $student->id;
+                                $subject->save();
+                                unset($subject);
+                            }
+                        }
+                    }
+                    unset($courses);
+
                     $response['subjects'] = $student->subjects()->where('deleted', false)->get();
                     $http_status_code = 200;
                 } else {
