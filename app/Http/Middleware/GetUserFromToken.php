@@ -27,14 +27,18 @@ class GetUserFromToken
                     return $next($request);
                 } else {
                     Log::channel('errors')->info('[app/Http/Middleware/GetUserFromToken.php] Token not valid');
-                    return response('Token not valid', 401);
+                    $response['response'] = "Token not valid";
+                    $http_status_code = 401;
                 }
             } else {
                 Log::channel('errors')->info('[app/Http/Middleware/GetUserFromToken.php] No token');
-                return response('No token', 412);
+                $response['response'] = "No token";
+                $http_status_code = 412;
             }
         } catch (\Throwable $th) {
-            return response($th->getMessage(), 500);
+            $response['response'] = $th->getMessage();
+            $http_status_code = 500;
         }
+        return response()->json($response)->setStatusCode($http_status_code);
     }
 }
