@@ -1,6 +1,6 @@
 # Powertask Backend Documentation
 
-Here you will find the [full documentation]() for the backend of [Powertask](https://powertask.kurokiji.com/public).
+Here you will find the [full documentation]() for the backend of [Powertask](http://powertask.kurokiji.com/public).
 
 
 ## Entity relation diagram
