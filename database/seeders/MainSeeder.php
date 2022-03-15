@@ -23,24 +23,24 @@ class MainSeeder extends Seeder
             $subject_ids = array();
             if(!$student->tasks()->get()->isEmpty() && !$student->subjects()->get()->isEmpty()) {
                 if($student->periods()->get()->isEmpty()) {
-                    DB::table('periods')->insert([
-                        'name' => "Primer trimestre",
-                        'date_start' => "1631704831",
-                        'date_end' => "1640258431",
-                        'student_id' => $student->id,
-                    ]);
+                    // DB::table('periods')->insert([
+                    //     'name' => "Primer trimestre",
+                    //     'date_start' => "1631704831",
+                    //     'date_end' => "1640258431",
+                    //     'student_id' => $student->id,
+                    // ]);
                     DB::table('periods')->insert([
                         'name' => "Segundo trimestre",
                         'date_start' => "1641813631",
                         'date_end' => "1648466431",
                         'student_id' => $student->id,
                     ]);
-                    DB::table('periods')->insert([
-                        'name' => "Tercer trimestre",
-                        'date_start' => "1648552831",
-                        'date_end' => "1655292031",
-                        'student_id' => $student->id,
-                    ]);
+                    // DB::table('periods')->insert([
+                    //     'name' => "Tercer trimestre",
+                    //     'date_start' => "1648552831",
+                    //     'date_end' => "1655292031",
+                    //     'student_id' => $student->id,
+                    // ]);
 
                     $period_id = $student->periods()->where('name', 'Segundo trimestre')->first()->id;
 
