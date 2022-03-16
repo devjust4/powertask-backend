@@ -267,16 +267,21 @@ class TasksController extends Controller
     public function toggleCheck(Request $request, $id) {
         try {
             if ($task = Task::find($id)) {
-                if($task->completed == true) {
-                    $task->completed = false;
-                    $task->save();
-                    $response['response'] = 0;
-                    $http_status_code = 200;
+                if($task->google_id != null) {
+                    if($task->completed == true) {
+                        $task->completed = false;
+                        $task->save();
+                        $response['response'] = 0;
+                        $http_status_code = 200;
+                    } else {
+                        $task->completed = true;
+                        $task->save();
+                        $response['response'] = 1;
+                        $http_status_code = 200;
+                    }
                 } else {
-                    $task->completed = true;
-                    $task->save();
-                    $response['response'] = 1;
-                    $http_status_code = 200;
+                    $response['response'] = "Can't toggle this task.";
+                    $http_status_code = 400;
                 }
             } else {
                 $response['response'] = "Task by that id doesn't exist.";
