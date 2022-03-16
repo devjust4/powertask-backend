@@ -267,7 +267,7 @@ class TasksController extends Controller
     public function toggleCheck(Request $request, $id) {
         try {
             if ($task = Task::find($id)) {
-                if($task->google_id != null) {
+                if($task->google_id == null) {
                     if($task->completed == true) {
                         $task->completed = false;
                         $task->save();
