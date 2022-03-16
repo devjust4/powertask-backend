@@ -244,6 +244,9 @@ class TasksController extends Controller
         try {
             if ($task = Task::find($id)) {
                 if($task->google_id == null) {
+                    foreach($task->subtasks()->get() as $subtask) {
+                        $subtask->delete();
+                    }
                     $task->delete();
                     $response['response'] = "Task deleted successfully.";
                     $http_status_code = 200;
