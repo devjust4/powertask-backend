@@ -17,21 +17,25 @@ class SubjectsController extends Controller
         if($data) {
             try {
                 $validator = Validator::make(json_decode($data, true), [
-                    'name' => 'string',
-                    'color' => 'string',
+                    'name' => 'sometimes|string',
+                    'color' => 'sometimes|string',
                 ]);
 
                 if (!$validator->fails()) {
                     $data = json_decode($data);
 
                     if($subject = Subject::find($id)) {
-                        if(isset($data->name)) $subject->name = $data->name;
-                        if(isset($data->color)) $subject->color = $data->color;
+                        if($subject->student()->first()->id == $request->student->id) {
+                            if(isset($data->name)) $subject->name = $data->name;
+                            if(isset($data->color)) $subject->color = $data->color;
+                            $subject->save();
 
-                        $subject->save();
-
-                        $response['response'] = "Subject edited properly";
-                        $http_status_code = 200;
+                            $response['response'] = "Subject edited properly";
+                            $http_status_code = 200;
+                        } else {
+                            $response['response'] = "Student doesn't have this subject";
+                            $http_status_code = 400;
+                        }
                     } else {
                         $response['response'] = "Subject by that id doesn't exist.";
                         $http_status_code = 404;

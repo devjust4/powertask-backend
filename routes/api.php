@@ -63,12 +63,12 @@ Route::middleware('checkApiToken')->group(function () {
         Route::get('list', [SessionsController::class, 'list']);
     });
 
-    Route::prefix('block')->group(function() {
-        Route::post('create/{id}', [BlocksController::class, 'create']);
-        Route::put('edit/{id}', [BlocksController::class, 'edit']);
-        Route::delete('delete/{id}', [BlocksController::class, 'delete']);
-        Route::get('list/{id}', [BlocksController::class, 'list']);
-    });
+    // Route::prefix('block')->group(function() {
+    //     Route::post('create/{id}', [BlocksController::class, 'create']);
+    //     Route::put('edit/{id}', [BlocksController::class, 'edit']);
+    //     Route::delete('delete/{id}', [BlocksController::class, 'delete']);
+    //     Route::get('list/{id}', [BlocksController::class, 'list']);
+    // });
 
     Route::prefix('event')->group(function() {
         Route::post('create', [EventsController::class, 'create']);
@@ -91,10 +91,10 @@ Route::middleware('checkApiToken')->group(function () {
 
         Route::prefix('widget')->group(function() {
             Route::get('getAllWidgetInfo', [StudentsController::class, 'getAllWidgetInfo']);
-            Route::get('totalSessionTime', [StudentsController::class, 'widget_totalSessionTime']);
-            Route::get('daysUntilPeriodEnds', [StudentsController::class, 'widget_daysUntilPeriodEnds']);
-            Route::get('completedTasks', [StudentsController::class, 'widget_completedTasks']);
-            Route::get('markAverage', [StudentsController::class, 'widget_markAverage']);
+            // Route::get('totalSessionTime', [StudentsController::class, 'widget_totalSessionTime']);
+            // Route::get('daysUntilPeriodEnds', [StudentsController::class, 'widget_daysUntilPeriodEnds']);
+            // Route::get('completedTasks', [StudentsController::class, 'widget_completedTasks']);
+            // Route::get('markAverage', [StudentsController::class, 'widget_markAverage']);
         });
     });
 });

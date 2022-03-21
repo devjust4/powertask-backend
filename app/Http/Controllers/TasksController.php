@@ -34,10 +34,12 @@ class TasksController extends Controller
                     $task->student_id = $request->student->id;
 
                     if(isset($data->subject_id)) {
-                        if (Subject::find($data->subject_id)) {
+                        $subject = Subject::find($data->subject_id);
+                        if($subject->student_id == $request->student->id) {
                             $task->subject_id = $data->subject_id;
                         } else {
-                            return response('Subject id doesn\'t match any subject')->setStatusCode(400);
+                            $response['response'] = "User doesn't have that subject";
+                            return response()->json($response)->setStatusCode(400);
                         }
                     }
                     $task->save();
@@ -97,7 +99,15 @@ class TasksController extends Controller
                         } else {
                             $task->completed = false;
                         }
-                        if(isset($data->subject_id)) $task->subject_id = $data->subject_id;
+                        if(isset($data->subject_id)) {
+                            $subject = Subject::find($data->subject_id);
+                            if($subject->student_id == $request->student->id) {
+                                $task->subject_id = $data->subject_id;
+                            } else {
+                                $response['response'] = "User doesn't have that subject";
+                                return response()->json($response)->setStatusCode(400);
+                            }
+                        }
                         $task->save();
 
                         foreach ($data->subtasks as $subtask_data) {
@@ -243,16 +253,21 @@ class TasksController extends Controller
     public function delete(Request $request, $id) {
         try {
             if ($task = Task::find($id)) {
-                if($task->google_id == null) {
-                    foreach($task->subtasks()->get() as $subtask) {
-                        $subtask->delete();
+                if($task->student()->first()->id == $request->student->id) {
+                    if($task->google_id == null) {
+                        foreach($task->subtasks()->get() as $subtask) {
+                            $subtask->delete();
+                        }
+                        $task->delete();
+                        $response['response'] = "Task deleted successfully.";
+                        $http_status_code = 200;
+                    } else {
+                        $response['response'] = "Task can't be deleted.";
+                        $http_status_code = 403;
                     }
-                    $task->delete();
-                    $response['response'] = "Task deleted successfully.";
-                    $http_status_code = 200;
                 } else {
-                    $response['response'] = "Task can't be deleted.";
-                    $http_status_code = 403;
+                    $response['response'] = "Student doesn't have this task.";
+                    $http_status_code = 400;
                 }
             } else {
                 $response['response'] = "Task by that id doesn't exist.";
@@ -267,20 +282,25 @@ class TasksController extends Controller
     public function toggleCheck(Request $request, $id) {
         try {
             if ($task = Task::find($id)) {
-                if($task->google_id == null) {
-                    if($task->completed == true) {
-                        $task->completed = false;
-                        $task->save();
-                        $response['response'] = 0;
-                        $http_status_code = 200;
+                if($task->student()->first()->id == $request->student->id) {
+                    if($task->google_id == null) {
+                        if($task->completed == true) {
+                            $task->completed = false;
+                            $task->save();
+                            $response['response'] = 0;
+                            $http_status_code = 200;
+                        } else {
+                            $task->completed = true;
+                            $task->save();
+                            $response['response'] = 1;
+                            $http_status_code = 200;
+                        }
                     } else {
-                        $task->completed = true;
-                        $task->save();
-                        $response['response'] = 1;
-                        $http_status_code = 200;
+                        $response['response'] = "Can't toggle this task.";
+                        $http_status_code = 400;
                     }
                 } else {
-                    $response['response'] = "Can't toggle this task.";
+                    $response['response'] = "User doesn't have this task.";
                     $http_status_code = 400;
                 }
             } else {

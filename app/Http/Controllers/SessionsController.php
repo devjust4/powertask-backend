@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Session;
 use App\Models\Student;
+use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -27,7 +28,14 @@ class SessionsController extends Controller
                     $session->quantity = $data->quantity;
                     $session->duration = $data->duration;
                     $session->total_time = $data->total_time;
-                    if(isset($data->task_id)) $session->task_id = $data->task_id;
+                    if(isset($data->task_id)) {
+                        if(Task::find($data->task_id)->student()->first()->id == $request->student->id) {
+                            $session->task_id = $data->task_id;
+                        } else {
+                            $response['response'] = "Student doesn't have task";
+                            return response()->json($response)->setStatusCode(400);
+                        }
+                    }
                     $session->student_id = $request->student->id;
 
                     $session->save();
@@ -50,9 +58,14 @@ class SessionsController extends Controller
     public function delete(Request $request, $id) {
         try {
             if ($session = Session::find($id)) {
-                $session->delete();
-                $response['response'] = "Session deleted successfully.";
-                $http_status_code = 200;
+                if($session->student()->first()->id == $request->student->id) {
+                    $session->delete();
+                    $response['response'] = "Session deleted successfully.";
+                    $http_status_code = 200;
+                } else {
+                    $response['response'] = "Student doesn't have session.";
+                    $http_status_code = 400;
+                }
             } else {
                 $response['response'] = "Session by that id doesn't exist.";
                 $http_status_code = 404;

@@ -40,15 +40,18 @@ class PeriodsController extends Controller
                     $period->save();
 
                     foreach ($data->subjects as $subject) {
-                        $contain = new Contain();
-                        $contain->period_id = $period->id;
-                        $contain->subject_id = $subject->id;
-                        $contain->save();
+                        $subject = Subject::find($subject->id);
+                        if($subject->student()->first()->id == $request->student->id) {
+                            $contain = new Contain();
+                            $contain->period_id = $period->id;
+                            $contain->subject_id = $subject->id;
+                            $contain->save();
 
-                        if($subject_ref = Subject::where('id', $subject->id)->first()) {
-                            $subject_ref->name = $subject->name;
-                            $subject_ref->color = $subject->color;
-                            $subject_ref->save();
+                            if($subject_ref = Subject::where('id', $subject->id)->first()) {
+                                $subject_ref->name = $subject->name;
+                                $subject_ref->color = $subject->color;
+                                $subject_ref->save();
+                            }
                         }
                     }
 
@@ -115,10 +118,9 @@ class PeriodsController extends Controller
                             $insert_data = array();
                             foreach($data->blocks as $block) {
                                 array_push($insert_data, ['time_start' => $block->time_start, 'time_end' => $block->time_end, 'day' => $block->day, 'subject_id' => $block->subject->id, 'student_id' => $request->student->id, 'period_id' => $period->id]);
+                                DB::table('blocks')->insert($insert_data);
                             }
-                            DB::table('blocks')->insert($insert_data);
                         }
-
                         $response['response'] = "Period edited properly";
                         $http_status_code = 200;
                     } else {
@@ -141,20 +143,24 @@ class PeriodsController extends Controller
     public function delete(Request $request, $id) {
         try {
             if ($period = Period::find($id)) {
-
-                if($blocks = $period->blocks()->get()) {
-                    foreach ($blocks as $block) {
-                        $block->delete();
+                if($period->student()->first()->id == $request->student->id) {
+                    if($blocks = $period->blocks()->get()) {
+                        foreach ($blocks as $block) {
+                            $block->delete();
+                        }
                     }
-                }
-                if($subjects = $period->subjects()->get()) {
-                    foreach ($subjects as $subject) {
-                        Contain::where('period_id', $id)->where('subject_id', $subject->id)->first()->delete();
+                    if($subjects = $period->subjects()->get()) {
+                        foreach ($subjects as $subject) {
+                            Contain::where('period_id', $id)->where('subject_id', $subject->id)->first()->delete();
+                        }
                     }
+                    $period->delete();
+                    $response['response'] = "Period deleted successfully.";
+                    $http_status_code = 200;
+                } else {
+                    $response['response'] = "Student doesn't have this period.";
+                    $http_status_code = 400;
                 }
-                $period->delete();
-                $response['response'] = "Period deleted successfully.";
-                $http_status_code = 200;
             } else {
                 $response['response'] = "Period by that id doesn't exist.";
                 $http_status_code = 404;

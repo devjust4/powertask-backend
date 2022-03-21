@@ -24,16 +24,21 @@ class SubtasksController extends Controller
                     $subtask = new Subtask();
                     $subtask->name = $data->name;
 
-                    if (Task::find($id)) {
-                        $subtask->task_id = $id;
+                    if($task = Task::find($id)) {
+                        if($task->student()->first()->id == $request->student->id) {
+                            $subtask->task_id = $id;
+                            $subtask->save();
+
+                            $response['id'] = $subtask->id;
+                            $http_status_code = 201;
+                        } else {
+                            $response['response'] = "Student doesn't have this task";
+                            $http_status_code = 400;
+                        }
                     } else {
-                        return response('Task id doesn\'t match any task')->setStatusCode(400);
+                        $response['response'] = "Task id doesn't match any task";
+                        $http_status_code = 400;
                     }
-
-                    $subtask->save();
-
-                    $response['id'] = $subtask->id;
-                    $http_status_code = 201;
                 } else {
                     $response['response'] = $validator->errors()->first();
                     $http_status_code = 400;
@@ -59,11 +64,16 @@ class SubtasksController extends Controller
                     $data = json_decode($data);
 
                     if($subtask = Subtask::find($id)) {
-                        $subtask->name = $data->name;
-                        $subtask->save();
+                        if($subtask->task()->first()->student()->first()->id == $request->student->id) {
+                            $subtask->name = $data->name;
+                            $subtask->save();
 
-                        $response['response'] = "Subtask edited properly";
-                        $http_status_code = 200;
+                            $response['response'] = "Subtask edited properly";
+                            $http_status_code = 200;
+                        } else {
+                            $response['response'] = "Student doesn't have this task";
+                            $http_status_code = 400;
+                        }
                     } else {
                         $response['response'] = "Subtask by that id doesn't exist.";
                         $http_status_code = 404;
@@ -84,9 +94,14 @@ class SubtasksController extends Controller
     public function delete(Request $request, $id) {
         try {
             if ($subtask = Subtask::find($id)) {
-                $subtask->delete();
-                $response['response'] = "Subtask deleted successfully.";
-                $http_status_code = 200;
+                if($subtask->task()->first()->student()->first()->id == $request->student->id) {
+                    $subtask->delete();
+                    $response['response'] = "Subtask deleted successfully.";
+                    $http_status_code = 200;
+                } else {
+                    $response['response'] = "Student doesn't have this subtask.";
+                    $http_status_code = 400;
+                }
             } else {
                 $response['response'] = "Task by that id doesn't exist.";
                 $http_status_code = 404;
@@ -100,16 +115,21 @@ class SubtasksController extends Controller
     public function toggleCheck(Request $request, $id) {
         try {
             if ($subtask = Subtask::find($id)) {
-                if($subtask->completed == true) {
-                    $subtask->completed = false;
-                    $subtask->save();
-                    $response['response'] = 0;
-                    $http_status_code = 200;
+                if($subtask->task()->first()->student()->first()->id == $request->student->id) {
+                    if($subtask->completed == true) {
+                        $subtask->completed = false;
+                        $subtask->save();
+                        $response['response'] = 0;
+                        $http_status_code = 200;
+                    } else {
+                        $subtask->completed = true;
+                        $subtask->save();
+                        $response['response'] = 1;
+                        $http_status_code = 200;
+                    }
                 } else {
-                    $subtask->completed = true;
-                    $subtask->save();
-                    $response['response'] = 1;
-                    $http_status_code = 200;
+                    $response['response'] = "Student doesn't have this subtask";
+                    $http_status_code = 400;
                 }
             } else {
                 $response['response'] = "Subtask by that id doesn't exist.";

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Block;
 use App\Models\Period;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use PhpParser\JsonDecoder;
 
@@ -27,20 +28,21 @@ class BlocksController extends Controller
 
                     $block_days = json_decode($data->blocks);
 
+                    $insert_array = array();
                     if($block_days) {
                         foreach ($block_days as $day => $block_day) {
                             foreach ($block_day as $block_data) {
-                                $block = new Block();
-                                $block->time_start = $block_data->timeStart;
-                                $block->time_end = $block_data->timeEnd;
-                                $block->day = $day;
-                                $block->student_id = $request->student->id;
-                                $block->subject_id = $block_data->subjectID;
-                                $block->period_id = $id;
-
-                                $block->save();
+                                array_push($insert_array, [
+                                    'time_start' => $block_data->timeStart,
+                                    'time_end' => $block_data->timeEnd,
+                                    'day' => $day,
+                                    'student_id' => $request->student->id,
+                                    'subject_id' => $block_data->subjectID,
+                                    'period_id' => $id
+                                ]);
                             }
                         }
+                        DB::table('blocks')->insert($insert_array);
                     }
                     $response['response'] = "Blocks created properly";
                     $http_status_code = 201;

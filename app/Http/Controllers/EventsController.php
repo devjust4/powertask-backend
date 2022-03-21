@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Student;
+use App\Models\Subject;
 use DateInterval;
 use DatePeriod;
 use DateTime;
@@ -40,7 +41,14 @@ class EventsController extends Controller
                     $event->timestamp_start = $data->timestamp_start;
                     $event->timestamp_end = $data->timestamp_end;
 
-                    if(isset($data->subject_id)) $event->subject_id = $data->subject_id;
+                    if(isset($data->subject_id)) {
+                        if(Subject::find($data->subject_id)->student()->first()->id == $request->student->id) {
+                            $event->subject_id = $data->subject_id;
+                        } else {
+                            $response['response'] = "Student doesn't have subject";
+                            return response()->json($response)->setStatusCode(400);
+                        }
+                    }
                     $event->student_id = $request->student->id;
 
                     $event->save();
@@ -80,20 +88,32 @@ class EventsController extends Controller
                     $data = json_decode($data);
 
                     if($event = Event::find($id)) {
-                        if(isset($data->name)) $event->name = $data->name;
-                        if(isset($data->type)) $event->type = $data->type;
-                        if(isset($data->all_day)) $event->all_day = $data->all_day;
-                        if(isset($data->notes)) $event->notes = $data->notes;
+                        if($event->student()->first()->id == $request->student->id) {
+                            if(isset($data->name)) $event->name = $data->name;
+                            if(isset($data->type)) $event->type = $data->type;
+                            if(isset($data->all_day)) $event->all_day = $data->all_day;
+                            if(isset($data->notes)) $event->notes = $data->notes;
 
-                        if(isset($data->timestamp_start)) $event->timestamp_start = $data->timestamp_start;
-                        if(isset($data->timestamp_end)) $event->timestamp_end = $data->timestamp_end;
+                            if(isset($data->timestamp_start)) $event->timestamp_start = $data->timestamp_start;
+                            if(isset($data->timestamp_end)) $event->timestamp_end = $data->timestamp_end;
 
-                        if(isset($data->subject_id)) $event->subject_id = $data->subject_id;
+                            if(isset($data->subject_id)) {
+                                if(Subject::find($data->subject_id)->student()->first()->id == $request->student->id) {
+                                    $event->subject_id = $data->subject_id;
+                                } else {
+                                    $response['response'] = "Student doesn't have subject";
+                                    return response()->json($response)->setStatusCode(400);
+                                }
+                            }
 
-                        $event->save();
+                            $event->save();
 
-                        $response['response'] = "Event edited properly";
-                        $http_status_code = 200;
+                            $response['response'] = "Event edited properly";
+                            $http_status_code = 200;
+                        } else {
+                            $response['response'] = "Student doesn't have event";
+                            $http_status_code = 400;
+                        }
                     } else {
                         $response['response'] = "Event by that id doesn't exist.";
                         $http_status_code = 404;
@@ -114,9 +134,14 @@ class EventsController extends Controller
     public function delete(Request $request, $id) {
         try {
             if ($event = Event::find($id)) {
-                $event->delete();
-                $response['response'] = "Event deleted successfully.";
-                $http_status_code = 200;
+                if($event->student()->first()->id == $request->student->id) {
+                    $event->delete();
+                    $response['response'] = "Event deleted successfully.";
+                    $http_status_code = 200;
+                } else {
+                    $response['response'] = "Student doesn't have event.";
+                    $http_status_code = 400;
+                }
             } else {
                 $response['response'] = "Event by that id doesn't exist.";
                 $http_status_code = 404;
