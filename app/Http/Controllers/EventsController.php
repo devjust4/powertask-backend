@@ -10,6 +10,9 @@ use DatePeriod;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+
+use function PHPUnit\Framework\isEmpty;
 
 class EventsController extends Controller
 {
@@ -213,21 +216,47 @@ class EventsController extends Controller
             $student = Student::find($id);
             $events = $student->events()->get();
 
-            if(!$events->isEmpty()) {
+            $tasks = array();
+            foreach ($student->subjects()->where('deleted', false)->get() as $subject) {
+                $tasks = $subject->tasks()->get();
+            }
+
+            // if(!$events->isEmpty() || !isEmpty($tasks)) {
+                $events_array = array();
                 foreach ($events as $event) {
                     if($event->type == "exam") {
                         $event->subject = $event->subject()->first();
                     }
                     $events_array[$event->id] = $event;
                 }
+
+                $tasks = $student->tasks()->get();
+                // $tasks_array = array();
+                if(!$tasks->isEmpty()) {
+                    foreach ($tasks as $task) {
+                        if(!$task->subject()->where('deleted', true)->first()) {
+                            if($task->date_handover) {
+                                $task->subject = $task->subject()->first();
+                                $task_event = new Event();
+                                $task_event->name = $task->name;
+                                $task_event->type = 'task';
+                                $task_event->all_day = 0;
+                                $task_event->timestamp_start = $task->date_handover;
+                                $task_event->timestamp_end = $task->date_handover;
+                                $events_array['00-'.strtoupper(Str::random(3))] = $task_event;
+                            }
+                        }
+                    }
+                }
+
                 if($events_array) {
                     $response['events'] = $events_array;
                     $http_status_code = 200;
                 }
-            } else {
-                $response['response'] = "Student doesn't have events";
-                $http_status_code = 404;
-            }
+            // } else {
+            //     $response['response'] = "Student doesn't have events";
+            //     $http_status_code = 404;
+            // }
         } catch (\Throwable $th) {
             $response['response'] = "An error has occurred: ".$th->getMessage();
             $http_status_code = 500;

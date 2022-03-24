@@ -16,7 +16,7 @@ class CreateEventsTable extends Migration
         Schema::create('events', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->enum('type', ['vacation', 'exam', 'personal']);
+            $table->enum('type', ['vacation', 'exam', 'personal', 'task']);
             $table->boolean('all_day');
             $table->text('notes')->nullable();
             // $table->date('date_start');
