@@ -216,12 +216,9 @@ class EventsController extends Controller
             $student = Student::find($id);
             $events = $student->events()->get();
 
-            $tasks = array();
-            foreach ($student->subjects()->where('deleted', false)->get() as $subject) {
-                $tasks = $subject->tasks()->get();
-            }
+            $tasks = $student->subjects()->where('deleted', false)->first()->tasks()->get();
 
-            // if(!$events->isEmpty() || !isEmpty($tasks)) {
+            if(!$events->isEmpty() || $tasks) {
                 $events_array = array();
                 foreach ($events as $event) {
                     if($event->type == "exam") {
@@ -231,7 +228,6 @@ class EventsController extends Controller
                 }
 
                 $tasks = $student->tasks()->get();
-                // $tasks_array = array();
                 if(!$tasks->isEmpty()) {
                     foreach ($tasks as $task) {
                         if(!$task->subject()->where('deleted', true)->first()) {
@@ -243,6 +239,7 @@ class EventsController extends Controller
                                 $task_event->all_day = 0;
                                 $task_event->timestamp_start = $task->date_handover;
                                 $task_event->timestamp_end = $task->date_handover;
+                                $task_event->subject = $task->subject()->first();
                                 $events_array['00-'.strtoupper(Str::random(3))] = $task_event;
                             }
                         }
@@ -253,10 +250,10 @@ class EventsController extends Controller
                     $response['events'] = $events_array;
                     $http_status_code = 200;
                 }
-            // } else {
-            //     $response['response'] = "Student doesn't have events";
-            //     $http_status_code = 404;
-            // }
+            } else {
+                $response['response'] = "Student doesn't have events and tasks";
+                $http_status_code = 404;
+            }
         } catch (\Throwable $th) {
             $response['response'] = "An error has occurred: ".$th->getMessage();
             $http_status_code = 500;
