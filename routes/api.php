@@ -35,6 +35,7 @@ Route::middleware('checkApiToken')->group(function () {
         Route::delete('delete/{id}', [TasksController::class, 'delete']);
         Route::put('toggle/{id}', [TasksController::class, 'toggleCheck']);
     });
+
     Route::prefix('subtask')->group(function() {
         Route::post('create/{id}', [SubtasksController::class, 'create']);
         Route::put('edit/{id}', [SubtasksController::class, 'edit']);

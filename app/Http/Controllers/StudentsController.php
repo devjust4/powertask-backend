@@ -16,6 +16,12 @@ use Illuminate\Support\Facades\Validator;
 
 class StudentsController extends Controller
 {
+    /**
+     * Receives: access token in headers
+     * Returns:
+     *      'new'   ->  1 if user is new, 0 if not
+     *      'token' ->  api-token of the user
+     */
     function loginRegister(Request $request) {
         try {
             $user = $request->user;
@@ -48,6 +54,13 @@ class StudentsController extends Controller
         }
         return response()->json($response)->setStatusCode($http_status_code);
     }
+
+    /**
+     * Receives: access token and api-token in headers
+     * Returns:
+     *      'user'   ->  user object with all user info, tasks, events, periods and sessions
+     * Notes: this function downloads all subjects and tasks from google
+     */
     function initialDownload(Request $request) {
         try {
             $user = $request->user;
@@ -112,9 +125,11 @@ class StudentsController extends Controller
                             unset($client);
                             $google_tasks = array();
                             foreach ($subjects as $subject) {
-                                $courseworks = $service->courses_courseWork->listCoursesCourseWork($subject->google_id)->courseWork;
-                                foreach ($courseworks as $coursework) {
-                                    array_push($google_tasks, $coursework);
+                                if($subject->deleted != true) {
+                                    $courseworks = $service->courses_courseWork->listCoursesCourseWork($subject->google_id)->courseWork;
+                                    foreach ($courseworks as $coursework) {
+                                        array_push($google_tasks, $coursework);
+                                    }
                                 }
                             }
 
@@ -264,6 +279,13 @@ class StudentsController extends Controller
             return response(null, 204);     //Ran when received data is empty    (412: Precondition failed)
         }
     }
+
+    /**
+     * Receives: an image in body as form
+     * Returns:
+     *      'url'   ->  url path of the image
+     * Notes: this function automatically changes the user's profile image
+     */
     function uploadImage(Request $request) {
         $base_url = "http://powertask.kurokiji.com/";
 
@@ -289,7 +311,11 @@ class StudentsController extends Controller
         return response()->json($response)->setStatusCode($http_status_code);
     }
 
-
+    /**
+     * Receives: api-token in headers
+     * Returns:
+     *      'widgets'   ->  returns all widget info as separate objects for each widget
+     */
     function getAllWidgetInfo(Request $request) {
         try {
             $student = Student::find($request->student->id);
@@ -392,143 +418,146 @@ class StudentsController extends Controller
         return response()->json($response)->setStatusCode($http_status_code);
     }
 
-    // function widget_totalSessionTime(Request $request) {
-    //     try {
-    //         $student = Student::find($request->student->id);
-    //         $sessions = $student->sessions()->get();
+// All widget functions separated, in case you can customize the widgets that are used.
+/*
+    function widget_totalSessionTime(Request $request) {
+        try {
+            $student = Student::find($request->student->id);
+            $sessions = $student->sessions()->get();
 
-    //         if(!$sessions->isEmpty()) {
-    //             $time = 0;                              //Time in seconds
-    //             foreach ($sessions as $session) {
-    //                 $time += $session->total_time;
-    //             }
+            if(!$sessions->isEmpty()) {
+                $time = 0;                              //Time in seconds
+                foreach ($sessions as $session) {
+                    $time += $session->total_time;
+                }
 
-    //             if($time) {
-    //                 $hours = intval($time / 3600);
-    //                 $minutes = intval(($time % 3600) / 60);
-    //                 $seconds = intval(($time % 3600) % 60);
+                if($time) {
+                    $hours = intval($time / 3600);
+                    $minutes = intval(($time % 3600) / 60);
+                    $seconds = intval(($time % 3600) % 60);
 
-    //                 $response['hours'] = $hours;
-    //                 $response['minutes'] = $minutes;
-    //                 $response['seconds'] = $seconds;
-    //             }
-    //             $http_status_code = 200;
-    //         } else {
-    //             $response['response'] = "Student doesn't have sessions.";
-    //             $http_status_code = 404;
-    //         }
-    //     } catch (\Throwable $th) {
-    //         $response['response'] = "An error has occurred: ".$th->getMessage();
-    //         $http_status_code = 500;
-    //     }
-    //     return response()->json($response)->setStatusCode($http_status_code);
-    // }
-    // function widget_daysUntilPeriodEnds(Request $request) {
-    //     try {
-    //         $student = Student::find($request->student->id);
-    //         $period = $student->periods()->where('date_start', '<=', time())->where('date_end', '>=', time())->first();
+                    $response['hours'] = $hours;
+                    $response['minutes'] = $minutes;
+                    $response['seconds'] = $seconds;
+                }
+                $http_status_code = 200;
+            } else {
+                $response['response'] = "Student doesn't have sessions.";
+                $http_status_code = 404;
+            }
+        } catch (\Throwable $th) {
+            $response['response'] = "An error has occurred: ".$th->getMessage();
+            $http_status_code = 500;
+        }
+        return response()->json($response)->setStatusCode($http_status_code);
+    }
+    function widget_daysUntilPeriodEnds(Request $request) {
+        try {
+            $student = Student::find($request->student->id);
+            $period = $student->periods()->where('date_start', '<=', time())->where('date_end', '>=', time())->first();
 
-    //         if($period) {
-    //             $start = $period->date_start;
-    //             $finish = $period->date_end;
+            if($period) {
+                $start = $period->date_start;
+                $finish = $period->date_end;
 
-    //             $days = 0;
-    //             $percentage = 0;
+                $days = 0;
+                $percentage = 0;
 
-    //             // for ($i=time(); $i <= $finish; $i+=86400) {
-    //             //     $days++;
-    //             // }
+                // for ($i=time(); $i <= $finish; $i+=86400) {
+                //     $days++;
+                // }
 
-    //             // More efective way of calculating days
+                // More efective way of calculating days
 
-    //             $days = round(($finish - time()) / 86400);      //Precision can be switched, calculation returns double
+                $days = round(($finish - time()) / 86400);      //Precision can be switched, calculation returns double
 
-    //             $percentage = floatval(round(((time() - $start) / ($finish - $start)), 2));         //Returns percentage with a decimal precision of 2 of the current period's completion
+                $percentage = floatval(round(((time() - $start) / ($finish - $start)), 2));         //Returns percentage with a decimal precision of 2 of the current period's completion
 
-    //             $response['days'] = $days;
-    //             $response['percentage'] = $percentage;
-    //             $http_status_code = 200;
-    //         } else {
-    //             $response['response'] = "Student doesn't have period.";
-    //             $http_status_code = 404;
-    //         }
-    //     } catch (\Throwable $th) {
-    //         $response['response'] = "An error has occurred: ".$th->getMessage();
-    //         $http_status_code = 500;
-    //     }
-    //     return response()->json($response)->setStatusCode($http_status_code);
-    // }
-    // function widget_completedTasks(Request $request) {
-    //     try {
-    //         $student = Student::find($request->student->id);
-    //         $tasks = $student->tasks()->get();
+                $response['days'] = $days;
+                $response['percentage'] = $percentage;
+                $http_status_code = 200;
+            } else {
+                $response['response'] = "Student doesn't have period.";
+                $http_status_code = 404;
+            }
+        } catch (\Throwable $th) {
+            $response['response'] = "An error has occurred: ".$th->getMessage();
+            $http_status_code = 500;
+        }
+        return response()->json($response)->setStatusCode($http_status_code);
+    }
+    function widget_completedTasks(Request $request) {
+        try {
+            $student = Student::find($request->student->id);
+            $tasks = $student->tasks()->get();
 
-    //         if(!$tasks->isEmpty()) {
-    //             $completed = 0;
-    //             $total = 0;
+            if(!$tasks->isEmpty()) {
+                $completed = 0;
+                $total = 0;
 
-    //             foreach ($tasks as $task) {
-    //                 if($task->completed) {
-    //                     $completed++;
-    //                 }
-    //                 $total++;
-    //             }
+                foreach ($tasks as $task) {
+                    if($task->completed) {
+                        $completed++;
+                    }
+                    $total++;
+                }
 
-    //             $response['completed'] = $completed;
-    //             $response['total'] = $total;
-    //             $http_status_code = 200;
-    //         } else {
-    //             $response['response'] = "Student doesn't have tasks.";
-    //             $http_status_code = 404;
-    //         }
-    //     } catch (\Throwable $th) {
-    //         $response['response'] = "An error has occurred: ".$th->getMessage();
-    //         $http_status_code = 500;
-    //     }
-    //     return response()->json($response)->setStatusCode($http_status_code);
-    // }
-    // function widget_markAverage(Request $request) {
-    //     try {
-    //         $student = Student::find($request->student->id);
-    //         $period = $student->periods()->where('date_start', '<=', time())->where('date_end', '>=', time())->first();
-    //         if($period) {
-    //             $subjects = $period->subjects()->where('deleted', true)->get();
+                $response['completed'] = $completed;
+                $response['total'] = $total;
+                $http_status_code = 200;
+            } else {
+                $response['response'] = "Student doesn't have tasks.";
+                $http_status_code = 404;
+            }
+        } catch (\Throwable $th) {
+            $response['response'] = "An error has occurred: ".$th->getMessage();
+            $http_status_code = 500;
+        }
+        return response()->json($response)->setStatusCode($http_status_code);
+    }
+    function widget_markAverage(Request $request) {
+        try {
+            $student = Student::find($request->student->id);
+            $period = $student->periods()->where('date_start', '<=', time())->where('date_end', '>=', time())->first();
+            if($period) {
+                $subjects = $period->subjects()->where('deleted', true)->get();
 
-    //             $tasks = array();
-    //             foreach ($subjects as $subject) {
-    //                 $allTasks = $subject->tasks()->get();
-    //                 if(!$allTasks->isEmpty()) {
-    //                     foreach ($allTasks as $task) {
-    //                         array_push($tasks, $task);
-    //                     }
-    //                 }
-    //             }
+                $tasks = array();
+                foreach ($subjects as $subject) {
+                    $allTasks = $subject->tasks()->get();
+                    if(!$allTasks->isEmpty()) {
+                        foreach ($allTasks as $task) {
+                            array_push($tasks, $task);
+                        }
+                    }
+                }
 
-    //             if($tasks) {
-    //                 $mark = 0;
-    //                 $count = 0;
+                if($tasks) {
+                    $mark = 0;
+                    $count = 0;
 
-    //                 foreach ($tasks as $task) {
-    //                     if($task->mark) {
-    //                         $mark += $task->mark;
-    //                         $count++;
-    //                     }
-    //                 }
+                    foreach ($tasks as $task) {
+                        if($task->mark) {
+                            $mark += $task->mark;
+                            $count++;
+                        }
+                    }
 
-    //                 $response['average'] = $mark / $count;
-    //                 $http_status_code = 200;
-    //             } else {
-    //                 $response['response'] = "Student doesn't have tasks.";
-    //                 $http_status_code = 404;
-    //             }
-    //         } else {
-    //             $response['response'] = "Student doesn't have period.";
-    //             $http_status_code = 404;
-    //         }
-    //     } catch (\Throwable $th) {
-    //         $response['response'] = "An error has occurred: ".$th->getMessage();
-    //         $http_status_code = 500;
-    //     }
-    //     return response()->json($response)->setStatusCode($http_status_code);
-    // }
+                    $response['average'] = $mark / $count;
+                    $http_status_code = 200;
+                } else {
+                    $response['response'] = "Student doesn't have tasks.";
+                    $http_status_code = 404;
+                }
+            } else {
+                $response['response'] = "Student doesn't have period.";
+                $http_status_code = 404;
+            }
+        } catch (\Throwable $th) {
+            $response['response'] = "An error has occurred: ".$th->getMessage();
+            $http_status_code = 500;
+        }
+        return response()->json($response)->setStatusCode($http_status_code);
+    }
+*/
 }

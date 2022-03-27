@@ -156,6 +156,7 @@ class EventsController extends Controller
         return response()->json($response)->setStatusCode($http_status_code);
     }
 
+/*
     public function deprecatedList(Request $request) {
         try {
             $id = $request->student->id;
@@ -209,6 +210,7 @@ class EventsController extends Controller
         }
         return response()->json($response)->setStatusCode($http_status_code);
     }
+*/
 
     public function list(Request $request) {
         try {
@@ -227,24 +229,25 @@ class EventsController extends Controller
                     $events_array[$event->id] = $event;
                 }
 
-                $tasks = $student->tasks()->get();
-                if(!$tasks->isEmpty()) {
-                    foreach ($tasks as $task) {
-                        if(!$task->subject()->where('deleted', true)->first()) {
-                            if($task->date_handover) {
-                                $task->subject = $task->subject()->first();
-                                $task_event = new Event();
-                                $task_event->name = $task->name;
-                                $task_event->type = 'task';
-                                $task_event->all_day = 0;
-                                $task_event->timestamp_start = $task->date_handover;
-                                $task_event->timestamp_end = $task->date_handover;
-                                $task_event->subject = $task->subject()->first();
-                                $events_array['00-'.strtoupper(Str::random(3))] = $task_event;
-                            }
-                        }
-                    }
-                }
+                //-- Add tasks to event's list with random keys
+                // $tasks = $student->tasks()->get();
+                // if(!$tasks->isEmpty()) {
+                //     foreach ($tasks as $task) {
+                //         if(!$task->subject()->where('deleted', true)->first()) {
+                //             if($task->date_handover) {
+                //                 $task->subject = $task->subject()->first();
+                //                 $task_event = new Event();
+                //                 $task_event->name = $task->name;
+                //                 $task_event->type = 'task';
+                //                 $task_event->all_day = 0;
+                //                 $task_event->timestamp_start = $task->date_handover;
+                //                 $task_event->timestamp_end = $task->date_handover;
+                //                 $task_event->subject = $task->subject()->first();
+                //                 $events_array['00-'.strtoupper(Str::random(3))] = $task_event;
+                //             }
+                //         }
+                //     }
+                // }
 
                 if($events_array) {
                     $response['events'] = $events_array;

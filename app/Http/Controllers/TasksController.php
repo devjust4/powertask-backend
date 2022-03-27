@@ -145,6 +145,13 @@ class TasksController extends Controller
             return response(null, 204);     //Ran when received data is empty    (412: Precondition failed)
         }
     }
+
+    /**
+     * Receives: access token and api-token in headers
+     * Returns:
+     *      'tasks'   ->  task array of all user's tasks
+     * Notes: only tasks of non-deleted subjects will be returned, the function downloads all the tasks of the existing subjects from Classroom
+     */
     public function list(Request $request) {
         try {
             $user = $request->user;
@@ -152,27 +159,29 @@ class TasksController extends Controller
             if ($student = Student::find($id)) {
                 $subjects = $student->subjects()->get();
 
-                if(!$subjects->isEmpty()) {
+                if(!$subjects->isEmpty()) {     //Checks if student has subjects
                     if($student->subjects()->where('google_id', '<>', null)->where('deleted', false)->first()) {
                         $client = new \Google\Client();
                         $client->setAuthConfig('../laravel_id_secret.json');
                         $client->addScope('https://www.googleapis.com/auth/classroom.course-work.readonly');
                         $client->addScope('https://www.googleapis.com/auth/classroom.student-submissions.me.readonly');
-                        $client->setAccessToken($user->token);
+                        $client->setAccessToken($user->token);      //Uses received access token from the headers
 
                         $service = new Classroom($client);
                         unset($client);
                         $google_tasks = array();
-                        foreach ($subjects as $subject) {
-                            $courseworks = $service->courses_courseWork->listCoursesCourseWork($subject->google_id)->courseWork;
-                            foreach ($courseworks as $coursework) {
-                                array_push($google_tasks, $coursework);
+                        foreach ($subjects as $subject) {       //Goes over all subjects and adds all the tasks to
+                            if($subject->deleted != true) {
+                                $courseworks = $service->courses_courseWork->listCoursesCourseWork($subject->google_id)->courseWork;
+                                foreach ($courseworks as $coursework) {
+                                    array_push($google_tasks, $coursework);        //Stores all tasks of the subjects
+                                }
                             }
                         }
 
                         foreach ($google_tasks as $google_task) {
                             $submission = $service->courses_courseWork_studentSubmissions->listCoursesCourseWorkStudentSubmissions($google_task->courseId, $google_task->id);
-                            $submission = $submission->studentSubmissions[0];
+                            $submission = $submission->studentSubmissions[0];       //Gets more information (submission status, mark) of each task
 
                             $task_ref = Task::where('google_id', $google_task->id)->where('student_id', $student->id)->first();
                             if(!$task_ref) {
@@ -220,13 +229,11 @@ class TasksController extends Controller
                     }
 
                     $tasks = $student->tasks()->get();
-                    $tasks_array = array();
                     if(!$tasks->isEmpty()) {
                         foreach ($tasks as $task) {
                             if(!$task->subject()->where('deleted', true)->first()) {
-                                $task->subtasks = $task->subtasks()->get();
-                                $task->subject = $task->subject()->first();
-                                array_push($tasks_array, $task);
+                                $task->subtasks = $task->subtasks()->get();     //Adds subtasks to task object
+                                $task->subject = $task->subject()->first();     //Adds subject to task object
                             }
                         }
 

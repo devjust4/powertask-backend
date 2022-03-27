@@ -18,7 +18,7 @@ class SessionsController extends Controller
                     'quantity' => 'required|integer',
                     'duration' => 'required|integer',
                     'total_time' => 'required|integer',
-                    'task_id' => 'integer|exists:tasks,id',
+                    'task_id' => 'sometimes|integer|exists:tasks,id',
                 ]);
 
                 if (!$validator->fails()) {
